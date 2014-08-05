@@ -4,12 +4,12 @@ using System.Collections;
 public class BoardScript : MonoBehaviour {
 
 
-	public enum Rooms
+	public enum Rooms : int
 	{
 		Studio = 1, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
 	};
 
-	public Rooms RoomsProperty { get; set;}
+	//public Rooms RoomsProperty { get; set;}
 
 	public struct PlayerPosition
 	{
@@ -98,9 +98,9 @@ public class BoardScript : MonoBehaviour {
 	public PlayerPosition[] playersPosition;
 	// Use this for initialization
 	void Start () {
-		playersPosition = new PlayerPosition[]{new PlayerPosition(6, 0), new PlayerPosition(22,7),
-				new PlayerPosition(0,7), new PlayerPosition(22, 16), 
-				new PlayerPosition(14,22), new PlayerPosition(5, 22)};
+		playersPosition = new PlayerPosition[]{new PlayerPosition(6, 0), new PlayerPosition(0,7),
+			new PlayerPosition(5, 22), new PlayerPosition(14,22), 
+			new PlayerPosition(22, 16),new PlayerPosition(22,7)};
 	}
 	
 	// Update is called once per frame
