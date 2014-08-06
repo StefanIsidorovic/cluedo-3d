@@ -10,7 +10,7 @@ public class CharacterControl : MonoBehaviour
     public int playerNum;
     private int numOfMoves;
     public int discesSum;
-    public int onTurn;
+    public int onTurn = 1;
 
     //---- Network variables.
     private float lastSynchronizationTime = 0f;
