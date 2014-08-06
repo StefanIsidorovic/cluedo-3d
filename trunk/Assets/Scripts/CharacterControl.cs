@@ -50,10 +50,10 @@ public class CharacterControl : MonoBehaviour
         Vector3 p3 = new Vector3(-9, 0, 0);
         Vector3 p4 = new Vector3(-17, 0, 6);
         Vector3 p5 = new Vector3(-17, 0, 15);
-        playerNum = 0; 
+        //playerNum = 0; 
         board = gameObject.GetComponent<BoardScript>();
-        numOfMoves = 0;
-        onTurn = 0;        
+        //numOfMoves = 0;
+        //onTurn = 0;        
     }
 
     void Update()

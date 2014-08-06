@@ -95,12 +95,15 @@ public class BoardScript : MonoBehaviour {
 							new Door(7, 20, 8, 20, Rooms.Billiard),
 							new Door(2, 15, 2, 16, Rooms.Kitchen)}; 
 
-	public PlayerPosition[] playersPosition;
+	public PlayerPosition[] playersPosition = {new PlayerPosition(6, 0), new PlayerPosition(0,7),
+		new PlayerPosition(5, 22), new PlayerPosition(14,22), 
+		new PlayerPosition(22, 16),new PlayerPosition(22,7)};
 	// Use this for initialization
 	void Start () {
+		/*
 		playersPosition = new PlayerPosition[]{new PlayerPosition(6, 0), new PlayerPosition(0,7),
 			new PlayerPosition(5, 22), new PlayerPosition(14,22), 
-			new PlayerPosition(22, 16),new PlayerPosition(22,7)};
+			new PlayerPosition(22, 16),new PlayerPosition(22,7)};*/
 	}
 	
 	// Update is called once per frame

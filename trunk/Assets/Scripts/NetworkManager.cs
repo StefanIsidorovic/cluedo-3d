@@ -10,6 +10,10 @@ public class NetworkManager : MonoBehaviour
     private HostData[] hostList;
 
     public GameObject playerPrefab;
+	public Vector3[] startPositions = {new Vector3 (-1, 0, 22),new Vector3 (5, 0, 15) , new Vector3 (0, 0, 0),
+		new Vector3 (-9, 0, 0),  new Vector3 (-17, 0, 6), new Vector3 (-17, 0, 15)};
+
+	public int numOfPlayersConnected = 0;
 
     void OnGUI()
     {
@@ -70,20 +74,24 @@ public class NetworkManager : MonoBehaviour
 
     void OnConnectedToServer()
     {
+		if (numOfPlayersConnected == 6) {
+			Debug.Log("Too many players in game!");
+						return;
+				}
         SpawnPlayer();
-
     }
 
 
     private void SpawnPlayer()
     {
-        //#TODO  Spawning players in order.
-        Vector3 p0 = new Vector3(-1, 0, 22);
-        Vector3 p1 = new Vector3(5, 0, 15);
-        Vector3 p2 = new Vector3(0, 0, 0);
-        Vector3 p3 = new Vector3(-9, 0, 0);
-        Vector3 p4 = new Vector3(-17, 0, 6);
-        Vector3 p5 = new Vector3(-17, 0, 15);
-        Network.Instantiate(playerPrefab, p0, Quaternion.identity, 0);
+		var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayersConnected], Quaternion.identity, 0);
+
+		string playerName = "Player" + numOfPlayersConnected;
+		spawnedPlayer.name = playerName;
+
+		var playerObject = GameObject.Find (playerName).gameObject.GetComponent<CharacterControl> ();
+		playerObject.playerNum = numOfPlayersConnected;
+
+		numOfPlayersConnected++;
     }
 }
