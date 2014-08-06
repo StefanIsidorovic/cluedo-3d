@@ -4,7 +4,7 @@ using System.Collections;
 public class NetworkManager : MonoBehaviour
 {
     private const string typeName = "UniqueGameName";
-    private const string gameName = "RoomName";
+    private const string gameName = "RoomNameAlex";
 
     private bool isRefreshingHostList = false;
     private HostData[] hostList;
@@ -13,7 +13,12 @@ public class NetworkManager : MonoBehaviour
 	public Vector3[] startPositions = {new Vector3 (-1, 0, 22),new Vector3 (5, 0, 15) , new Vector3 (0, 0, 0),
 		new Vector3 (-9, 0, 0),  new Vector3 (-17, 0, 6), new Vector3 (-17, 0, 15)};
 
-	public int numOfPlayersConnected = 0;
+	public int numOfPlayersConnected;
+
+	void Start()
+	{
+		numOfPlayersConnected = 0;
+	}
 
     void OnGUI()
     {
@@ -55,6 +60,7 @@ public class NetworkManager : MonoBehaviour
             isRefreshingHostList = false;
             hostList = MasterServer.PollHostList();
         }
+
     }
 
     private void RefreshHostList()
@@ -74,7 +80,7 @@ public class NetworkManager : MonoBehaviour
 
     void OnConnectedToServer()
     {
-		if (numOfPlayersConnected == 6) {
+		if (numOfPlayersConnected == 7) {
 			Debug.Log("Too many players in game!");
 						return;
 				}
@@ -84,6 +90,10 @@ public class NetworkManager : MonoBehaviour
 
     private void SpawnPlayer()
     {
+		numOfPlayersConnected = Network.connections.Length;
+		Debug.Log("connected: " + numOfPlayersConnected);
+
+		Debug.Log ("Spawning new player. PlayerNum = " + numOfPlayersConnected + ".");
 		var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayersConnected], Quaternion.identity, 0);
 
 		string playerName = "Player" + numOfPlayersConnected;
@@ -91,7 +101,10 @@ public class NetworkManager : MonoBehaviour
 
 		var playerObject = GameObject.Find (playerName).gameObject.GetComponent<CharacterControl> ();
 		playerObject.playerNum = numOfPlayersConnected;
+		playerObject.tag = "Player";
 
-		numOfPlayersConnected++;
+		//numOfPlayersConnected++;
+		Debug.Log ("New player spawned on position: " + startPositions[numOfPlayersConnected].x + "," + 
+		           startPositions[numOfPlayersConnected].y + ", " + startPositions[numOfPlayersConnected].z);
     }
 }
