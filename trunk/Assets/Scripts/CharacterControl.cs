@@ -12,12 +12,19 @@ public class CharacterControl : MonoBehaviour
     public int discesSum;
     public int onTurn = 1;
 
+    public NetworkManager netMan;
+
     //---- Network variables.
     private float lastSynchronizationTime = 0f;
     private float syncDelay = 0f;
     private float syncTime = 0f;
     private Vector3 syncStartPosition = Vector3.zero;
     private Vector3 syncEndPosition = Vector3.zero;
+
+    public void setNumNet(int num)
+    {
+        networkView.RPC("setNum", RPCMode.AllBuffered, num);
+    }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
@@ -52,6 +59,9 @@ public class CharacterControl : MonoBehaviour
         Vector3 p5 = new Vector3(-17, 0, 15);
         //playerNum = 0; 
         board = gameObject.GetComponent<BoardScript>();
+        netMan = gameObject.GetComponent<NetworkManager>();
+        playerNum = netMan.numOfPlayersConnected;
+        name = "Player" + netMan.numOfPlayersConnected;
         //numOfMoves = 0;
         //onTurn = 0;        
     }
@@ -311,4 +321,10 @@ public class CharacterControl : MonoBehaviour
 
     }
 
+    [RPC]
+    void setNum(int num)
+    {
+        playerNum = num;
+        name = "Player" + num;
+    }
 }

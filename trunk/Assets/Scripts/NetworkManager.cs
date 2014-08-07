@@ -75,6 +75,7 @@ public class NetworkManager : MonoBehaviour
 
     private void JoinServer(HostData hostData)
     {
+        numOfPlayersConnected = hostData.connectedPlayers;
         Network.Connect(hostData);
     }
 
@@ -84,13 +85,13 @@ public class NetworkManager : MonoBehaviour
 			Debug.Log("Too many players in game!");
 						return;
 				}
+        
         SpawnPlayer();
     }
 
 
     private void SpawnPlayer()
     {
-		numOfPlayersConnected = Network.connections.Length;
 		Debug.Log("connected: " + numOfPlayersConnected);
 
 		Debug.Log ("Spawning new player. PlayerNum = " + numOfPlayersConnected + ".");
@@ -100,11 +101,13 @@ public class NetworkManager : MonoBehaviour
 		spawnedPlayer.name = playerName;
 
 		var playerObject = GameObject.Find (playerName).gameObject.GetComponent<CharacterControl> ();
-		playerObject.playerNum = numOfPlayersConnected;
+		playerObject.setNumNet(numOfPlayersConnected);
 		playerObject.tag = "Player";
 
 		//numOfPlayersConnected++;
 		Debug.Log ("New player spawned on position: " + startPositions[numOfPlayersConnected].x + "," + 
 		           startPositions[numOfPlayersConnected].y + ", " + startPositions[numOfPlayersConnected].z);
     }
+
+    
 }
