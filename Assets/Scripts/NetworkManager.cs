@@ -13,11 +13,10 @@ public class NetworkManager : MonoBehaviour
 	public Vector3[] startPositions = {new Vector3 (-1, 0, 22),new Vector3 (5, 0, 15) , new Vector3 (0, 0, 0),
 		new Vector3 (-9, 0, 0),  new Vector3 (-17, 0, 6), new Vector3 (-17, 0, 15)};
 
-	public int numOfPlayersConnected;
+	public int numOfPlayersConnected=0;
 
 	void Start()
 	{
-		numOfPlayersConnected = 0;
 	}
 
     void OnGUI()
