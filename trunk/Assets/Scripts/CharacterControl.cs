@@ -7,7 +7,7 @@ public class CharacterControl : MonoBehaviour
     private CharacterController controller;
     private CollisionFlags collisionFlags;
     private BoardScript board;
-    public int playerNum;
+    public int playerNum=0;
     private int numOfMoves;
     public int discesSum;
     public int onTurn = 1;
@@ -50,18 +50,7 @@ public class CharacterControl : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //#TODO  Spawning players in order.
-        Vector3 p0 = new Vector3(-1, 0, 22);
-        Vector3 p1 = new Vector3(5, 0, 15);
-        Vector3 p2 = new Vector3(0, 0, 0);
-        Vector3 p3 = new Vector3(-9, 0, 0);
-        Vector3 p4 = new Vector3(-17, 0, 6);
-        Vector3 p5 = new Vector3(-17, 0, 15);
-        //playerNum = 0; 
         board = gameObject.GetComponent<BoardScript>();
-        netMan = gameObject.GetComponent<NetworkManager>();
-        playerNum = netMan.numOfPlayersConnected;
-        name = "Player" + netMan.numOfPlayersConnected;
         //numOfMoves = 0;
         //onTurn = 0;        
     }
