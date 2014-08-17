@@ -12,14 +12,6 @@ public class CharacterControl : MonoBehaviour
     public int discesSum;
     public int onTurn = 1;
 
-    public NetworkManager netMan;
-
-    //---- Network variables.
-    private float lastSynchronizationTime = 0f;
-    private float syncDelay = 0f;
-    private float syncTime = 0f;
-    private Vector3 syncStartPosition = Vector3.zero;
-    private Vector3 syncEndPosition = Vector3.zero;
 
     public void setNumNet(int num)
     {
@@ -41,10 +33,6 @@ public class CharacterControl : MonoBehaviour
         }
     }
 
-    void Awake()
-    {
-        lastSynchronizationTime = Time.time;
-    }
 
 
     // Use this for initialization
