@@ -114,10 +114,10 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <summary>
     /// Vector that contains players positions on board.
     /// </summary>
-    public PlayerPosition[] playersPosition = { new PlayerPosition(6, 0), new PlayerPosition(0,7),
-		                                            new PlayerPosition(5, 22), new PlayerPosition(14,22), 
-		                                            new PlayerPosition(22, 16),new PlayerPosition(22,7)
-                                              };
+    private PlayerPosition[] playersPosition = { new PlayerPosition(6, 0), new PlayerPosition(0,7),
+		                                             new PlayerPosition(5, 22), new PlayerPosition(14,22), 
+		                                             new PlayerPosition(22, 16),new PlayerPosition(22,7)
+                                               };
 
     void Start()
     {
@@ -126,9 +126,13 @@ public class BoardScript : MonoSingleton<BoardScript>
     // Update is called once per frame
     void Update()
     {
-
     }
 
+
+    public PlayerPosition PlayerPos(int whichPlayer)
+    {
+        return playersPosition[whichPlayer];
+    }
 
     /// <summary>
     /// Indicator function for doors.
@@ -138,7 +142,7 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <param name="x2"> x coordinate of second field </param>
     /// <param name="z2"> z coordinate of second field </param>
     /// <returns>Function returns true if there are door between these two fields.</returns>
-    public bool isDoor(int x1, int z1, int x2, int z2)
+    public bool IsDoor(int x1, int z1, int x2, int z2)
     {
         foreach (Door d in doors)
         {
@@ -159,14 +163,13 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <param name="npx"> potentional new x coordinate </param>
     /// <param name="npz"> potentional new z coordinate </param>
     /// <returns> True if move is valid </returns>
-    public bool isValid(int playerNum, int px, int pz, int npx, int npz)
+    public bool IsValid(int playerNum, int px, int pz, int npx, int npz)
     {
         //Dimensions of board are 23*23
         if (npx < 0 || npx > 22 || npz < 0 || npz > 22)
             return false;
 
         //Player can't walk over some other player
-        PlayerPosition newPlayerPosition = new PlayerPosition(npx, npz);
         foreach (PlayerPosition pp in playersPosition)
             if (pp.X == npx && pp.Z == npz)
                 return false;
@@ -174,9 +177,21 @@ public class BoardScript : MonoSingleton<BoardScript>
         //Player can't walk through walls (change room without crossing the door)
         int currentRoom = board[px, pz];
         int nextRoom = board[npx, npz];
-        if (currentRoom != nextRoom && !isDoor(px, pz, npx, npz))
+        if (currentRoom != nextRoom && !IsDoor(px, pz, npx, npz))
             return false;
 
         return true;
+    }
+
+    public void SetPlayerPosition(int whichPlayer, int x, int z)
+    {
+        networkView.RPC("SetPlayerPositionRPC", RPCMode.AllBuffered, whichPlayer, x, z);
+    }
+
+    [RPC]
+    private void SetPlayerPositionRPC(int whichPlayer, int x, int z)
+    {
+        playersPosition[whichPlayer].X = x;
+        playersPosition[whichPlayer].Z = z;
     }
 }

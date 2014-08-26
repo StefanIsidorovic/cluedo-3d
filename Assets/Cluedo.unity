@@ -696,6 +696,59 @@ Prefab:
   m_RootGameObject: {fileID: 629597190}
   m_IsPrefabParent: 0
   m_IsExploded: 1
+--- !u!1 &38588589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 38588592}
+  - 114: {fileID: 38588591}
+  - 148: {fileID: 38588590}
+  m_Layer: 0
+  m_Name: Board
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!148 &38588590
+NetworkView:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 38588589}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 0}
+  m_ViewID:
+    m_ID: 3
+    m_Type: 1
+--- !u!114 &38588591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 38588589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267135ad6e84927459e52aab75aa347a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsGameStatic: 0
+--- !u!4 &38588592
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 38588589}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.50627756, y: -.340031624, z: 3.63683271}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 22
 --- !u!1 &41652236
 GameObject:
   m_ObjectHideFlags: 0
@@ -9420,10 +9473,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsGameStatic: 0
-  onTurn: 0
-  sumDice: 10
-  playerName: 
-  playing: 1
 --- !u!4 &399530593
 Transform:
   m_ObjectHideFlags: 0
@@ -49664,7 +49713,7 @@ MonoBehaviour:
   - {x: -9, y: 0, z: 0}
   - {x: -17, y: 0, z: 6}
   - {x: -17, y: 0, z: 15}
-  minimumNumberOfPlayers: 3
+  minimumNumberOfPlayers: 2
 --- !u!148 &1983822641
 NetworkView:
   m_ObjectHideFlags: 0
