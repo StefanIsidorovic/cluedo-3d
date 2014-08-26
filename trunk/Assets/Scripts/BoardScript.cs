@@ -63,7 +63,7 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// Map of rooms
     /// </summary>
     public int[,] board =
-	{
+	{// TODO: If there's time change board to be array of Rooms instead of int array.
 		{(int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Hallway, (int)Rooms.Hallway, (int)Rooms.SleepingRoom, (int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.Hallway,(int)Rooms.Hallway, (int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen},
 		{(int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Hallway, (int)Rooms.Hallway, (int)Rooms.SleepingRoom, (int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.Hallway,(int)Rooms.Hallway, (int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen},
 		{(int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Studio, (int)Rooms.Hallway, (int)Rooms.Hallway, (int)Rooms.SleepingRoom, (int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.SleepingRoom,(int)Rooms.Hallway,(int)Rooms.Hallway, (int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen,(int) Rooms.Kitchen},
@@ -165,22 +165,33 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <returns> True if move is valid </returns>
     public bool IsValid(int playerNum, int px, int pz, int npx, int npz)
     {
-        //Dimensions of board are 23*23
+        // Dimensions of board are 23*23
         if (npx < 0 || npx > 22 || npz < 0 || npz > 22)
             return false;
 
-        //Player can't walk over some other player
+        // Player can't walk over some other player
         foreach (PlayerPosition pp in playersPosition)
             if (pp.X == npx && pp.Z == npz)
                 return false;
 
-        //Player can't walk through walls (change room without crossing the door)
+        // Player can't walk through walls (change room without crossing the door)
         int currentRoom = board[px, pz];
         int nextRoom = board[npx, npz];
         if (currentRoom != nextRoom && !IsDoor(px, pz, npx, npz))
             return false;
 
         return true;
+    }
+
+    /// <summary>
+    /// Player can check if he is in any room or hallway using this method.
+    /// </summary>
+    /// <param name="whichPlayer">Player asking for position.</param>
+    /// <returns>Room enum for player.</returns>
+    public Rooms WhereAmI(int whichPlayer)
+    {
+        var playerPos = playersPosition[whichPlayer];
+        return (Rooms)board[playerPos.X, playerPos.Z];
     }
 
     public void SetPlayerPosition(int whichPlayer, int x, int z)
