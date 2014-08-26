@@ -10,7 +10,7 @@ public class CharacterControl : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        board = gameObject.GetComponent<BoardScript>();
+        board = GameObject.Find("Board").gameObject.GetComponent<BoardScript>();
         numOfMoves = 0;     
     }
 
@@ -49,15 +49,15 @@ public class CharacterControl : MonoBehaviour
 
     public void MoveLeft(int onTurn)
     {
-        int xPos, zPos;
-        xPos = board.playersPosition[playerNum].X;
-        zPos = board.playersPosition[playerNum].Z;
+        var playerPos = board.PlayerPos(playerNum);
+        int xPos = playerPos.X;
+        int zPos = playerPos.Z;
 
         if (playerNum == 0 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos - 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
             {
-                board.playersPosition[playerNum].X -= 1;
+                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -66,9 +66,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if (playerNum == 1 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos + 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
             {
-                board.playersPosition[playerNum].Z += 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
@@ -77,9 +77,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos + 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
             {
-                board.playersPosition[playerNum].X += 1;
+                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -88,9 +88,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos - 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.playersPosition[playerNum].Z -= 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
@@ -100,15 +100,15 @@ public class CharacterControl : MonoBehaviour
 
     public void MoveRight(int onTurn)
     {
-        int xPos, zPos;
-        xPos = board.playersPosition[playerNum].X;
-        zPos = board.playersPosition[playerNum].Z;
+        var playerPos = board.PlayerPos(playerNum);
+        int xPos = playerPos.X;
+        int zPos = playerPos.Z;
 
         if (playerNum == 0 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos + 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
             {
-                board.playersPosition[playerNum].X += 1;
+                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -117,9 +117,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if (playerNum == 1 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos - 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.playersPosition[playerNum].Z -= 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
@@ -127,9 +127,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos - 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
             {
-                board.playersPosition[playerNum].X -= 1;
+                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -138,9 +138,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos + 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
             {
-                board.playersPosition[playerNum].Z += 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
@@ -151,15 +151,15 @@ public class CharacterControl : MonoBehaviour
 
     public void MoveUp(int onTurn)
     {
-        int xPos, zPos;
-        xPos = board.playersPosition[playerNum].X;
-        zPos = board.playersPosition[playerNum].Z;
+        var playerPos = board.PlayerPos(playerNum);
+        int xPos = playerPos.X;
+        int zPos = playerPos.Z;
 
         if (playerNum == 0 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos + 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
             {
-                board.playersPosition[playerNum].Z += 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
@@ -168,9 +168,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if (playerNum == 1 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos + 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
             {
-                board.playersPosition[playerNum].X += 1;
+                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -179,9 +179,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos - 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.playersPosition[playerNum].Z -= 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos-1);
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
@@ -190,9 +190,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos - 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
             {
-                board.playersPosition[playerNum].X -= 1;
+                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -203,15 +203,15 @@ public class CharacterControl : MonoBehaviour
 
     public void MoveDown(int onTurn)
     {
-        int xPos, zPos;
-        xPos = board.playersPosition[playerNum].X;
-        zPos = board.playersPosition[playerNum].Z;
+        var playerPos = board.PlayerPos(playerNum);
+        int xPos = playerPos.X;
+        int zPos = playerPos.Z;
 
         if (playerNum == 0 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos - 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.playersPosition[playerNum].Z -= 1;
+                board.SetPlayerPosition(playerNum, xPos, zPos-1);
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
@@ -220,9 +220,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if (playerNum == 1 && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos - 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
             {
-                board.playersPosition[playerNum].X -= 1;
+                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
@@ -231,9 +231,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos, zPos + 1))
+            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
             {
-                board.playersPosition[playerNum].Z += 1;
+                board.SetPlayerPosition(playerNum, xPos , zPos + 1);
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
@@ -242,9 +242,9 @@ public class CharacterControl : MonoBehaviour
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
         {
-            if (board.isValid(playerNum, xPos, zPos, xPos + 1, zPos))
+            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
             {
-                board.playersPosition[playerNum].X += 1;
+                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
