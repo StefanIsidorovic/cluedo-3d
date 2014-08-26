@@ -60,7 +60,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -71,7 +71,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -82,7 +82,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -92,7 +92,7 @@ public class CharacterControl : MonoBehaviour
             {
                 board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -111,7 +111,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -121,7 +121,7 @@ public class CharacterControl : MonoBehaviour
             {
                 board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -132,7 +132,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -143,7 +143,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -162,7 +162,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -173,7 +173,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -184,7 +184,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos-1);
                 transform.Translate(0, 0, 1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -195,7 +195,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -214,7 +214,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos-1);
                 transform.Translate(0, 0, 1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -225,7 +225,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos - 1, zPos);
                 transform.Translate(1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -236,7 +236,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos , zPos + 1);
                 transform.Translate(0, 0, -1);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
@@ -247,7 +247,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos + 1, zPos);
                 transform.Translate(-1, 0, 0);
 
-                if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
+                if (board.board[xPos, zPos] == (int)Rooms.Hallway || board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
                     SetNumOfMoves(numOfMoves+1);
             }
         }
