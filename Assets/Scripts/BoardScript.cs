@@ -4,14 +4,6 @@ using System.Collections;
 public class BoardScript : MonoSingleton<BoardScript>
 {
     /// <summary>
-    /// Enum that represents each of 9 rooms and hallway.
-    /// </summary>
-    public enum Rooms : int
-    {
-        Studio = 1, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
-    };
-
-    /// <summary>
     /// Struct that will be used to represent player's position on board.
     /// </summary>
     public struct PlayerPosition
@@ -60,7 +52,7 @@ public class BoardScript : MonoSingleton<BoardScript>
 
     #region Board hardcoded definition
     /// <summary>
-    /// Map of rooms
+    /// Map of allRooms
     /// </summary>
     public int[,] board =
 	{// TODO: If there's time change board to be array of Rooms instead of int array.
@@ -92,7 +84,7 @@ public class BoardScript : MonoSingleton<BoardScript>
 
     #region Doors hardcoded definition
     /// <summary>
-    /// Doors with their positions and rooms.
+    /// Doors with their positions and allRooms.
     /// </summary>
     public Door[] doors = {new Door(6, 4, 5, 4, Rooms.Studio), 
 						 	new Door(3, 7, 3, 8, Rooms.SleepingRoom),

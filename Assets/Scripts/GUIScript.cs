@@ -130,8 +130,5 @@ public class GUIScript : MonoBehaviour
 
     private void AskDialog_ChoosingCards()
     {
-        GUI.BeginGroup();
-
-        GUI.EndGroup();
     }
 }
