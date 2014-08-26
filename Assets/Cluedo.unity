@@ -9416,7 +9416,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 399530591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc2ada2733a7eae449191f51ea4899d0, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a7fa781b08579843898e162196216d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   IsGameStatic: 0
@@ -49653,7 +49653,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1983822637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ec547e5b3cff8b429a1110c3d3aa929, type: 3}
+  m_Script: {fileID: 11500000, guid: 16a2c59f3b6b47e47a3305e99636d8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 100004, guid: e24410ca109905f41b4ec3fddecad812, type: 2}
@@ -49664,7 +49664,7 @@ MonoBehaviour:
   - {x: -9, y: 0, z: 0}
   - {x: -17, y: 0, z: 6}
   - {x: -17, y: 0, z: 15}
-  minimumNumberOfPlayers: 2
+  minimumNumberOfPlayers: 3
 --- !u!148 &1983822641
 NetworkView:
   m_ObjectHideFlags: 0
