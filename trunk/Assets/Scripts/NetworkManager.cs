@@ -153,7 +153,7 @@ public class NetworkManager : MonoBehaviour
         spawnedPlayer.name = playerName;
 
         var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
-        playerObject.setNumNet(numOfPlayer);
+        playerObject.SetNum(numOfPlayer);
         playerObject.tag = "Player";
 
         GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().incrementNumberOfPlayers();

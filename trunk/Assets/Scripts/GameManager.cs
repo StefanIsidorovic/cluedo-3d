@@ -4,26 +4,65 @@ using System.Collections.Generic;
 
 public class GameManager : MonoSingleton<GameManager>
 {
-    public int onTurn = 0;
-    public int sumDice = 10;
-    public string playerName;
-    public bool playing = true;
-    private int numOfPlayers;
+    private int onTurn; // Denotes which player can move it's piece (players are enumerated from 0 to 5)
+    private int numOfPlayers; // Keeps info about how many players are playing the game
+
+    // Use this for initialization
+    void Start()
+    {
+        onTurn = numOfPlayers = 0;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        try
+        {
+            string playerName = "Player" + onTurn;
+            var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
+            // TODO: Remove constant and get real value from dices.
+            if (10 == playerObject.NumOfMoves())
+            {
+                playerObject.SetNumOfMoves(0);
+                setTurn((onTurn + 1) % numOfPlayers);
+            }
+        }
+        catch (System.Exception)
+        {
+        }
+    }
+
+    #region Get and set methods
+
+    public int OnTurn()
+    {
+        return onTurn;
+    }
+
+    public void setTurn(int turn)
+    {
+        networkView.RPC("setTurnRPC", RPCMode.AllBuffered, turn);
+    }
 
     public void incrementNumberOfPlayers()
     {
         networkView.RPC("incrementNumberOfPlayersRPC", RPCMode.AllBuffered);
     }
 
+    public void decrementNumberOfPlayers()
+    {
+        networkView.RPC("decrementNumberOfPlayersRPC", RPCMode.AllBuffered);
+    }
+
+
+    #endregion
+
+    #region RPC set methods
+
     [RPC]
     private void incrementNumberOfPlayersRPC()
     {
         ++numOfPlayers;
-    }
-
-    public void decrementNumberOfPlayers()
-    {
-        networkView.RPC("decrementNumberOfPlayersRPC", RPCMode.AllBuffered);
     }
 
     [RPC]
@@ -32,41 +71,12 @@ public class GameManager : MonoSingleton<GameManager>
         --numOfPlayers;
     }
 
-    public void setTurn(int turn)
-    {
-        networkView.RPC("setTurnRPC", RPCMode.AllBuffered, turn);
-    }
-
     [RPC]
     private void setTurnRPC(int turn)
     {
         onTurn = turn;
     }
 
-    // Use this for initialization
-    void Start()
-    {
-    }
+    #endregion
 
-    // Update is called once per frame
-    void Update()
-    {
-        try
-		{    
-			playerName = "Player" + onTurn;
-            var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
-            if (sumDice == playerObject.numOfMoves)
-            {
-                playerObject.setMoves(0);
-                setTurn((onTurn + 1) % numOfPlayers);
-            }
-		} catch(System.Exception)
-		{
-		}
-    }
-
-    void throwDices()
-    {
-        sumDice = Random.Range(1, 6) + Random.Range(1, 6);
-    }
 }

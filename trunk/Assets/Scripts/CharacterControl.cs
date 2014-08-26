@@ -3,27 +3,31 @@ using System.Collections;
 
 public class CharacterControl : MonoBehaviour
 {
+    private BoardScript board; // Provides data about players on map and map itself
+    private int playerNum; // Number of this player
+    private int numOfMoves; // Number of made moves in current series of moves
 
-    private CharacterController controller;
-    private CollisionFlags collisionFlags;
-    private BoardScript board;
-    public int playerNum = 0;
-    public int numOfMoves;
-
-    public void setNumNet(int num)
+    // Use this for initialization
+    void Start()
     {
-        networkView.RPC("setNum", RPCMode.AllBuffered, num);
-    }
-    
-    public void setMoves(int moves)
-    {
-        networkView.RPC("setMovesRPC", RPCMode.AllBuffered, moves);
+        board = gameObject.GetComponent<BoardScript>();
+        numOfMoves = 0;     
     }
 
-    [RPC]
-    private void setMovesRPC(int moves)
+    void Update()
     {
-        numOfMoves = moves;
+        if (networkView.isMine)
+        {
+            int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+                MoveLeft(onTurn);
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+                MoveRight(onTurn);
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+                MoveUp(onTurn);
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+                MoveDown(onTurn);
+        }
     }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
@@ -41,33 +45,9 @@ public class CharacterControl : MonoBehaviour
         }
     }
 
+    #region Move functions
 
-
-    // Use this for initialization
-    void Start()
-    {
-        board = gameObject.GetComponent<BoardScript>();
-        //numOfMoves = 0;
-        //onTurn = 0;        
-    }
-
-    void Update()
-    {
-        if (networkView.isMine)
-        {
-            int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().onTurn;
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-                moveLeft(onTurn);
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-                moveRight(onTurn);
-            else if (Input.GetKeyDown(KeyCode.UpArrow))
-                moveUp(onTurn);
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-                moveDown(onTurn);
-        }
-    }
-
-    public void moveLeft(int onTurn)
+    public void MoveLeft(int onTurn)
     {
         int xPos, zPos;
         xPos = board.playersPosition[playerNum].X;
@@ -81,9 +61,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos - 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -94,9 +72,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos + 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -107,9 +83,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos + 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -119,14 +93,12 @@ public class CharacterControl : MonoBehaviour
                 board.playersPosition[playerNum].Z -= 1;
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos - 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
     }
 
-    public void moveRight(int onTurn)
+    public void MoveRight(int onTurn)
     {
         int xPos, zPos;
         xPos = board.playersPosition[playerNum].X;
@@ -140,9 +112,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos + 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -152,9 +122,7 @@ public class CharacterControl : MonoBehaviour
                 board.playersPosition[playerNum].Z -= 1;
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos - 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -165,9 +133,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos - 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -178,14 +144,12 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos + 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
     }
 
-    public void moveUp(int onTurn)
+    public void MoveUp(int onTurn)
     {
         int xPos, zPos;
         xPos = board.playersPosition[playerNum].X;
@@ -199,9 +163,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos + 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -212,9 +174,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos + 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -225,9 +185,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos - 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -238,14 +196,12 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos - 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
     }
 
-    public void moveDown(int onTurn)
+    public void MoveDown(int onTurn)
     {
         int xPos, zPos;
         xPos = board.playersPosition[playerNum].X;
@@ -259,9 +215,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos - 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos - 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -272,9 +226,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos - 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos - 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -285,9 +237,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos, zPos + 1] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + xPos + " zPos: " + (zPos + 1) + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -298,18 +248,46 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos, zPos] == (int)BoardScript.Rooms.Hallway || board.board[xPos + 1, zPos] == (int)BoardScript.Rooms.Hallway)
-                    setMoves(numOfMoves+1);
-
-                Debug.Log("xPos: " + (xPos + 1) + " zPos: " + zPos + "BROJ POTEZA: " + numOfMoves);
+                    SetNumOfMoves(numOfMoves+1);
             }
         }
     }
 
+    #endregion
+
+    #region Get and set methods
+
+    public void SetNum(int num)
+    {
+        networkView.RPC("SetNumRPC", RPCMode.AllBuffered, num);
+    }
+
+    public void SetNumOfMoves(int moves)
+    {
+        networkView.RPC("SetNumOfMovesRPC", RPCMode.AllBuffered, moves);
+    }
+
+    public int NumOfMoves()
+    {
+        return numOfMoves;
+    }
+
+    #endregion
+
+    #region RPC set methods
 
     [RPC]
-    void setNum(int num)
+    private void SetNumRPC(int num)
     {
         playerNum = num;
         name = "Player" + num;
     }
+
+    [RPC]
+    private void SetNumOfMovesRPC(int moves)
+    {
+        numOfMoves = moves;
+    }
+
+    #endregion
 }
