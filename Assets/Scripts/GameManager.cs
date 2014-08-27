@@ -16,7 +16,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// Keeps info about how many players are playing the game.
     /// NOTE: This variable is dependent on NetworkManager to call GameManager.incrementNumberOfPlayers() method when each player is spawned.
     /// </summary>
-    private int numOfPlayers;// #TODO: Fix this shit!!!
+    private int numOfPlayers;
     /// <summary>
     /// List of all available rooms in the game.
     /// </summary>
@@ -32,15 +32,15 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// Game solution. Keeps indexes of solution room, person and weapon, from allRooms, allCharacters and allWeapons respectively.
     /// </summary>
-    private Triple<int, int, int> solution;// #TODO: Add RPC.
+    private Triple<int, int, int> solution;
     /// <summary>
     /// Keeps information which player has which cards after cards are dealt.
     /// </summary>
-    private Dictionary<int, List<int>> cardsDistribution;// #TODO: Add RPC.
+    private Dictionary<int, List<int>> cardsDistribution;
     /// <summary>
     /// Flag used in Update() method to decide if cards should be dealt.
     /// </summary>
-    private bool shouldDeal;// #TODO: Add RPC.
+    private bool shouldDeal;
 
     // Use this for initialization
     void Start()
@@ -55,14 +55,17 @@ public class GameManager : MonoSingleton<GameManager>
                                                             });
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
         shouldDeal = true;
+        cardsDistribution = new Dictionary<int, List<int>>();
     }
 
     // Update is called once per frame
     void Update()
     {
         // Deal cards
-        if (shouldDeal && Network.isServer && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
+        var networkManager = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>();
+        if (shouldDeal && Network.isServer && networkManager.GameStarted())
         {
+            SetNumOfPlayers(networkManager.NumberOfPlayersConnected());
             InitSolution();
             DealCards();
             shouldDeal = false;
@@ -79,7 +82,7 @@ public class GameManager : MonoSingleton<GameManager>
             if (10 == playerObject.NumOfMoves())
             {
                 playerObject.SetNumOfMoves(0);
-                setTurn((onTurn + 1) % numOfPlayers);
+                SetTurn((onTurn + 1) % numOfPlayers);
             }
         }
         catch (System.Exception)
@@ -176,11 +179,10 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void InitSolution()
     {
-        // TODO: create RPC setter for solution!
-        int whichRoom = Random.Range(0, allRooms.Count - 1);
+        int whichRoom = Random.Range(0, allRooms.Count - 2); // Hallway is not a valid room
         int whichPerson = Random.Range(0, allCharacters.Count - 1);
         int whichWeapon = Random.Range(0, allWeapons.Count - 1);
-        solution = new Triple<int, int, int>(whichRoom, whichPerson, whichWeapon);
+        SetSolution(whichRoom, whichPerson, whichWeapon);
     }
 
     /// <summary>
@@ -190,11 +192,10 @@ public class GameManager : MonoSingleton<GameManager>
     private void DealCards()
     {
         // Fill all cards list with cards that are not in solution 
-        cardsDistribution = new Dictionary<int, List<int>>();
         List<int> allCards = new List<int>();
         foreach (var room in allRooms)
         {
-            if (room != allRooms[solution.First]) allCards.Add((int)room);
+            if (room != allRooms[solution.First] && room != Rooms.Hallway) allCards.Add((int)room);
         }
         foreach (var character in allCharacters)
         {
@@ -206,19 +207,15 @@ public class GameManager : MonoSingleton<GameManager>
         }
 
         // Create lists in dictionary for players
-        int numberOfPlayers = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().NumberOfPlayers(); // Note this variable is not a member!
-        for (int i = 0; i < numberOfPlayers; i++)
-        {
-            cardsDistribution.Add(i, new List<int>());
-        }
+        networkView.RPC("InitCardsDistributionRPC", RPCMode.AllBuffered);
 
         // Shuffle and deal cards
         Algorithms.Shuffle<int>(allCards);
         int currentPlayer = 0;
         foreach (var card in allCards)
         {
-            cardsDistribution[currentPlayer].Add(card);
-            currentPlayer = (currentPlayer + 1) % numberOfPlayers;
+            DealCardToPlayer(card, currentPlayer);
+            currentPlayer = (currentPlayer + 1) % numOfPlayers;
         }
     }
 
@@ -240,25 +237,24 @@ public class GameManager : MonoSingleton<GameManager>
     /// NOTE: This setter affects all the clones of this object as it is wrapper for RPC call.
     /// </summary>
     /// <param name="turn"></param>
-    public void setTurn(int turn)
+    public void SetTurn(int turn)
     {
-        networkView.RPC("setTurnRPC", RPCMode.AllBuffered, turn);
+        networkView.RPC("SetTurnRPC", RPCMode.AllBuffered, turn);
     }
 
-    /// <summary>
-    /// Increments indicator for how many players are playing the game.
-    /// </summary>
-    public void incrementNumberOfPlayers()
+    public void SetNumOfPlayers(int numberOfPlayers)
     {
-        networkView.RPC("incrementNumberOfPlayersRPC", RPCMode.AllBuffered);
+        networkView.RPC("SetNumOfPlayersRPC", RPCMode.AllBuffered, numberOfPlayers);
     }
 
-    /// <summary>
-    /// Decrements indicator for how many players are playing the game.
-    /// </summary>
-    public void decrementNumberOfPlayers()
+    public void SetSolution(int room, int person, int weapon)
     {
-        networkView.RPC("decrementNumberOfPlayersRPC", RPCMode.AllBuffered);
+        networkView.RPC("SetSolutionRPC", RPCMode.AllBuffered, room, person, weapon);
+    }
+
+    public void DealCardToPlayer(int card, int player)
+    {
+        networkView.RPC("DealCardToPlayerRPC", RPCMode.AllBuffered, card, player);
     }
 
     #endregion
@@ -266,31 +262,40 @@ public class GameManager : MonoSingleton<GameManager>
     #region RPC set methods
 
     /// <summary>
-    /// RPC for incrementing indicator for how many players are playing the game.
-    /// </summary>
-    [RPC]
-    private void incrementNumberOfPlayersRPC()
-    {
-        ++numOfPlayers;
-    }
-
-    /// <summary>
-    /// RPC for decrementing indicator for how many players are playing the game.
-    /// </summary>
-    [RPC]
-    private void decrementNumberOfPlayersRPC()
-    {
-        --numOfPlayers;
-    }
-
-    /// <summary>
     /// RPC setter for GameManager.onTurn field.
     /// </summary>
     /// <param name="turn">Value to set GameManager.onTurn parameter to.</param>
     [RPC]
-    private void setTurnRPC(int turn)
+    private void SetTurnRPC(int turn)
     {
         onTurn = turn;
+    }
+
+    [RPC]
+    private void SetNumOfPlayersRPC(int numberOfPlayers)
+    {
+        numOfPlayers = numberOfPlayers;
+    }
+
+    [RPC]
+    private void SetSolutionRPC(int room, int person, int weapon)
+    {
+        solution = new Triple<int, int, int>(room, person, weapon);
+    }
+
+    [RPC]
+    private void InitCardsDistributionRPC()
+    {
+        for (int i = 0; i < numOfPlayers; i++)
+        {
+            cardsDistribution.Add(i, new List<int>());
+        }
+    }
+
+    [RPC]
+    private void DealCardToPlayerRPC(int card, int player)
+    {
+        cardsDistribution[player].Add(card);
     }
 
     #endregion
