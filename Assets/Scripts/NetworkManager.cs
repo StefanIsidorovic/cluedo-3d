@@ -5,14 +5,16 @@ public class NetworkManager : MonoBehaviour
 {
     // Unique typename for game (Hopefully unique).
     private const string typeName = "Cluedo3DSAMOSTeam";
-    private const string gameName = "RoomNameAlex";
+    private const string gameName = "RoomNameOgKoci";
+
+    public Material[] playerMaterials; 
 
     private bool isRefreshingHostList = false;
     private HostData[] hostList;
 
     public GameObject playerPrefab;
-    public Vector3[] startPositions = {new Vector3 (-1, 0, 22),new Vector3 (5, 0, 15) , new Vector3 (0, 0, 0),
-		new Vector3 (-9, 0, 0),  new Vector3 (-17, 0, 6), new Vector3 (-17, 0, 15)};
+    public Vector3[] startPositions = {new Vector3 (8, 2, 15),new Vector3 (14, 2, 8) , new Vector3 (9, 2, -7),
+		new Vector3 (0, 2, -7),  new Vector3 (-8, 2, -1), new Vector3 (-8, 2, 8)};
 
     // Number of minimum players need to be so game could start, its for testing and debuging purposes
     // because its frustrating to start three instances everytime. By default is set to 3 but you can change it from Unity editor, NOT HERE!
@@ -154,7 +156,10 @@ public class NetworkManager : MonoBehaviour
 
         var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
         playerObject.SetNum(numOfPlayer);
+        playerObject.SetMaterial(numOfPlayer);
         playerObject.tag = "Player";
+
+      
 
         GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().incrementNumberOfPlayers();
         Debug.Log("New player spawned on position: " + startPositions[numOfPlayer].x + "," +

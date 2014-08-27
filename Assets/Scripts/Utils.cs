@@ -181,7 +181,7 @@ public class EnumConverter
     /// <summary>
     /// Converts given string to appropriate enum. 
     /// NOTE: Caller has responsibility to do proper cast to Rooms, Characters or Weapons enum type.
-    ///       In case when the caller doesn't know to which type to cast they can use 'is' operator to test type
+    ///       In case when the caller doesn't know to which type to cast they can use 'is' operator to playerMaterials type
     ///       of returned object.
     /// </summary>
     /// <param name="toConvert">String to convert to enum.</param>

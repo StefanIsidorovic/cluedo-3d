@@ -267,10 +267,16 @@ public class CharacterControl : MonoBehaviour
         networkView.RPC("SetNumOfMovesRPC", RPCMode.AllBuffered, moves);
     }
 
+    public void SetMaterial(int mat)
+    {
+        networkView.RPC("SetMaterialRPC", RPCMode.AllBuffered, mat);
+    }
+
     public int NumOfMoves()
     {
         return numOfMoves;
     }
+
 
     #endregion
 
@@ -287,6 +293,14 @@ public class CharacterControl : MonoBehaviour
     private void SetNumOfMovesRPC(int moves)
     {
         numOfMoves = moves;
+    }
+    
+    [RPC]
+    private void SetMaterialRPC(int materialIndex)
+    {
+        Material mat = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().playerMaterials[materialIndex];
+        transform.Find("PlayerGreen").renderer.material = mat;
+        transform.Find("Sphere").renderer.material = mat;
     }
 
     #endregion
