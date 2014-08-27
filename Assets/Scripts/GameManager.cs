@@ -54,8 +54,6 @@ public class GameManager : MonoSingleton<GameManager>
                                                              Characters.MrGreen, Characters.MrYellow, Characters.MrsWhite 
                                                             });
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
-        if (Network.isServer)
-            InitSolution();
         shouldDeal = true;
     }
 
@@ -65,6 +63,7 @@ public class GameManager : MonoSingleton<GameManager>
         // Deal cards
         if (shouldDeal && Network.isServer && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
         {
+            InitSolution();
             DealCards();
             shouldDeal = false;
         }

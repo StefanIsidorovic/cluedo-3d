@@ -175,7 +175,7 @@ public class NetworkManager : MonoBehaviour
 
     public int NumberOfPlayers()
     {
-        return numOfPlayer;
+        return numOfPlayersConnected;
     }
 
     // Wrapper methods
