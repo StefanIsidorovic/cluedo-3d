@@ -148,7 +148,6 @@ public class NetworkManager : MonoBehaviour
     {
         Debug.Log("connected: " + numOfPlayer);
 
-        Debug.Log("Spawning new player. PlayerNum = " + numOfPlayer + ".");
         var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayer], Quaternion.identity, 0);
 
         string playerName = "Player" + numOfPlayer;
@@ -159,11 +158,13 @@ public class NetworkManager : MonoBehaviour
         playerObject.SetMaterial(numOfPlayer);
         playerObject.tag = "Player";
 
-      
-
         GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().incrementNumberOfPlayers();
-        Debug.Log("New player spawned on position: " + startPositions[numOfPlayer].x + "," +
-                   startPositions[numOfPlayer].y + ", " + startPositions[numOfPlayer].z);
+
+        //Camera that follows playerObject
+        if (playerObject.networkView.isMine)
+        { 
+            GameObject.Find("Main Camera").GetComponent<SmoothFollow>().target = playerObject.transform;
+        }
     }
 
     //Method for to check if game is started.
