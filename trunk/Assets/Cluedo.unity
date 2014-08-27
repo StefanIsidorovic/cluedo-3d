@@ -4113,6 +4113,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 203439787}
+  - 114: {fileID: 203439788}
   m_Layer: 0
   m_Name: GUI
   m_TagString: GUI
@@ -4132,6 +4133,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
+--- !u!114 &203439788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 203439786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fed1851b3e16c54395a485f84840fd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &205394897
 GameObject:
   m_ObjectHideFlags: 0
@@ -49705,14 +49717,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16a2c59f3b6b47e47a3305e99636d8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 100004, guid: e24410ca109905f41b4ec3fddecad812, type: 2}
+  playerMaterials:
+  - {fileID: 2100000, guid: c9b8d9a2022a2f542b24aaea854c4d93, type: 2}
+  - {fileID: 2100000, guid: d262f1a7db56da04aa819b93ae7f7c48, type: 2}
+  - {fileID: 2100000, guid: 669ede6a230cf0d46a0299f7eb074805, type: 2}
+  - {fileID: 2100000, guid: 0770e9267dc98114698e6c6aa617e43a, type: 2}
+  - {fileID: 2100000, guid: 8add5fd61b8087b47b9a3a207f43fe8a, type: 2}
+  - {fileID: 2100000, guid: 89879474f0098784ab164b56fbbda040, type: 2}
+  playerPrefab: {fileID: 100000, guid: 1f4e3e6420240614181df5800922ec9a, type: 2}
   startPositions:
-  - {x: -1, y: 0, z: 22}
-  - {x: 5, y: 0, z: 15}
-  - {x: 0, y: 0, z: 0}
-  - {x: -9, y: 0, z: 0}
-  - {x: -17, y: 0, z: 6}
-  - {x: -17, y: 0, z: 15}
+  - {x: 8, y: 2, z: 15}
+  - {x: 14, y: 2, z: 8}
+  - {x: 9, y: 2, z: -7}
+  - {x: 0, y: 2, z: -7}
+  - {x: -8, y: 2, z: -1}
+  - {x: -8, y: 2, z: 8}
   minimumNumberOfPlayers: 2
 --- !u!148 &1983822641
 NetworkView:
