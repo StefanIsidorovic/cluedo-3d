@@ -158,8 +158,6 @@ public class NetworkManager : MonoBehaviour
         playerObject.SetMaterial(numOfPlayer);
         playerObject.tag = "Player";
 
-        GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().incrementNumberOfPlayers();
-
         //Camera that follows playerObject
         if (playerObject.networkView.isMine)
         { 
@@ -173,7 +171,7 @@ public class NetworkManager : MonoBehaviour
         return gameStarted;
     }
 
-    public int NumberOfPlayers()
+    public int NumberOfPlayersConnected()
     {
         return numOfPlayersConnected;
     }
