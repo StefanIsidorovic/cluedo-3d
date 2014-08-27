@@ -167,6 +167,11 @@ public class NetworkManager : MonoBehaviour
         return gameStarted;
     }
 
+    public int NumberOfPlayers()
+    {
+        return numOfPlayer;
+    }
+
     // Wrapper methods
     private void ChangePlayersConnected(int numberOfPlayers)
     {

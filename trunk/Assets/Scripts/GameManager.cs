@@ -16,7 +16,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// Keeps info about how many players are playing the game.
     /// NOTE: This variable is dependent on NetworkManager to call GameManager.incrementNumberOfPlayers() method when each player is spawned.
     /// </summary>
-    private int numOfPlayers;
+    private int numOfPlayers;// #TODO: Fix this shit!!!
     /// <summary>
     /// List of all available rooms in the game.
     /// </summary>
@@ -32,15 +32,15 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// Game solution. Keeps indexes of solution room, person and weapon, from allRooms, allCharacters and allWeapons respectively.
     /// </summary>
-    private Triple<int, int, int> solution;
+    private Triple<int, int, int> solution;// #TODO: Add RPC.
     /// <summary>
     /// Keeps information which player has which cards after cards are dealt.
     /// </summary>
-    private Dictionary<int, List<int>> cardsDistribution;
+    private Dictionary<int, List<int>> cardsDistribution;// #TODO: Add RPC.
     /// <summary>
     /// Flag used in Update() method to decide if cards should be dealt.
     /// </summary>
-    private bool shouldDeal;
+    private bool shouldDeal;// #TODO: Add RPC.
 
     // Use this for initialization
     void Start()
@@ -54,26 +54,27 @@ public class GameManager : MonoSingleton<GameManager>
                                                              Characters.MrGreen, Characters.MrYellow, Characters.MrsWhite 
                                                             });
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
-        InitSolution();
+        if (Network.isServer)
+            InitSolution();
         shouldDeal = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Deal cards
+        if (shouldDeal && Network.isServer && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
+        {
+            DealCards();
+            shouldDeal = false;
+        }
+
         // Controll movement of players
         try
         {
             // Test if players are spawn and get current player 
             string playerName = "Player" + onTurn;
             var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
-
-            // Deal cards
-            if (shouldDeal)
-            {
-                DealCards();
-                shouldDeal = false;
-            }
 
             // TODO: Remove constant and get real value from dices.
             if (10 == playerObject.NumOfMoves())
@@ -176,6 +177,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void InitSolution()
     {
+        // TODO: create RPC setter for solution!
         int whichRoom = Random.Range(0, allRooms.Count - 1);
         int whichPerson = Random.Range(0, allCharacters.Count - 1);
         int whichWeapon = Random.Range(0, allWeapons.Count - 1);
@@ -205,7 +207,8 @@ public class GameManager : MonoSingleton<GameManager>
         }
 
         // Create lists in dictionary for players
-        for (int i = 0; i < numOfPlayers; i++)
+        int numberOfPlayers = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().NumberOfPlayers(); // Note this variable is not a member!
+        for (int i = 0; i < numberOfPlayers; i++)
         {
             cardsDistribution.Add(i, new List<int>());
         }
@@ -216,7 +219,7 @@ public class GameManager : MonoSingleton<GameManager>
         foreach (var card in allCards)
         {
             cardsDistribution[currentPlayer].Add(card);
-            currentPlayer = (currentPlayer + 1) % numOfPlayers;
+            currentPlayer = (currentPlayer + 1) % numberOfPlayers;
         }
     }
 
