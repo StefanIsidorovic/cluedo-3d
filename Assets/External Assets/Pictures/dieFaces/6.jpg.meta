@@ -1,6 +1,7 @@
 fileFormatVersion: 2
-guid: c4dbcfecc8d286841a486a7cc349f4d1
+guid: 69b11fb8d7a39b1429370d112b222601
 TextureImporter:
+  fileIDToRecycleName: {}
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -35,6 +36,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
   alphaIsTransparency: 0
   textureType: -1
