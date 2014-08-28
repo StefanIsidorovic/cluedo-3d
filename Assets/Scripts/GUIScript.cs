@@ -7,10 +7,11 @@ public class GUIScript : MonoBehaviour
     // Hint: Every position of element is defined as Rect where first two values are upper left corner and second two values
     // are down right corner.
 
+    // Game manager instance
+    private GameManager gameManager;
+    private BoardScript board;
+
     // Help structures for Unity3D GUI elements (storing values and iterating through groups of elements aka type of cards)
-    private List<string> rooms;
-    private List<string> persons;
-    private List<string> weapons;
     private Dictionary<string, bool> toogle;
     private Dictionary<string, string> textBoxes;
     private Vector2 scrollPosition = Vector2.zero;
@@ -21,56 +22,32 @@ public class GUIScript : MonoBehaviour
     // width of textbox.
     private int textBoxWidth = 160;
 
-    // Use this for initialization
     void Start()
     {
+        gameManager = MonoSingleton<GameManager>.Instance;
+        board = MonoSingleton<BoardScript>.Instance;
+
         heightCoef = Percentage(Screen.height, 30);
         toogle = new Dictionary<string, bool>();
         textBoxes = new Dictionary<string, string>();
-        //rooms
-        rooms = new List<string>();
-        rooms.Add("Biliard");
-        rooms.Add("Kitchen");
-        rooms.Add("Hall");
-        rooms.Add("Studio");
-        rooms.Add("Library");
-        rooms.Add("Cabinet");
-        rooms.Add("Guest Room");
-        rooms.Add("Dining Room");
-        rooms.Add("Sleeping Room");
-        //persons
-        persons = new List<string>();
-        persons.Add("Black");
-        persons.Add("Yellow");
-        persons.Add("Red");
-        persons.Add("Blue");
-        persons.Add("White");
-        persons.Add("Green");
-        //weapons
-        weapons = new List<string>();
-        weapons.Add("Rope");
-        weapons.Add("Wrench");
-        weapons.Add("Knife");
-        weapons.Add("Gun");
-        weapons.Add("Candlestick");
-        weapons.Add("Lead Pipe");
-
-        foreach (var item in rooms)
+        foreach (var item in gameManager.AllRooms())
         {
-            toogle.Add(item, false);
-            textBoxes.Add(item, "");
+            string strItem = EnumConverter.ToString(item);
+            toogle.Add(strItem, false);
+            textBoxes.Add(strItem, "");
         }
 
-        foreach (var item in persons)
+        foreach (var item in gameManager.AllWeapons())
         {
-            toogle.Add(item, false);
-            textBoxes.Add(item, "");
+            string strItem = EnumConverter.ToString(item);
+            toogle.Add(strItem, false);
+            textBoxes.Add(strItem, "");
         }
-
-        foreach (var item in weapons)
+        foreach (var item in gameManager.AllCharacters())
         {
-            toogle.Add(item, false);
-            textBoxes.Add(item, "");
+            string strItem = EnumConverter.ToString(item);            
+            toogle.Add(strItem, false);
+            textBoxes.Add(strItem, "");
         }
     }
 
@@ -95,6 +72,7 @@ public class GUIScript : MonoBehaviour
 
     private void ShowSideBar()
     {
+
         scrollPosition = GUI.BeginScrollView(
             new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
             scrollPosition,
@@ -104,22 +82,25 @@ public class GUIScript : MonoBehaviour
         //generate elements
         GUI.Label(new Rect(0, 0 + heightCoef, 80, 20), "Rooms");
         int i = 0;
-        foreach (var item in rooms)
+        foreach (var item1 in gameManager.AllRooms())
         {
+            string item = EnumConverter.ToString(item1);
             toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 20 + heightCoef, 110, 20), toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 20 + heightCoef, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
         GUI.Label(new Rect(0, i * 20 + 20 + heightCoef, 80, 20), "Persons");
-        foreach (var item in persons)
+        foreach (var item1 in gameManager.AllCharacters())
         {
+            string item = EnumConverter.ToString(item1);
             toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 40 + heightCoef, 110, 20), toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 40 + heightCoef, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
         GUI.Label(new Rect(0, i * 20 + 40 + heightCoef, 80, 20), "Weapons");
-        foreach (var item in weapons)
+        foreach (var item1 in gameManager.AllWeapons())
         {
+            string item = EnumConverter.ToString(item1);
             toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 60 + heightCoef, 110, 20), toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 60 + heightCoef, textBoxWidth, 20), textBoxes[item]);
             i++;
@@ -131,4 +112,8 @@ public class GUIScript : MonoBehaviour
     private void AskDialog_ChoosingCards()
     {
     }
+
+    #region HelperMethods
+
+    #endregion
 }

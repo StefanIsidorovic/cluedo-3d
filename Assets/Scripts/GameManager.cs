@@ -9,6 +9,10 @@ using System.Collections.Generic;
 public class GameManager : MonoSingleton<GameManager>
 {
     /// <summary>
+    /// Reference to created empty gameObject with attached GUIScript on it.
+    /// </summary>
+    public GameObject GUIObject;
+    /// <summary>
     /// Constant that represents invalid player. As player has ID which is int null can't be returned to indicate invalid player, thus this is solution.
     /// </summary>
     public const int INVALID_PLAYER_NUM = -1;
@@ -66,6 +70,8 @@ public class GameManager : MonoSingleton<GameManager>
         cardsDistribution = new Dictionary<int, List<int>>();
         question = new Pair<int, Triple<Rooms?, Characters?, Weapons?>>(GameManager.INVALID_PLAYER_NUM, 
                                                                         new Triple<Rooms?, Characters?, Weapons?>(null, null, null));
+        GUIObject = new GameObject("GUI");
+        GUIObject.AddComponent<GUIScript>();
     }
 
     // Update is called once per frame
