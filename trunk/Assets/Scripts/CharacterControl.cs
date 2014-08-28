@@ -257,6 +257,11 @@ public class CharacterControl : MonoBehaviour
 
     #region Get and set methods
 
+    public int GetPlayerNum()
+    {
+        return playerNum;
+    }
+
     public void SetNum(int num)
     {
         networkView.RPC("SetNumRPC", RPCMode.AllBuffered, num);

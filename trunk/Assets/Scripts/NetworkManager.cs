@@ -5,7 +5,7 @@ public class NetworkManager : MonoBehaviour
 {
     // Unique typename for game (Hopefully unique).
     private const string typeName = "Cluedo3DSAMOSTeam";
-    private const string gameName = "RoomNameOgKoci";
+    private const string gameName = "RoomNameSanja";
 
     public Material[] playerMaterials; 
 

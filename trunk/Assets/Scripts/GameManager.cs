@@ -25,6 +25,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// NOTE: This variable is dependent on NetworkManager to call GameManager.incrementNumberOfPlayers() method when each player is spawned.
     /// </summary>
     private int numOfPlayers;
+    private int dicesSum;
     /// <summary>
     /// List of all available rooms in the game.
     /// </summary>
@@ -54,10 +55,12 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private Pair<int, Triple<Rooms?, Characters?, Weapons?>> question;
 
+
     // Use this for initialization
     void Start()
     {
         onTurn = numOfPlayers = 0;
+        dicesSum = 2;
         allRooms = new List<Rooms>(new Rooms[]{ Rooms.Studio, Rooms.Hall, Rooms.GuestsRoom, Rooms.SleepingRoom, 
                                              Rooms.DiningRoom, Rooms.Cabinet, Rooms.Kitchen, Rooms.Billiard, 
                                              Rooms.Library, Rooms.Hallway
@@ -95,7 +98,7 @@ public class GameManager : MonoSingleton<GameManager>
             var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
 
             // TODO: Remove constant and get real value from dices.
-            if (10 == playerObject.NumOfMoves())
+            if (dicesSum == playerObject.NumOfMoves())
             {
                 playerObject.SetNumOfMoves(0);
                 SetTurn((onTurn + 1) % numOfPlayers);
@@ -258,6 +261,11 @@ public class GameManager : MonoSingleton<GameManager>
         return onTurn;
     }
 
+    public int DicesSum()
+    {
+        return dicesSum;
+    }
+
     /// <summary>
     /// Setter for GameManager.onTurn field.
     /// NOTE: This setter affects all the clones of this object as it is wrapper for RPC call.
@@ -267,10 +275,15 @@ public class GameManager : MonoSingleton<GameManager>
     {
         networkView.RPC("SetTurnRPC", RPCMode.AllBuffered, turn);
     }
-
+    
     public void SetNumOfPlayers(int numberOfPlayers)
     {
         networkView.RPC("SetNumOfPlayersRPC", RPCMode.AllBuffered, numberOfPlayers);
+    }
+
+    public void SetDicesSum(int sum)
+    {
+        networkView.RPC("SetDicesSumRPC", RPCMode.AllBuffered, sum);
     }
 
     public void SetSolution(int room, int person, int weapon)
@@ -301,6 +314,12 @@ public class GameManager : MonoSingleton<GameManager>
     private void SetNumOfPlayersRPC(int numberOfPlayers)
     {
         numOfPlayers = numberOfPlayers;
+    }
+
+    [RPC]
+    private void SetDicesSumRPC(int sum)
+    {
+        dicesSum = sum;
     }
 
     [RPC]
