@@ -2,6 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/* #TODO:
+ * 4. koji igrac je pokazao koju kartu set i get
+ */
+
 public class GameManager : MonoSingleton<GameManager>
 {
     /// <summary>
@@ -41,6 +45,10 @@ public class GameManager : MonoSingleton<GameManager>
     /// Flag used in Update() method to decide if cards should be dealt.
     /// </summary>
     private bool shouldDeal;
+    /// <summary>
+    /// When player asks a question what is asked is saved here so it can be reused in GUI.
+    /// </summary>
+    private Pair<int, Triple<Rooms?, Characters?, Weapons?>> question;
 
     // Use this for initialization
     void Start()
@@ -56,6 +64,8 @@ public class GameManager : MonoSingleton<GameManager>
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
         shouldDeal = true;
         cardsDistribution = new Dictionary<int, List<int>>();
+        question = new Pair<int, Triple<Rooms?, Characters?, Weapons?>>(GameManager.INVALID_PLAYER_NUM, 
+                                                                        new Triple<Rooms?, Characters?, Weapons?>(null, null, null));
     }
 
     // Update is called once per frame
@@ -167,6 +177,16 @@ public class GameManager : MonoSingleton<GameManager>
     public bool PlayerHasCard(int whichPlayer, int card)
     {
         return whichPlayer == PlayerWhoHasCard(card);
+    }
+
+    public void SetAskedQuestion(int whichPlayer, Rooms room, Characters person, Weapons weapon)
+    {
+        networkView.RPC("SetAskedQuestionRPC", RPCMode.AllBuffered, whichPlayer, (int)room, (int)person, (int)weapon);
+    }
+
+    public Pair<int, Triple<Rooms?, Characters?, Weapons?>> AskedQuestion()
+    {
+        return question;
     }
 
     #endregion
@@ -296,6 +316,15 @@ public class GameManager : MonoSingleton<GameManager>
     private void DealCardToPlayerRPC(int card, int player)
     {
         cardsDistribution[player].Add(card);
+    }
+
+    [RPC]
+    private void SetAskedQuestionRPC(int whichPlayer, int room, int person, int weapon)
+    {
+        question.First = whichPlayer;
+        question.Second.First = (Rooms)room;
+        question.Second.Second = (Characters)person;
+        question.Second.Third = (Weapons)weapon;
     }
 
     #endregion
