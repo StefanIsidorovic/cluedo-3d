@@ -18,7 +18,13 @@ public class CharacterControl : MonoBehaviour
     {
         if (networkView.isMine)
         {
-            int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
+            var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
+            
+            //Player must throw dices before his movement
+            if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM)
+                return;
+
+            int onTurn = gameManager.OnTurn();
             if (Input.GetKeyDown(KeyCode.LeftArrow))
                 MoveLeft(onTurn);
             else if (Input.GetKeyDown(KeyCode.RightArrow))

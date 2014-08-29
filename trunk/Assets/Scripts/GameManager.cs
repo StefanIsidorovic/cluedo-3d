@@ -17,6 +17,10 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     public const int INVALID_PLAYER_NUM = -1;
     /// <summary>
+    /// Constant that represents invalid dices sum. It must be assigned to variable dicesSum when player finishes his movement.
+    /// </summary>
+    public const int INVALID_DICES_SUM = -1;
+    /// <summary>
     /// Denotes which player can move it's piece (players are enumerated from 0 to 5).
     /// </summary>
     private int onTurn;
@@ -25,6 +29,9 @@ public class GameManager : MonoSingleton<GameManager>
     /// NOTE: This variable is dependent on NetworkManager to call GameManager.incrementNumberOfPlayers() method when each player is spawned.
     /// </summary>
     private int numOfPlayers;
+    /// <summary>
+    /// Keeps information about current dices sum.
+    /// </summary>
     private int dicesSum;
     /// <summary>
     /// List of all available rooms in the game.
@@ -60,7 +67,7 @@ public class GameManager : MonoSingleton<GameManager>
     void Start()
     {
         onTurn = numOfPlayers = 0;
-        dicesSum = 2;
+        dicesSum = INVALID_DICES_SUM;
         allRooms = new List<Rooms>(new Rooms[]{ Rooms.Studio, Rooms.Hall, Rooms.GuestsRoom, Rooms.SleepingRoom, 
                                              Rooms.DiningRoom, Rooms.Cabinet, Rooms.Kitchen, Rooms.Billiard, 
                                              Rooms.Library, Rooms.Hallway
@@ -102,6 +109,7 @@ public class GameManager : MonoSingleton<GameManager>
             {
                 playerObject.SetNumOfMoves(0);
                 SetTurn((onTurn + 1) % numOfPlayers);
+                SetDicesSum(INVALID_DICES_SUM);
             }
         }
         catch (System.Exception)
