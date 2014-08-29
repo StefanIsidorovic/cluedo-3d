@@ -13,11 +13,9 @@ public class NetworkManager : MonoBehaviour
     private HostData[] hostList;
 
     public GameObject playerPrefab;
-    public Vector3[] startPositions = {new Vector3 (8, 2, 15),new Vector3 (14, 2, 8) , new Vector3 (9, 2, -7),
-		new Vector3 (0, 2, -7),  new Vector3 (-8, 2, -1), new Vector3 (-8, 2, 8)};
-
-    public Vector3[] startRotations = { new Vector3(45, 180, 0), new Vector3(45, -90, 0), new Vector3(45, 0, 0), new Vector3(45, 0, 0), new Vector3(45, 90, 0), new Vector3(45, 90, 0) };
-    public Vector3[] startTopViewCameraRotations;
+    public Vector3[] startPositions = {new Vector3 (8, 2, 15),new Vector3 (14, 2, 8) , new Vector3 (9, 2, -7),new Vector3 (0, 2, -7),  new Vector3 (-8, 2, -1), new Vector3 (-8, 2, 8)};
+    public Vector3[] startCameraRotations = { new Vector3(45, 180, 0), new Vector3(45, -90, 0), new Vector3(45, 0, 0), new Vector3(45, 0, 0), new Vector3(45, 90, 0), new Vector3(45, 90, 0) };
+    public Vector3[] startTopViewCameraRotations = {new Vector3(90, 180, 0), new Vector3(90, 270, 0), new Vector3(90, 0, 0), new Vector3(90, 0, 0), new Vector3(90, 90, 0), new Vector3(90, 90, 0)};
 
     // Number of minimum players need to be so game could start, its for testing and debuging purposes
     // because its frustrating to start three instances everytime. By default is set to 3 but you can change it from Unity editor, NOT HERE!
@@ -166,7 +164,7 @@ public class NetworkManager : MonoBehaviour
         {
             var camera1 = GameObject.Find("Main Camera");
             camera1.GetComponent<FollowThePlayer>().target = playerObject.transform;
-            camera1.transform.rotation = Quaternion.Euler(startRotations[numOfPlayer]);
+            camera1.transform.rotation = Quaternion.Euler(startCameraRotations[numOfPlayer]);
 
             var camera2 = GameObject.Find("TopViewCamera");
             camera2.transform.rotation = Quaternion.Euler(startTopViewCameraRotations[numOfPlayer]);
