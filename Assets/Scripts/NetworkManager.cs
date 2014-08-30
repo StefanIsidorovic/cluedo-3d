@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
 public class NetworkManager : MonoBehaviour
 {
     // Unique typename for game (Hopefully unique).
     private const string typeName = "Cluedo3DSAMOSTeam";
-    private const string gameName = "RoomNameSanja";
+    private string gameName ="";
+	// Only show Gui Window if needed.
+	private bool show = false;
+	public Rect boxRect = new Rect (Screen.width / 2 - 150, Screen.height / 2 - 150, 300, 300);
 
     public Material[] playerMaterials; 
 
@@ -47,8 +51,18 @@ public class NetworkManager : MonoBehaviour
     void OnGUI()
     {
         // Start or join server dialog
+
+
+
         if (!Network.isClient && !Network.isServer)
         {
+
+			if(show){
+				GUI.Box(boxRect,"Make a new room");
+				DialogWindow();
+			}
+
+			if(!show){
             if (GUI.Button(new Rect(100, 100, 250, 100), "Start Server"))
                 StartServer();
 
@@ -63,6 +77,7 @@ public class NetworkManager : MonoBehaviour
                         JoinServer(hostList[i]);
                 }
             }
+			}
         }
         // start game dialog
         if ((Network.isClient || Network.isServer) && startGameDialog)
@@ -105,15 +120,42 @@ public class NetworkManager : MonoBehaviour
 
     }
 
+
+		
+	
+
     //Network methods
     private void StartServer()
     {
-        Network.InitializeServer(5, 25000, !Network.HavePublicAddress());
-        MasterServer.RegisterHost(typeName, gameName);
-        serverStarted = true;
-    }
+		show = true;
 
-    public bool ServerStarted()
+	}
+	//function caled in onGui Gui.Window
+	void DialogWindow ()
+    {
+		GUI.Label (new Rect(boxRect.x+10,boxRect.y+30,250,30), "Insert your game room name");
+		gameName = GUI.TextField (new Rect(boxRect.x+10,boxRect.y+70,250,30), gameName).Trim ();
+		if (GUI.Button (new Rect (boxRect.x+10,boxRect.y+110,80,30), "Make room")) {
+				
+						if (string.IsNullOrEmpty (gameName))
+								gameName = "DefaultRoomName";
+						Network.InitializeServer (5, 25000, !Network.HavePublicAddress ());
+						MasterServer.RegisterHost (typeName, gameName);
+						show = false;
+						serverStarted = true;
+				}
+		if (GUI.Button (new Rect (boxRect.x+180,boxRect.y+110,80,30), "Cancel")) {
+			gameName="";
+			show = false;
+
+
+		}
+
+		
+		
+	}
+	
+	public bool ServerStarted()
     {
         return serverStarted;
     }
