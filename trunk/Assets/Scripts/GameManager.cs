@@ -82,6 +82,9 @@ public class GameManager : MonoSingleton<GameManager>
                                                                         new Triple<Rooms?, Characters?, Weapons?>(null, null, null));
         GUIObject = new GameObject("GUI");
         GUIObject.AddComponent<GUIScript>();
+        GUIObject.AddComponent<NetworkView>();
+        GUIObject.GetComponent<NetworkView>().stateSynchronization = NetworkStateSynchronization.Off;
+        GUIObject.GetComponent<NetworkView>().observed = null;
     }
 
     // Update is called once per frame
@@ -302,6 +305,11 @@ public class GameManager : MonoSingleton<GameManager>
     public void DealCardToPlayer(int card, int player)
     {
         networkView.RPC("DealCardToPlayerRPC", RPCMode.AllBuffered, card, player);
+    }
+
+    public int NumOfPlayers()
+    {
+        return numOfPlayers;
     }
 
     #endregion

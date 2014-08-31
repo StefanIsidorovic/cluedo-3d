@@ -2,12 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public static class EnumeratorConstants
+{
+    public const int RoomStartValue = 1;
+    public const int CharacterStartValue = 100;
+    public const int WeaponStartValue = 1000;
+}
+
 /// <summary>
 /// Enum that represents each of 9 allRooms and hallway.
 /// </summary>
 public enum Rooms : int
 {
-    Studio = 1, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
+    Studio = EnumeratorConstants.RoomStartValue, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
 };
 
 /// <summary>
@@ -15,7 +22,7 @@ public enum Rooms : int
 /// </summary>
 public enum Characters : int
 {
-    MrsScarlet = 100, MrBlack, MrsBlue, MrGreen, MrYellow, MrsWhite
+    MrsScarlet = EnumeratorConstants.CharacterStartValue, MrBlack, MrsBlue, MrGreen, MrYellow, MrsWhite
 };
 
 /// <summary>
@@ -23,7 +30,7 @@ public enum Characters : int
 /// </summary>
 public enum Weapons : int
 {
-    Candlestick = 1000, Knife, LeadPipe, Revolver, Rope, Wrench
+    Candlestick = EnumeratorConstants.WeaponStartValue, Knife, LeadPipe, Revolver, Rope, Wrench
 };
 
 public class Pair<T1, T2>
@@ -100,7 +107,7 @@ public class EnumConverter
                 case Rooms.GuestsRoom:
                     return "Guest room";
                 case Rooms.SleepingRoom:
-                    return "Sleeping room";
+                    return "Bedroom";
                 case Rooms.DiningRoom:
                     return "Dining room";
                 case Rooms.Cabinet:
@@ -108,7 +115,7 @@ public class EnumConverter
                 case Rooms.Kitchen:
                     return "Kitchen";
                 case Rooms.Billiard:
-                    return "Billiard";
+                    return "Biliard room";
                 case Rooms.Library:
                     return "Library";
                 case Rooms.Hallway:
@@ -144,9 +151,9 @@ public class EnumConverter
                 case Weapons.Knife:
                     return "Knife";
                 case Weapons.LeadPipe:
-                    return "Lead pipe";
+                    return "Leadpipe";
                 case Weapons.Revolver:
-                    return "Revolver";
+                    return "Gun";
                 case Weapons.Rope:
                     return "Rope";
                 case Weapons.Wrench:
@@ -197,7 +204,7 @@ public class EnumConverter
                 return Rooms.Hall;
             case "Guest room":
                 return Rooms.GuestsRoom;
-            case "Sleeping room":
+            case "Bedroom":
                 return Rooms.SleepingRoom;
             case "Dining room":
                 return Rooms.DiningRoom;
@@ -205,7 +212,7 @@ public class EnumConverter
                 return Rooms.Cabinet;
             case "Kitchen":
                 return Rooms.Kitchen;
-            case "Billiard":
+            case "Biliard room":
                 return Rooms.Billiard;
             case "Library":
                 return Rooms.Library;
@@ -231,9 +238,9 @@ public class EnumConverter
                 return Weapons.Candlestick;
             case "Knife":
                 return Weapons.Knife;
-            case "Lead pipe":
+            case "Leadpipe":
                 return Weapons.LeadPipe;
-            case "Revolver":
+            case "Gun":
                 return Weapons.Revolver;
             case "Rope":
                 return Weapons.Rope;
