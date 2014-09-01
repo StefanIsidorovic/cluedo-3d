@@ -9,8 +9,7 @@ public class NetworkManager : MonoBehaviour
     private string gameName ="";
 	// Only show Gui Window if needed.
 	private bool show = false;
-	public Rect boxRect = new Rect (Screen.width / 2 - 150, Screen.height / 2 - 150, 300, 300);
-
+    private Rect boxRect;
     public Material[] playerMaterials; 
 
     private bool isRefreshingHostList = false;
@@ -70,7 +69,14 @@ public class NetworkManager : MonoBehaviour
         {
 
 			if(show){
-				GUI.Box(boxRect,"Make a new room");
+                GUIStyle myStyle = new GUIStyle(GUI.skin.box);
+                myStyle.fontStyle = FontStyle.Bold;
+                myStyle.fontSize = 18;
+                myStyle.alignment = TextAnchor.UpperCenter;
+               
+
+                boxRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 100, 300, 200);
+                GUI.Box(boxRect, "Make a new room", myStyle);
 				DialogWindow();
 			}
 
@@ -145,9 +151,9 @@ public class NetworkManager : MonoBehaviour
 	//function caled in onGui Gui.Window
 	void DialogWindow ()
     {
-		GUI.Label (new Rect(boxRect.x+10,boxRect.y+30,250,30), "Insert your game room name");
-		gameName = GUI.TextField (new Rect(boxRect.x+10,boxRect.y+70,250,30), gameName).Trim ();
-		if (GUI.Button (new Rect (boxRect.x+10,boxRect.y+110,80,30), "Make room")) {
+		GUI.Label (new Rect(boxRect.x+10,boxRect.y+50,250,30), "Insert your game room name:");
+		gameName = GUI.TextField (new Rect(boxRect.x+10,boxRect.y+90,280,30), gameName).Trim ();
+		if (GUI.Button (new Rect (boxRect.x+10,boxRect.y+130,80,30), "Make room")) {
 				
 						if (string.IsNullOrEmpty (gameName))
 								gameName = "DefaultRoomName";
@@ -156,7 +162,7 @@ public class NetworkManager : MonoBehaviour
 						show = false;
 						serverStarted = true;
 				}
-		if (GUI.Button (new Rect (boxRect.x+180,boxRect.y+110,80,30), "Cancel")) {
+		if (GUI.Button (new Rect (boxRect.x+210,boxRect.y+130,80,30), "Cancel")) {
 			gameName="";
 			show = false;
 		}				
