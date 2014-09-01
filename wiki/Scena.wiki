@@ -14,7 +14,5 @@ Na ovaj objekat treba nakaciti skriptu GameManager.
 
 Na ovaj objekat treba nakaciti skripte NetworkManager (na koji treba nakaciti Player Prefab) i NetworkView
 
-*GUI*
-
-Na ovaj objekat treba nakaciti skriptu GUIScript
-
+*Main camera*
+Nakaciti skriptu FollowThePlayer
