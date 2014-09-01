@@ -62,7 +62,7 @@ public class GUIScript : MonoBehaviour
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
         gameManager = MonoSingleton<GameManager>.Instance;
         board = MonoSingleton<BoardScript>.Instance;
-        heightCoef = Percentage(Screen.height, 30);
+        heightCoef = 160;
         toogle = new Dictionary<string, bool>();
         textBoxes = new Dictionary<string, string>();
         cardTextures = new Dictionary<int, Texture2D>();
@@ -152,18 +152,18 @@ public class GUIScript : MonoBehaviour
         scrollPosition = GUI.BeginScrollView(
             new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
             scrollPosition,
-            new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 10)
+            new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
         );
 
-        GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 10), "BLAH");
+        GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80), "");
         
         // Generate 2d part for throwing dices - everything about this part is within a group.
  
         GUI.BeginGroup(new Rect(0, 0, Percentage(Screen.width, 25) - 25, heightCoef - 10));
 
         //two rect for presenting the dices and centering them 
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 - 60, 30, 40, 40), dieFacesVector[num1]);
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 + 20, 30, 40, 40), dieFacesVector[num2]);
+        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 - 60, 20, 40, 40), dieFacesVector[num1]);
+        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 + 20, 20, 40, 40), dieFacesVector[num2]);
         //chacking if this player is on turn
 
         int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
@@ -182,7 +182,7 @@ public class GUIScript : MonoBehaviour
             if (playerNum != onTurn || dicesThrown)
                 GUI.enabled = false;
             int numberOfMovesMade = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
-            if (GUI.Button(new Rect((Percentage(Screen.width, 25) - 25)/2 - 50, 100, 100, 50), "Throw dices!"))
+            if (GUI.Button(new Rect((Percentage(Screen.width, 25) - 25)/2 - 50, 80, 100, 50), "Throw dices!"))
             {
                 ThrowDices();
                 GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1+num2));
@@ -349,6 +349,14 @@ public class GUIScript : MonoBehaviour
                 if (me)
                 {
                     // #TODO: Logic for ending move!
+                    //if (true)
+                    //{
+                    //    var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
+                    //    var onTurn = gameManager.OnTurn();
+                    //    var numOfPlayers = gameManager.NumOfPlayers();
+                    //    gameManager.SetTurn((onTurn + 1) % numOfPlayers);
+                    //    gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
+                    //}
                 }
                 
             }
@@ -494,7 +502,7 @@ public class GUIScript : MonoBehaviour
 
     void BeginAskDialogBox()
     {
-        GUI.BeginGroup(new Rect(Percentage(Screen.width, 5), Percentage(Screen.height, 15), widthAskDialog, heightAskDialog));
+        GUI.BeginGroup(new Rect(Percentage(Screen.width, 30), Percentage(Screen.height, 10), widthAskDialog, heightAskDialog));
     }
 
     private void ThrowDices()
