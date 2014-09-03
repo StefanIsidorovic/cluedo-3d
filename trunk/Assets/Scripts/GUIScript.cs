@@ -47,6 +47,7 @@ public class GUIScript : MonoBehaviour
     private int stepW, stepH, widthAskDialog, heightAskDialog;
     private bool asking = false;
     private int playerAsking = -1;
+    private Rect boxForChosingCards;
     #endregion
 
     private Triple<int, int, int> playersWhoHaveCards;
@@ -105,6 +106,7 @@ public class GUIScript : MonoBehaviour
     void OnGUI()
     {
         InitAskDialogPositionVariables();
+        boxForChosingCards = new Rect(Screen.width/2-250, Screen.height/2 - 125, widthAskDialog, heightAskDialog);
         // Showing initial dialog for choosing cards to form a question, and setting variable someoneasking to true, so other player 
         // know when somebody else is forming a question.
         if (askDialogShow)
@@ -253,18 +255,18 @@ public class GUIScript : MonoBehaviour
                     askButtonText = askButtonText == "Must choose weapon!" ? "Ask!" : askButtonText;
                 }
 
-                if (Popup.List<Characters>(new Rect(stepW * 7, stepH * 6, 100, 30), ref boolCh, ref choseCh, new GUIContent(character), gameManager.AllCharacters(), this.GetPopupListStyle()))
+                if (Popup.List<Characters>(new Rect(165, stepH * 3, 115, 30), ref boolCh, ref choseCh, new GUIContent(character), gameManager.AllCharacters(), this.GetPopupListStyle()))
                 {
                     cardCharacter = choseCh;
                     character = EnumConverter.ToString(choseCh);
                 }
-                if (Popup.List<Weapons>(new Rect(stepW * 13, stepH * 6, 100, 30), ref boolWe, ref choseWe, new GUIContent(weapon), gameManager.AllWeapons(), this.GetPopupListStyle()))
+                if (Popup.List<Weapons>(new Rect(315, stepH * 3, 115, 30), ref boolWe, ref choseWe, new GUIContent(weapon), gameManager.AllWeapons(), this.GetPopupListStyle()))
                 {
                     cardWeapon = choseWe;
                     weapon = EnumConverter.ToString(choseWe);
                 }
 
-                if (GUI.Button(new Rect(stepW * 5, stepH * 21, stepW * 8, stepH * 2), askButtonText))
+                if (GUI.Button(new Rect(155, stepH * 21, 130, 30), askButtonText))
                 {
                     if (cardCharacter == 0)
                     {
@@ -300,31 +302,42 @@ public class GUIScript : MonoBehaviour
         // Dimensions of dialog box
         BeginAskDialogBox();
         {
-            GUIStyle style = new GUIStyle();
-            style.fixedHeight = style.fixedWidth = 0;
-            style.stretchHeight = style.stretchWidth = true;
-            style.border.left = style.border.right = style.border.bottom = style.border.top = 0;
+            //GUIStyle style = new GUIStyle();
+            //style.stretchHeight = style.stretchWidth = true;
+            //style.border.left = style.border.right = style.border.bottom = style.border.top = 0;
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.First))
             {
-                if (GUI.Button(firstCard, cardTextures[(int)askedFor.First], style))
+                if (GUI.Button(firstCard, cardTextures[(int)askedFor.First]))
                 {
                     doneChoosing(1);
                 }
             }
+            else
+            {
+                GUI.DrawTexture(firstCard, cardTextures[(int)askedFor.First]);
+            }
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.Second))
             {
-                if (GUI.Button(secondCard, cardTextures[(int)askedFor.Second], style))
+                if (GUI.Button(secondCard, cardTextures[(int)askedFor.Second]))
                 {
                     doneChoosing(2);
                 }
 
             }
+            else
+            {
+                GUI.DrawTexture(secondCard, cardTextures[(int)askedFor.Second]);
+            }
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.Third))
             {
-                if (GUI.Button(thirdCard, cardTextures[(int)askedFor.Third], style))
+                if (GUI.Button(thirdCard, cardTextures[(int)askedFor.Third]))
                 {
                     doneChoosing(3);
                 }
+            }
+            else
+            {
+                GUI.DrawTexture(thirdCard, cardTextures[(int)askedFor.Third]);
             }
         }
         GUI.EndGroup();
@@ -342,7 +355,7 @@ public class GUIScript : MonoBehaviour
             GUI.Label(secondCardLabel, playersWhoHaveCards.Second != -1 ? "Player" + playersWhoHaveCards.Second + " showed card!" : "None of other players show card!");
             GUI.Label(thirdCardLabel, playersWhoHaveCards.Third != -1 ? "Player" + playersWhoHaveCards.Third + " showed card!" : "None of other players show card!");
 
-            if (GUI.Button(new Rect(stepW * 5, stepH * 21, stepW * 8, stepH * 2), "Ok. Close window."))
+            if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Ok.Close window."))
             {
                 numberOfProcessedPlayers = 0;
                 networkView.RPC("ResetGUIVariables", RPCMode.AllBuffered);
@@ -470,18 +483,18 @@ public class GUIScript : MonoBehaviour
 
     void InitAskDialogPositionVariables()
     {
-        widthAskDialog = Percentage(Screen.width, 50);
-        heightAskDialog = Percentage(Screen.height, 75);
+        widthAskDialog = 450;//Percentage(Screen.width, 50);
+        heightAskDialog = 250;//Percentage(Screen.height, 75);
         stepW = widthAskDialog / 21;
         stepH = heightAskDialog / 24;
 
-        firstCard = new Rect(stepW, 8 * stepH, 5 * stepW, 12 * stepH);
-        secondCard = new Rect(stepW * 7, 8 * stepH, 5 * stepW, 12 * stepH);
-        thirdCard = new Rect(stepW * 13, 8 * stepH, 5 * stepW, 12 * stepH);
+        firstCard = new Rect(30, 7 * stepH, 90, 13 * stepH);
+        secondCard = new Rect(180, 7 * stepH, 90, 13 * stepH);
+        thirdCard = new Rect(330, 7 * stepH, 90, 13 * stepH);
 
-        firstCardLabel = new Rect(stepW, 7 * stepH, 5 * stepW, 20);
-        secondCardLabel = new Rect(stepW * 7, 7 * stepH, 5 * stepW, 20);
-        thirdCardLabel = new Rect(stepW * 13, 7 * stepH, 5 * stepW, 20);
+        firstCardLabel = new Rect(30, stepH * 3, 90, 20);
+        secondCardLabel = new Rect(180, stepH * 3, 90, 20);
+        thirdCardLabel = new Rect(330, stepH * 3, 90, 20);
 
     }
 
@@ -502,7 +515,8 @@ public class GUIScript : MonoBehaviour
 
     void BeginAskDialogBox()
     {
-        GUI.BeginGroup(new Rect(Percentage(Screen.width, 30), Percentage(Screen.height, 10), widthAskDialog, heightAskDialog));
+        GUIStyle style = new GUIStyle(GUI.skin.box);
+        GUI.BeginGroup(boxForChosingCards, style);
     }
 
     private void ThrowDices()
