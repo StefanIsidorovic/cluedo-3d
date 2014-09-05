@@ -106,7 +106,7 @@ public class GUIScript : MonoBehaviour
     void OnGUI()
     {
         InitAskDialogPositionVariables();
-        boxForChosingCards = new Rect(Screen.width/2-250, Screen.height/2 - 125, widthAskDialog, heightAskDialog);
+        boxForChosingCards = new Rect((Percentage(Screen.width, 75))/2 -250, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
         // Showing initial dialog for choosing cards to form a question, and setting variable someoneasking to true, so other player 
         // know when somebody else is forming a question.
         if (askDialogShow)
