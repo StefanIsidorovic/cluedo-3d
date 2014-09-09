@@ -11,7 +11,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// Reference to created empty gameObject with attached GUIScript on it.
     /// </summary>
-    public GameObject GUIObject;
+    private GameObject GUIObject;
     /// <summary>
     /// Constant that represents invalid player. As player has ID which is int null can't be returned to indicate invalid player, thus this is solution.
     /// </summary>
