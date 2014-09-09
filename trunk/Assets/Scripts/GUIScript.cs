@@ -45,7 +45,7 @@ public class GUIScript : MonoBehaviour
     #region Askdialog position variables
     private Rect firstCard, secondCard, thirdCard, firstCardLabel, secondCardLabel, thirdCardLabel;
     private int stepW, stepH, widthAskDialog, heightAskDialog;
-    private bool asking = false;
+    private bool asking = false, askDialogShowCardsBool = false, askDialogShowQuestion = false;
     private int playerAsking = -1;
     private Rect boxForChosingCards;
     #endregion
@@ -106,7 +106,7 @@ public class GUIScript : MonoBehaviour
     void OnGUI()
     {
         InitAskDialogPositionVariables();
-        boxForChosingCards = new Rect((Percentage(Screen.width, 75))/2 -220, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
+        
         // Showing initial dialog for choosing cards to form a question, and setting variable someoneasking to true, so other player 
         // know when somebody else is forming a question.
         if (askDialogShow)
@@ -114,34 +114,28 @@ public class GUIScript : MonoBehaviour
             AskDialog_ChoosingCards();
             setSomeoneAskingRPC(true);
         }
-        else
+        // Show cards from question asked.
+        if (askDialogShowQuestion && playerAsking != playerNum )
         {
-            if (someoneAsking)
-            {
-                AskDialog_SomeoneAsking();
-            }
+            AskDialog_ShowQuestionCards();
         }
-        // If some other player than me asked a question and I have one of cards he requested
-        if (asking && playerAsking != playerNum &&
-            (playerNum == gameManager.PlayerWhoHasCard((int)askedFor.First)
-            || playerNum == gameManager.PlayerWhoHasCard((int)askedFor.Second)
-            || playerNum == gameManager.PlayerWhoHasCard((int)askedFor.Third)))
+        // Dialog for choosing card to show.
+        if(askDialogShowCardsBool)
         {
-            guardAsking = true;
             AskDialog_ChooseCardsToShow();
         }
+
         // If I dont have any cards to show. Also for increment counter of processed players for "Asker" also.
         if (asking && !guardAsking)
         {
             guardAsking = true;
-            increaseNumberOfProcessedPlayersRPC();
         }
         if (GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
         {
             setCards(playerNum);
             ShowSideBar();
         }
-        if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
+        if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() )
         {
             AskDialog_ShowCardsToPlayers(playerAsking == playerNum);
         }
@@ -283,6 +277,7 @@ public class GUIScript : MonoBehaviour
                             setSomeoneAskingRPC(false); // ???
                             setQuestionRPC((int)whereAmI, cardCharacter, cardWeapon);
                             setAskingRPC(true, playerNum);
+                            increaseNumberOfProcessedPlayersRPC();
 
                         }
                 }
@@ -358,25 +353,58 @@ public class GUIScript : MonoBehaviour
             if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Ok.Close window."))
             {
                 numberOfProcessedPlayers = 0;
-                networkView.RPC("ResetGUIVariables", RPCMode.AllBuffered);
-                if (me)
-                {
+                ResetGUIVariables();
+                //networkView.RPC("ResetGUIVariables", RPCMode.AllBuffered);
+               // if (me)
+               // {
                     // #TODO: Logic for ending move!
                     //if (true)
                     //{
+                    //    Use Singleton feature, dont need to use find. Or simple use gameManager field of this script :)
                     //    var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
                     //    var onTurn = gameManager.OnTurn();
                     //    var numOfPlayers = gameManager.NumOfPlayers();
                     //    gameManager.SetTurn((onTurn + 1) % numOfPlayers);
                     //    gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
                     //}
-                }
+               // }
                 
             }
         }
         GUI.EndGroup();
     }
 
+    private void AskDialog_ShowQuestionCards()
+    {
+        BeginAskDialogBox();
+        {
+            GUI.DrawTexture(firstCard, cardTextures[(int)askedFor.First]);
+            GUI.DrawTexture(secondCard, cardTextures[(int)askedFor.Second]);
+            GUI.DrawTexture(thirdCard, cardTextures[(int)askedFor.Third] );
+
+            GUI.Label(firstCardLabel, "Room");
+            GUI.Label(secondCardLabel, "Character");
+            GUI.Label(thirdCardLabel, "Weapon");
+            if (playerNum == gameManager.PlayerWhoHasCard((int)askedFor.First)
+            || playerNum == gameManager.PlayerWhoHasCard((int)askedFor.Second)
+            || playerNum == gameManager.PlayerWhoHasCard((int)askedFor.Third))
+            {
+                if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Show Cards!"))
+                {
+                    askDialogShowCardsBool = true;
+                    askDialogShowQuestion = false;
+                }
+            }
+            else
+                if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Close dialog!"))
+                {
+                    askDialogShowQuestion = false;
+                    increaseNumberOfProcessedPlayersRPC();
+                }
+
+        }
+        GUI.EndGroup();
+    }
 
     #endregion
 
@@ -421,6 +449,7 @@ public class GUIScript : MonoBehaviour
     {
         asking = value;
         playerAsking = player;
+        askDialogShowQuestion = true;
     }
     [RPC]
     void setQuestion(int room, int character, int weapon)
@@ -452,7 +481,7 @@ public class GUIScript : MonoBehaviour
         weapon = "Choose weapon";
         character = "Choose character";
         askButtonText = "Ask!";
-        askDialogShow = someoneAsking = guardAsking = false;
+        askDialogShow = someoneAsking = guardAsking =  askDialogShowCardsBool = askDialogShowQuestion = false;
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
         asking = false;
@@ -483,18 +512,20 @@ public class GUIScript : MonoBehaviour
 
     void InitAskDialogPositionVariables()
     {
+        
         widthAskDialog = 450;//Percentage(Screen.width, 50);
         heightAskDialog = 250;//Percentage(Screen.height, 75);
+        boxForChosingCards = new Rect((Percentage(Screen.width, 75)) / 2 - 220, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
         stepW = widthAskDialog / 21;
         stepH = heightAskDialog / 24;
 
-        firstCard = new Rect(30, 7 * stepH, 90, 13 * stepH);
-        secondCard = new Rect(180, 7 * stepH, 90, 13 * stepH);
-        thirdCard = new Rect(330, 7 * stepH, 90, 13 * stepH);
+        firstCard =     new Rect( 30, 7 * stepH, 90, 13 * stepH);
+        secondCard =    new Rect(180, 7 * stepH, 90, 13 * stepH);
+        thirdCard =     new Rect(330, 7 * stepH, 90, 13 * stepH);
 
-        firstCardLabel = new Rect(30, stepH * 3, 90, 20);
-        secondCardLabel = new Rect(180, stepH * 3, 90, 20);
-        thirdCardLabel = new Rect(330, stepH * 3, 90, 20);
+        firstCardLabel =     new Rect( 30, stepH * 3, 90, 20);
+        secondCardLabel =    new Rect(180, stepH * 3, 90, 20);
+        thirdCardLabel =     new Rect(330, stepH * 3, 90, 20);
 
     }
 
