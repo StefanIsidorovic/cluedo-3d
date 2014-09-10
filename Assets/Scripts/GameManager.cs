@@ -210,7 +210,8 @@ public class GameManager : MonoSingleton<GameManager>
     }
     public bool CheckSolution(Triple<int, int, int> questionCards)
     {
-        return solution.Equals(questionCards);
+        Triple<int, int, int> realSolution = new Triple<int, int, int>((int)allRooms[solution.First], (int)allCharacters[solution.Second], (int)allWeapons[solution.Third]);
+        return realSolution.Equals(questionCards);
     }
 
     #endregion
