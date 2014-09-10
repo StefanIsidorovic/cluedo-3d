@@ -1,0 +1,28 @@
+Initialize engine version: 4.5.2f1 (9abb1b59b47c)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 4000 (ID=0x166)
+    Vendor:   Intel
+    VRAM:     2067 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading G:\CLUEDO 3D\play_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\Assembly-CSharp-firstpass.dll (this message is harmless)
+Loading G:\CLUEDO 3D\play_Data\Managed\Assembly-CSharp-firstpass.dll into Unity Child Domain
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading G:\CLUEDO 3D\play_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\Assembly-UnityScript-firstpass.dll (this message is harmless)
+Loading G:\CLUEDO 3D\play_Data\Managed\Assembly-UnityScript-firstpass.dll into Unity Child Domain
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\Assembly-UnityScript.dll (this message is harmless)
+Loading G:\CLUEDO 3D\play_Data\Managed\Assembly-UnityScript.dll into Unity Child Domain
+- Completed reload, in  0.049 seconds
+desktop: 1366x768 60Hz; virtual: 1366x768 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+WARNING: Shader Unsupported: 'Reflective/VertexLit' - Pass '' shader state not supported
+Platform assembly: G:\CLUEDO 3D\play_Data\Managed\System.dll (this message is harmless)
+connected: 0
+ 
+(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
+
