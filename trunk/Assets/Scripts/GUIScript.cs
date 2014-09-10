@@ -240,6 +240,8 @@ public class GUIScript : MonoBehaviour
         }
         if (gameManager.OnTurn() == playerNum)
         {
+            if(board.WhereAmI(playerNum) == Rooms.Hallway)
+                 GUI.enabled = false;
             if (GUI.Button(new Rect(60, i * 21 + 60 + heightCoef, 100, 30), "Ask!"))
             {
                 askDialogShow = true;
@@ -249,6 +251,8 @@ public class GUIScript : MonoBehaviour
             {
                 questionAsk = true;
             }
+            if (board.WhereAmI(playerNum) == Rooms.Hallway)
+                GUI.enabled = true;
         }
         GUI.EndScrollView();
 
