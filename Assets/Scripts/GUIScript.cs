@@ -124,6 +124,7 @@ public class GUIScript : MonoBehaviour
         {
             if (!setCardGuard)
             {
+                playerNum = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().NumOfMyPlayer();
                 setCardGuard = true;
                 setCards(playerNum);
             }
