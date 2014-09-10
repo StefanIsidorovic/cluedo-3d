@@ -146,22 +146,30 @@ public class NetworkManager : MonoBehaviour
 	//function caled in onGui Gui.Window
 	void DialogWindow ()
     {
-		GUI.Label (new Rect(boxRect.x+10,boxRect.y+50,250,30), "Insert your game room name:");
+		GUI.Label (new Rect (boxRect.x + 10, boxRect.y + 50, 250, 30), "Insert your game room name:");
+		GUI.SetNextControlName("gamename");
 		gameName = GUI.TextField (new Rect(boxRect.x+10,boxRect.y+90,280,30), gameName).Trim ();
-		if (GUI.Button (new Rect (boxRect.x+10,boxRect.y+130,80,30), "Make room")) {
-				
-						if (string.IsNullOrEmpty (gameName))
-								gameName = "DefaultRoomName";
-						Network.InitializeServer (5, 25000, !Network.HavePublicAddress ());
-						MasterServer.RegisterHost (typeName, gameName);
-						show = false;
-						serverStarted = true;
-				}
+		GUI.FocusControl("gamename");
+		if ((Event.current.isKey && (Event.current.keyCode== KeyCode.Return) && (GUI.GetNameOfFocusedControl()=="gamename")) || GUI.Button (new Rect (boxRect.x + 10, boxRect.y + 130, 80, 30), "Make room")) {
+			
+			if (string.IsNullOrEmpty (gameName))
+				gameName = "DefaultRoomName";
+			Network.InitializeServer (5, 25000, !Network.HavePublicAddress ());
+			MasterServer.RegisterHost (typeName, gameName);
+			show = false;
+			serverStarted = true;
+			
+		}
+
 		if (GUI.Button (new Rect (boxRect.x+210,boxRect.y+130,80,30), "Cancel")) {
 			gameName="";
 			show = false;
-		}				
-	}
+		}
+
+
+	
+
+	} 
 	
 	public bool ServerStarted()
     {
