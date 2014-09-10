@@ -203,7 +203,7 @@ public class GUIScript : MonoBehaviour
                 ThrowDices();
                 GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1+num2));
             }
-            if (numberOfMovesMade == (num1 + num2))
+            if ((numberOfMovesMade == (num1 + num2)))
             {
                 dicesThrown = false;
             }
@@ -418,6 +418,10 @@ public class GUIScript : MonoBehaviour
             {
                 numberOfProcessedPlayers = 0;
                 ResetGUIVariables();
+                dicesThrown = false;
+                var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
+                if (me)
+                    gameManager.SetQuestionIsAsked(true);
                 //networkView.RPC("ResetGUIVariables", RPCMode.AllBuffered);
                // if (me)
                // {

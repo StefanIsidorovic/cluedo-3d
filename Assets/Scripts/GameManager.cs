@@ -33,6 +33,8 @@ public class GameManager : MonoSingleton<GameManager>
     /// Keeps information about current dices sum.
     /// </summary>
     private int dicesSum;
+
+    private bool questionIsAsked;
     /// <summary>
     /// List of all available rooms in the game.
     /// </summary>
@@ -62,12 +64,15 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private Pair<int, Triple<Rooms, Characters, Weapons>> question;
 
+    private BoardScript board;
 
     // Use this for initialization
     void Start()
     {
         onTurn = numOfPlayers = 0;
         dicesSum = INVALID_DICES_SUM;
+        questionIsAsked = false;
+        board = MonoSingleton<BoardScript>.Instance;
         allRooms = new List<Rooms>(new Rooms[]{ Rooms.Studio, Rooms.Hall, Rooms.GuestsRoom, Rooms.SleepingRoom, 
                                              Rooms.DiningRoom, Rooms.Cabinet, Rooms.Kitchen, Rooms.Billiard, 
                                              Rooms.Library, Rooms.Hallway
@@ -108,11 +113,14 @@ public class GameManager : MonoSingleton<GameManager>
             var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
 
             // TODO: Remove constant and get real value from dices.
-            if (dicesSum == playerObject.NumOfMoves())
+            if ((dicesSum == playerObject.NumOfMoves()) || questionIsAsked)
             {
+                //if (dicesSum == playerObject.NumOfMoves() && board.WhereAmI(onTurn) != Rooms.Hallway && !questionIsAsked)
+                //    return;
                 playerObject.SetNumOfMoves(0);
                 SetTurn((onTurn + 1) % numOfPlayers);
                 SetDicesSum(INVALID_DICES_SUM);
+                SetQuestionIsAsked(false);
             }
         }
         catch (System.Exception)
@@ -282,6 +290,11 @@ public class GameManager : MonoSingleton<GameManager>
         return dicesSum;
     }
 
+    public bool QuestionIsAsked()
+    {
+        return questionIsAsked;
+    }
+
     /// <summary>
     /// Setter for GameManager.onTurn field.
     /// NOTE: This setter affects all the clones of this object as it is wrapper for RPC call.
@@ -300,6 +313,11 @@ public class GameManager : MonoSingleton<GameManager>
     public void SetDicesSum(int sum)
     {
         networkView.RPC("SetDicesSumRPC", RPCMode.AllBuffered, sum);
+    }
+
+    public void SetQuestionIsAsked(bool asked)
+    {
+        networkView.RPC("SetQuestionIsAskedRPC", RPCMode.AllBuffered, asked);
     }
 
     public void SetSolution(int room, int person, int weapon)
@@ -329,6 +347,12 @@ public class GameManager : MonoSingleton<GameManager>
     private void SetTurnRPC(int turn)
     {
         onTurn = turn;
+    }
+
+    [RPC]
+    private void SetQuestionIsAskedRPC(bool asked)
+    {
+        questionIsAsked = asked;
     }
 
     [RPC]
