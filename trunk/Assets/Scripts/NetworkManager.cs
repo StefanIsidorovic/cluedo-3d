@@ -125,11 +125,6 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
-        if (!spawnTrigger && gameStarted)
-        {
-            spawnTrigger = true;
-            SpawnPlayer();
-        }
         if (isRefreshingHostList && MasterServer.PollHostList().Length > 0)
         {
             isRefreshingHostList = false;
@@ -213,7 +208,6 @@ public class NetworkManager : MonoBehaviour
         playerObject.SetNum(numOfPlayer);
         playerObject.SetMaterial(numOfPlayer);
         playerObject.tag = "Player";
-        GameObject.Find("GUI").GetComponent<GUIScript>().setPlayerNum(numOfPlayer);
         //Setting up the cameras
         if (playerObject.networkView.isMine)
         {
@@ -264,6 +258,7 @@ public class NetworkManager : MonoBehaviour
     [RPC]
     private void StartGameNetwork()
     {
+        SpawnPlayer();
         gameStarted = true;
         startGameDialog = false;
     }
