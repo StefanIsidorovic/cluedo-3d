@@ -50,10 +50,16 @@ public class GUIScript : MonoBehaviour
     private Rect boxForChosingCards;
     #endregion
 
-    private Triple<int, int, int> playersWhoHaveCards;
+    private bool setCardGuard = false;
+    private bool questionAsk = false;
+    private bool infoBox = false;
+    private string infoBoxLabel = "";
 
+    private Triple<int, int, int> playersWhoHaveCards;
+    private bool questionToogle = false;
     private int numberOfProcessedPlayers = 0;
 
+    private bool endGameInfo = false;
     // #TODO: Refactor code.
     // #NOTE: Move rect and help variables from functions;
     void Start()
@@ -90,23 +96,46 @@ public class GUIScript : MonoBehaviour
             textBoxes.Add(strItem, "");
             cardTextures.Add((int)item, (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D)));
         }
-       // test =(Texture2D) Resources.Load("Cards/message", typeof(Texture2D));
         dieFacesVector = new List<Texture2D>();
         dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/images", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/1", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/2", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/3", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/4", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/5", typeof(Texture2D)));
-        dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/6", typeof(Texture2D)));
+        // this
+        for (int i = 1; i < 7; i++ )
+            dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/"+i, typeof(Texture2D)));
+        // instead of
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/1", typeof(Texture2D)));
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/2", typeof(Texture2D)));
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/3", typeof(Texture2D)));
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/4", typeof(Texture2D)));
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/5", typeof(Texture2D)));
+        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/6", typeof(Texture2D)));
     }
 
     // GUI elements
 
     void OnGUI()
     {
+        if (infoBox)
+        {
+            InfoBox();
+        }
+
         InitAskDialogPositionVariables();
-        
+        if (GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() && !endGameInfo)
+        {
+            if (!setCardGuard)
+            {
+                setCardGuard = true;
+                setCards(playerNum);
+            }
+
+            ShowSideBar();
+        }
+
+        if (questionAsk)
+        {
+            AskDialog_ChoosingCards(true);
+        }
+
         // Showing initial dialog for choosing cards to form a question, and setting variable someoneasking to true, so other player 
         // know when somebody else is forming a question.
         if (askDialogShow)
@@ -125,16 +154,6 @@ public class GUIScript : MonoBehaviour
             AskDialog_ChooseCardsToShow();
         }
 
-        // If I dont have any cards to show. Also for increment counter of processed players for "Asker" also.
-        if (asking && !guardAsking)
-        {
-            guardAsking = true;
-        }
-        if (GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
-        {
-            setCards(playerNum);
-            ShowSideBar();
-        }
         if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() )
         {
             AskDialog_ShowCardsToPlayers(playerAsking == playerNum);
@@ -219,17 +238,37 @@ public class GUIScript : MonoBehaviour
             i++;
         }
         if (gameManager.OnTurn() == playerNum)
+        {
             if (GUI.Button(new Rect(60, i * 21 + 60 + heightCoef, 100, 30), "Ask!"))
             {
                 askDialogShow = true;
             }
+
+            if (GUI.Button(new Rect(60, i * 21 + 90 + heightCoef, 100, 30), "Master Ask!"))
+            {
+                questionAsk = true;
+            }
+        }
         GUI.EndScrollView();
 
+    }
+
+    private void InfoBox()
+    {
+        BeginAskDialogBox();
+
+        GUI.Label(new Rect(widthAskDialog / 2 - 60, heightAskDialog / 2, 200, 50), infoBoxLabel);
+        if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Close"))
+        {
+            infoBox = false;
+        }
+
+        GUI.EndGroup();
     }
     #endregion
 
     #region Ask Dialog Elements
-    private void AskDialog_ChoosingCards()
+    private void AskDialog_ChoosingCards(bool question = false)
     {
         Rooms whereAmI = board.WhereAmI(playerNum);
 
@@ -259,27 +298,55 @@ public class GUIScript : MonoBehaviour
                     cardWeapon = choseWe;
                     weapon = EnumConverter.ToString(choseWe);
                 }
-
-                if (GUI.Button(new Rect(155, stepH * 21, 130, 30), askButtonText))
+                if (!question)
                 {
-                    if (cardCharacter == 0)
+                    if (GUI.Button(new Rect(155, stepH * 21, 130, 30), askButtonText))
                     {
-                        askButtonText = "Must choose character!";
-                    }
-                    else
-                        if (cardWeapon == 0)
+                        if (cardCharacter == 0)
                         {
-                            askButtonText = "Must choose weapon!";
+                            askButtonText = "Must choose character!";
+                        }
+                        else
+                            if (cardWeapon == 0)
+                            {
+                                askButtonText = "Must choose weapon!";
+                            }
+                            else
+                            {
+                                askDialogShow = false;
+                                setSomeoneAskingRPC(false); // ???
+                                setQuestionRPC((int)whereAmI, cardCharacter, cardWeapon);
+                                setAskingRPC(true, playerNum);
+                                increaseNumberOfProcessedPlayersRPC();
+
+                            }
+                    }
+                }
+                else
+                {
+                    if (GUI.Button(new Rect(60, stepH * 21, 130, 30), "Ask!"))
+                    {
+                        // argument!
+                        // #TODO: gameManager check solution
+                        Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
+                        // #TODO: instead of true, need to be gameManager method call for checking solution
+                        // #CheckSolution
+                        if (true)
+                        {
+                            EndGameRPC(playerNum);
                         }
                         else
                         {
-                            askDialogShow = false;
-                            setSomeoneAskingRPC(false); // ???
-                            setQuestionRPC((int)whereAmI, cardCharacter, cardWeapon);
-                            setAskingRPC(true, playerNum);
-                            increaseNumberOfProcessedPlayersRPC();
-
+                            questionAsk = false;
+                            infoBox = true;
+                            infoBoxLabel = "You are wrong!";
                         }
+                    }
+
+                    if (GUI.Button(new Rect(200, stepH * 21, 130, 30), "Cancel"))
+                    {
+                        questionAsk = false;
+                    }
                 }
             }
             GUI.EndGroup();
@@ -435,6 +502,11 @@ public class GUIScript : MonoBehaviour
     {
         networkView.RPC("increaseNumberOfProcessedPlayers", RPCMode.AllBuffered);
     }
+
+    void EndGameRPC(int playerNum)
+    {
+        networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum);
+    }
     #endregion
 
     #region RPC
@@ -481,12 +553,22 @@ public class GUIScript : MonoBehaviour
         weapon = "Choose weapon";
         character = "Choose character";
         askButtonText = "Ask!";
-        askDialogShow = someoneAsking = guardAsking =  askDialogShowCardsBool = askDialogShowQuestion = false;
+        askDialogShow = someoneAsking = guardAsking = askDialogShowCardsBool = askDialogShowQuestion = questionAsk = false;
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
         asking = false;
         playerAsking = -1;
         numberOfProcessedPlayers = 0;
+    }
+    [RPC]
+    void EndGame(int playerWon)
+    {
+        ResetGUIVariables();
+        endGameInfo = true;
+        infoBox = true;
+        infoBoxLabel = "Player " + playerWon + " wins! Congrats!";
+
+        //endgame logic for other components
     }
     #endregion
 
