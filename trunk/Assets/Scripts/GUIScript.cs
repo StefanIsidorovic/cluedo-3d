@@ -326,12 +326,8 @@ public class GUIScript : MonoBehaviour
                 {
                     if (GUI.Button(new Rect(60, stepH * 21, 130, 30), "Ask!"))
                     {
-                        // argument!
-                        // #TODO: gameManager check solution
                         Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
-                        // #TODO: instead of true, need to be gameManager method call for checking solution
-                        // #CheckSolution
-                        if (true)
+                        if (gameManager.CheckSolution(questionCards))
                         {
                             EndGameRPC(playerNum);
                         }

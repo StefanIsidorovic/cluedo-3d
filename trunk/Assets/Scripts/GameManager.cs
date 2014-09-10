@@ -60,7 +60,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// When player asks a question what is asked is saved here so it can be reused in GUI.
     /// </summary>
-    private Pair<int, Triple<Rooms?, Characters?, Weapons?>> question;
+    private Pair<int, Triple<Rooms, Characters, Weapons>> question;
 
 
     // Use this for initialization
@@ -78,8 +78,8 @@ public class GameManager : MonoSingleton<GameManager>
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
         shouldDeal = true;
         cardsDistribution = new Dictionary<int, List<int>>();
-        question = new Pair<int, Triple<Rooms?, Characters?, Weapons?>>(GameManager.INVALID_PLAYER_NUM, 
-                                                                        new Triple<Rooms?, Characters?, Weapons?>(null, null, null));
+        question = new Pair<int, Triple<Rooms, Characters, Weapons>>(GameManager.INVALID_PLAYER_NUM, 
+                                                                        new Triple<Rooms, Characters, Weapons>(Rooms.Hallway, Characters.MrBlack, Weapons.Candlestick));
         GUIObject = new GameObject("GUI");
         GUIObject.AddComponent<GUIScript>();
         GUIObject.AddComponent<NetworkView>();
@@ -100,7 +100,7 @@ public class GameManager : MonoSingleton<GameManager>
             shouldDeal = false;
         }
 
-        // Controll movement of players
+        // Control movement of players
         try
         {
             // Test if players are spawn and get current player 
@@ -204,9 +204,13 @@ public class GameManager : MonoSingleton<GameManager>
         networkView.RPC("SetAskedQuestionRPC", RPCMode.AllBuffered, whichPlayer, (int)room, (int)person, (int)weapon);
     }
 
-    public Pair<int, Triple<Rooms?, Characters?, Weapons?>> AskedQuestion()
+    public Pair<int, Triple<Rooms, Characters, Weapons>> AskedQuestion()
     {
         return question;
+    }
+    public bool CheckSolution(Triple<int, int, int> questionCards)
+    {
+        return solution.Equals(questionCards);
     }
 
     #endregion
@@ -369,5 +373,4 @@ public class GameManager : MonoSingleton<GameManager>
     }
 
     #endregion
-
 }

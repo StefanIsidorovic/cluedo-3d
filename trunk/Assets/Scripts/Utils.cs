@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public static class EnumeratorConstants
 {
@@ -48,7 +49,10 @@ public class Pair<T1, T2>
     public T2 Second { get { return second; } set { second = value; } }
 }
 
-public class Triple<T1, T2, T3>
+public class Triple<T1, T2, T3>  
+    where T1:  IComparable 
+    where T2 : IComparable
+    where T3 : IComparable
 {
     private T1 first;
     private T2 second;
@@ -64,6 +68,11 @@ public class Triple<T1, T2, T3>
     public T1 First { get { return first; } set { first = value; } }
     public T2 Second { get { return second; } set { second = value; } }
     public T3 Third { get { return third; } set { third = value; } }
+
+    public bool Equals(Triple<T1, T2, T3> t)
+    {
+        return t.first.CompareTo(first) == 0 && t.second.CompareTo(second) == 0 && t.third.CompareTo(third) == 0;
+    }
 }
 
 public class Algorithms
