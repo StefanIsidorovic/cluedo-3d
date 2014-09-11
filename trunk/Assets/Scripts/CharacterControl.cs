@@ -6,12 +6,14 @@ public class CharacterControl : MonoBehaviour
     private BoardScript board; // Provides data about players on map and map itself
     private int playerNum; // Number of this player
     private int numOfMoves; // Number of made moves in current series of moves
+    private string publicName; //Name that player choose
 
     // Use this for initialization
     void Start()
     {
         board = GameObject.Find("Board").gameObject.GetComponent<BoardScript>();
-        numOfMoves = 0;     
+        numOfMoves = 0;
+        publicName = "";
     }
 
     void Update()
@@ -19,7 +21,7 @@ public class CharacterControl : MonoBehaviour
         if (networkView.isMine)
         {
             var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
-            
+
             //Player must throw dices before his movement
             if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM)
                 return;
@@ -67,7 +69,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -78,7 +80,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -89,7 +91,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -99,7 +101,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
     }
@@ -118,7 +120,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -128,7 +130,7 @@ public class CharacterControl : MonoBehaviour
                 board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
                 if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
@@ -139,7 +141,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -150,7 +152,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
     }
@@ -169,7 +171,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -180,18 +182,18 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
             if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.SetPlayerPosition(playerNum, xPos, zPos-1);
+                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -202,7 +204,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
     }
@@ -217,11 +219,11 @@ public class CharacterControl : MonoBehaviour
         {
             if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
             {
-                board.SetPlayerPosition(playerNum, xPos, zPos-1);
+                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
                 transform.Translate(0, 0, 1);
 
                 if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if (playerNum == 1 && onTurn == playerNum)
@@ -232,18 +234,18 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(1, 0, 0);
 
                 if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
         {
             if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
             {
-                board.SetPlayerPosition(playerNum, xPos , zPos + 1);
+                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
                 transform.Translate(0, 0, -1);
 
                 if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
         else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
@@ -254,7 +256,7 @@ public class CharacterControl : MonoBehaviour
                 transform.Translate(-1, 0, 0);
 
                 if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves+1);
+                    SetNumOfMoves(numOfMoves + 1);
             }
         }
     }
@@ -288,6 +290,15 @@ public class CharacterControl : MonoBehaviour
         return numOfMoves;
     }
 
+    public void SetPublicName(string playerName)
+    {
+        networkView.RPC("SetPublicNameRPC", RPCMode.AllBuffered, playerName);
+    }
+
+    public string PublicName()
+    {
+        return publicName;
+    }
 
     #endregion
 
@@ -305,7 +316,7 @@ public class CharacterControl : MonoBehaviour
     {
         numOfMoves = moves;
     }
-    
+
     [RPC]
     private void SetMaterialRPC(int materialIndex)
     {
@@ -314,5 +325,10 @@ public class CharacterControl : MonoBehaviour
         transform.Find("Sphere").renderer.material = mat;
     }
 
+    [RPC]
+    private void SetPublicNameRPC(string playerName)
+    {
+        publicName = playerName;
+    }
     #endregion
 }
