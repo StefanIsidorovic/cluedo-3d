@@ -11,6 +11,7 @@ public class GUIScript : MonoBehaviour
     private GameManager gameManager;
     private BoardScript board;
     private Texture2D backOfCard;
+
     #region Variables for sidebar elements
     // Help structures for Unity3D GUI elements (storing values and iterating through groups of elements aka type of cards)
     private Dictionary<string, bool> toogle;
@@ -98,16 +99,8 @@ public class GUIScript : MonoBehaviour
         }
         dieFacesVector = new List<Texture2D>();
         dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/images", typeof(Texture2D)));
-        // this
-        for (int i = 1; i < 7; i++ )
-            dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/"+i, typeof(Texture2D)));
-        // instead of
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/1", typeof(Texture2D)));
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/2", typeof(Texture2D)));
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/3", typeof(Texture2D)));
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/4", typeof(Texture2D)));
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/5", typeof(Texture2D)));
-        //dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/6", typeof(Texture2D)));
+        for (int i = 1; i < 7; i++)
+            dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/" + i, typeof(Texture2D)));
     }
 
     // GUI elements
@@ -145,17 +138,17 @@ public class GUIScript : MonoBehaviour
             setSomeoneAskingRPC(true);
         }
         // Show cards from question asked.
-        if (askDialogShowQuestion && playerAsking != playerNum )
+        if (askDialogShowQuestion && playerAsking != playerNum)
         {
             AskDialog_ShowQuestionCards();
         }
         // Dialog for choosing card to show.
-        if(askDialogShowCardsBool)
+        if (askDialogShowCardsBool)
         {
             AskDialog_ChooseCardsToShow();
         }
 
-        if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() )
+        if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
         {
             AskDialog_ShowCardsToPlayers(playerAsking == playerNum);
         }
@@ -172,14 +165,14 @@ public class GUIScript : MonoBehaviour
         );
 
         GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80), "");
-        
+
         // Generate 2d part for throwing dices - everything about this part is within a group.
- 
+
         GUI.BeginGroup(new Rect(0, 0, Percentage(Screen.width, 25) - 25, heightCoef - 10));
 
         //two rect for presenting the dices and centering them 
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 - 60, 20, 40, 40), dieFacesVector[num1]);
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25)/2 + 20, 20, 40, 40), dieFacesVector[num2]);
+        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25) / 2 - 60, 20, 40, 40), dieFacesVector[num1]);
+        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25) / 2 + 20, 20, 40, 40), dieFacesVector[num2]);
         //chacking if this player is on turn
 
         int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
@@ -198,10 +191,10 @@ public class GUIScript : MonoBehaviour
             if (playerNum != onTurn || dicesThrown)
                 GUI.enabled = false;
             int numberOfMovesMade = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
-            if (GUI.Button(new Rect((Percentage(Screen.width, 25) - 25)/2 - 50, 80, 100, 50), "Throw dices!"))
+            if (GUI.Button(new Rect((Percentage(Screen.width, 25) - 25) / 2 - 50, 80, 100, 50), "Throw dices!"))
             {
                 ThrowDices();
-                GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1+num2));
+                GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1 + num2));
             }
             if ((numberOfMovesMade == (num1 + num2)))
             {
@@ -240,8 +233,8 @@ public class GUIScript : MonoBehaviour
         }
         if (gameManager.OnTurn() == playerNum)
         {
-            if(board.WhereAmI(playerNum) == Rooms.Hallway)
-                 GUI.enabled = false;
+            if (board.WhereAmI(playerNum) == Rooms.Hallway)
+                GUI.enabled = false;
             if (GUI.Button(new Rect(60, i * 21 + 60 + heightCoef, 100, 30), "Ask!"))
             {
                 askDialogShow = true;
@@ -414,33 +407,39 @@ public class GUIScript : MonoBehaviour
             GUI.DrawTexture(secondCard, me || playersWhoHaveCards.Second == playerNum ? cardTextures[(int)askedFor.Second] : backOfCard);
             GUI.DrawTexture(thirdCard, me || playersWhoHaveCards.Third == playerNum ? cardTextures[(int)askedFor.Third] : backOfCard);
 
-            GUI.Label(firstCardLabel, playersWhoHaveCards.First != -1 ? "Player" + playersWhoHaveCards.First + " showed card!" : "None of other players show card!");
-            GUI.Label(secondCardLabel, playersWhoHaveCards.Second != -1 ? "Player" + playersWhoHaveCards.Second + " showed card!" : "None of other players show card!");
-            GUI.Label(thirdCardLabel, playersWhoHaveCards.Third != -1 ? "Player" + playersWhoHaveCards.Third + " showed card!" : "None of other players show card!");
+            string player1 = "", player2 = "", player3 = "";
+            if (playersWhoHaveCards.First != -1)
+            {
+                player1 = GameObject.Find("Player" + playersWhoHaveCards.First).gameObject.GetComponent<CharacterControl>().PublicName();
+                if (string.IsNullOrEmpty(player1))
+                    player1 = "Player" + playersWhoHaveCards.First;
+            }
+
+            if (playersWhoHaveCards.Second != -1)
+            {
+                player2 = GameObject.Find("Player" + playersWhoHaveCards.Second).gameObject.GetComponent<CharacterControl>().PublicName();
+                if (string.IsNullOrEmpty(player2))
+                    player2 = "Player" + playersWhoHaveCards.Second;
+            }
+
+            if (playersWhoHaveCards.Third != -1)
+            {
+                player3 = GameObject.Find("Player" + playersWhoHaveCards.Third).gameObject.GetComponent<CharacterControl>().PublicName();
+                if (string.IsNullOrEmpty(player3))
+                    player3 = "Player" + playersWhoHaveCards.Third;
+            }
+
+            GUI.Label(firstCardLabel, playersWhoHaveCards.First != -1 ? player1 + " showed card!" : "None of other players show card!");
+            GUI.Label(secondCardLabel, playersWhoHaveCards.Second != -1 ? player2 + " showed card!" : "None of other players show card!");
+            GUI.Label(thirdCardLabel, playersWhoHaveCards.Third != -1 ? player3 + " showed card!" : "None of other players show card!");
 
             if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Ok.Close window."))
             {
                 numberOfProcessedPlayers = 0;
                 ResetGUIVariables();
                 dicesThrown = false;
-                var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
                 if (me)
                     gameManager.SetQuestionIsAsked(true);
-                //networkView.RPC("ResetGUIVariables", RPCMode.AllBuffered);
-               // if (me)
-               // {
-                    // #TODO: Logic for ending move!
-                    //if (true)
-                    //{
-                    //    Use Singleton feature, dont need to use find. Or simple use gameManager field of this script :)
-                    //    var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
-                    //    var onTurn = gameManager.OnTurn();
-                    //    var numOfPlayers = gameManager.NumOfPlayers();
-                    //    gameManager.SetTurn((onTurn + 1) % numOfPlayers);
-                    //    gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
-                    //}
-               // }
-                
             }
         }
         GUI.EndGroup();
@@ -452,7 +451,7 @@ public class GUIScript : MonoBehaviour
         {
             GUI.DrawTexture(firstCard, cardTextures[(int)askedFor.First]);
             GUI.DrawTexture(secondCard, cardTextures[(int)askedFor.Second]);
-            GUI.DrawTexture(thirdCard, cardTextures[(int)askedFor.Third] );
+            GUI.DrawTexture(thirdCard, cardTextures[(int)askedFor.Third]);
 
             GUI.Label(firstCardLabel, "Room");
             GUI.Label(secondCardLabel, "Character");
@@ -599,20 +598,20 @@ public class GUIScript : MonoBehaviour
 
     void InitAskDialogPositionVariables()
     {
-        
+
         widthAskDialog = 450;//Percentage(Screen.width, 50);
         heightAskDialog = 250;//Percentage(Screen.height, 75);
         boxForChosingCards = new Rect((Percentage(Screen.width, 75)) / 2 - 220, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
         stepW = widthAskDialog / 21;
         stepH = heightAskDialog / 24;
 
-        firstCard =     new Rect( 30, 7 * stepH, 90, 13 * stepH);
-        secondCard =    new Rect(180, 7 * stepH, 90, 13 * stepH);
-        thirdCard =     new Rect(330, 7 * stepH, 90, 13 * stepH);
+        firstCard = new Rect(30, 7 * stepH, 90, 13 * stepH);
+        secondCard = new Rect(180, 7 * stepH, 90, 13 * stepH);
+        thirdCard = new Rect(330, 7 * stepH, 90, 13 * stepH);
 
-        firstCardLabel =     new Rect( 30, stepH * 3, 90, 20);
-        secondCardLabel =    new Rect(180, stepH * 3, 90, 20);
-        thirdCardLabel =     new Rect(330, stepH * 3, 90, 20);
+        firstCardLabel = new Rect(30, stepH * 3, 90, 20);
+        secondCardLabel = new Rect(180, stepH * 3, 90, 20);
+        thirdCardLabel = new Rect(330, stepH * 3, 90, 20);
 
     }
 

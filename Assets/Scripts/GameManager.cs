@@ -33,8 +33,6 @@ public class GameManager : MonoSingleton<GameManager>
     /// Keeps information about current dices sum.
     /// </summary>
     private int dicesSum;
-
-    private bool questionIsAsked;
     /// <summary>
     /// List of all available rooms in the game.
     /// </summary>
@@ -65,6 +63,7 @@ public class GameManager : MonoSingleton<GameManager>
     private Pair<int, Triple<Rooms, Characters, Weapons>> question;
 
     private BoardScript board;
+    private bool questionIsAsked;
 
     // Use this for initialization
     void Start()
@@ -83,7 +82,7 @@ public class GameManager : MonoSingleton<GameManager>
         allWeapons = new List<Weapons>(new Weapons[] { Weapons.Candlestick, Weapons.Knife, Weapons.LeadPipe, Weapons.Revolver, Weapons.Rope, Weapons.Wrench });
         shouldDeal = true;
         cardsDistribution = new Dictionary<int, List<int>>();
-        question = new Pair<int, Triple<Rooms, Characters, Weapons>>(GameManager.INVALID_PLAYER_NUM, 
+        question = new Pair<int, Triple<Rooms, Characters, Weapons>>(GameManager.INVALID_PLAYER_NUM,
                                                                         new Triple<Rooms, Characters, Weapons>(Rooms.Hallway, Characters.MrBlack, Weapons.Candlestick));
         GUIObject = new GameObject("GUI");
         GUIObject.AddComponent<GUIScript>();
@@ -207,15 +206,6 @@ public class GameManager : MonoSingleton<GameManager>
         return whichPlayer == PlayerWhoHasCard(card);
     }
 
-    public void SetAskedQuestion(int whichPlayer, Rooms room, Characters person, Weapons weapon)
-    {
-        networkView.RPC("SetAskedQuestionRPC", RPCMode.AllBuffered, whichPlayer, (int)room, (int)person, (int)weapon);
-    }
-
-    public Pair<int, Triple<Rooms, Characters, Weapons>> AskedQuestion()
-    {
-        return question;
-    }
     public bool CheckSolution(Triple<int, int, int> questionCards)
     {
         Triple<int, int, int> realSolution = new Triple<int, int, int>((int)allRooms[solution.First], (int)allCharacters[solution.Second], (int)allWeapons[solution.Third]);
@@ -304,7 +294,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         networkView.RPC("SetTurnRPC", RPCMode.AllBuffered, turn);
     }
-    
+
     public void SetNumOfPlayers(int numberOfPlayers)
     {
         networkView.RPC("SetNumOfPlayersRPC", RPCMode.AllBuffered, numberOfPlayers);
@@ -335,6 +325,15 @@ public class GameManager : MonoSingleton<GameManager>
         return numOfPlayers;
     }
 
+    public void SetAskedQuestion(int whichPlayer, Rooms room, Characters person, Weapons weapon)
+    {
+        networkView.RPC("SetAskedQuestionRPC", RPCMode.AllBuffered, whichPlayer, (int)room, (int)person, (int)weapon);
+    }
+
+    public Pair<int, Triple<Rooms, Characters, Weapons>> AskedQuestion()
+    {
+        return question;
+    }
     #endregion
 
     #region RPC set methods

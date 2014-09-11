@@ -4,19 +4,44 @@ using System.Collections;
 
 public class NetworkManager : MonoBehaviour
 {
+    #region Network data
     // Unique typename for game (Hopefully unique).
     private const string typeName = "Cluedo3DSAMOSTeam";
-    private string gameName ="";
-	// Only show Gui Window if needed.
-	private bool show = false;
-    private Rect boxRect;
-    public Material[] playerMaterials; 
-
+    private string gameName = "";
     private bool isRefreshingHostList = false;
     private HostData[] hostList;
+    // Number of minimum players need to be so game could start, its for testing and debuging purposes
+    // because its frustrating to start three instances everytime. By default is set to 3 but you can change it from Unity editor, NOT HERE!
+    // Again, NOT HERE, in unity editor (inspector).
+    public int minimumNumberOfPlayers = 3;
 
-    public GameObject playerPrefab;
-    public Vector3[] startPositions = {new Vector3 (8, 2, 15),new Vector3 (14, 2, 8) , new Vector3 (9, 2, -7),new Vector3 (0, 2, -7),  new Vector3 (-8, 2, -1), new Vector3 (-8, 2, 8)};
+    // Variable for server to know how many players are there
+    // you can change it to public so you can track changes in debug.
+    private int numOfPlayersConnected = 0;
+
+    // Bool triggers for game start dialog.
+    private bool spawnTrigger = false;
+    private bool startGameDialog = true;
+    // Do not change this to public, you have below method for checking if game is started.
+    private bool gameStarted = false;
+    private bool serverStarted = false;
+    #endregion
+
+    #region GUI elements
+    private bool show = false;
+    private Rect makeRoomBox;
+    private Rect playerNameBox;
+    private Rect hostsBox;
+    private GUIStyle buttonTextStyle;
+    private GUIStyle labelTextStyle;
+    private GUIStyle inputTextStyle;
+    private GUIStyle boxStyle;
+    private GUIStyle backgroundStyle;
+    private bool isRefreshedFirstTime = false;
+    #endregion
+
+    #region Camera
+    public Vector3[] startPositions = { new Vector3(8, 2, 15), new Vector3(14, 2, 8), new Vector3(9, 2, -7), new Vector3(0, 2, -7), new Vector3(-8, 2, -1), new Vector3(-8, 2, 8) };
     public Vector3[] startCameraRotations = { 
                                                 new Vector3(45, 180, 0), 
                                                 new Vector3(45, -90, 0), 
@@ -32,25 +57,15 @@ public class NetworkManager : MonoBehaviour
                                                        new Vector3(90, 90, 0), 
                                                        new Vector3(90, 90, 0)};
 
-    // Number of minimum players need to be so game could start, its for testing and debuging purposes
-    // because its frustrating to start three instances everytime. By default is set to 3 but you can change it from Unity editor, NOT HERE!
-    // Again, NOT HERE, in unity editor (inspector).
-    public int minimumNumberOfPlayers = 3;
+    #endregion
 
-    // Variable for server to know how many players are there
-    // you can change it to public so you can track changes in debug.
-    private int numOfPlayersConnected = 0;
-
+    #region Player data
+    private string publicPlayerName = "";
+    public GameObject playerPrefab;
+    public Material[] playerMaterials;
     // Variable for network manager to know which player is his, for later spawning.
     private int numOfPlayer = 0;
-
-    // Bool triggers for game start dialog.
-    private bool spawnTrigger = false;
-    private bool startGameDialog = true;
-    // Do not change this to public, you have below method for checking if game is started.
-    private bool gameStarted = false;
-    private bool serverStarted = false;
-
+    #endregion
 
     //#TODO: Disconnect logic.
     //#TODO: Chat and name logic. 
@@ -58,44 +73,40 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
     }
+    void Update()
+    {
+        if (isRefreshingHostList && MasterServer.PollHostList().Length > 0)
+        {
+            isRefreshingHostList = false;
+            hostList = MasterServer.PollHostList();
+        }
 
+    }
     void OnGUI()
     {
+
         // Start or join server dialog
-
-
-
         if (!Network.isClient && !Network.isServer)
         {
+            InitGUIStyles();
 
-			if(show){
-                GUIStyle myStyle = new GUIStyle(GUI.skin.box);
-                myStyle.fontStyle = FontStyle.Bold;
-                myStyle.fontSize = 18;
-                myStyle.alignment = TextAnchor.UpperCenter;
-               
+            //StartPage
 
-                boxRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 100, 300, 200);
-                GUI.Box(boxRect, "Make a new room", myStyle);
-				DialogWindow();
-			}
+            //First line
+            playerNameBox = new Rect(Screen.width / 4 - 150, Screen.height / 10, 300, 200);
+            GUI.Box(playerNameBox, "You can choose your name!", boxStyle);
+            ShowPlayerNameBoxDialog();
 
-			if(!show){
-            if (GUI.Button(new Rect(100, 100, 250, 100), "Start Server"))
-                StartServer();
+            //Second line
+            makeRoomBox = new Rect(Screen.width / 2 - 150, Screen.height / 10, 300, 200);
+            GUI.Box(makeRoomBox, "Make a new room", boxStyle);
+            ShowMakeRoomDialog();
 
-            if (GUI.Button(new Rect(100, 250, 250, 100), "Refresh Hosts"))
-                RefreshHostList();
+            //Third line
+            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, Screen.height);
+            GUI.Box(hostsBox, "Enter an existing room", boxStyle);
+            ShowHostsList();
 
-            if (hostList != null)
-            {
-                for (int i = 0; i < hostList.Length; i++)
-                {
-                    if (GUI.Button(new Rect(400, 100 + (110 * i), 300, 100), hostList[i].gameName))
-                        JoinServer(hostList[i]);
-                }
-            }
-			}
         }
         // start game dialog
         if ((Network.isClient || Network.isServer) && startGameDialog)
@@ -123,55 +134,86 @@ public class NetworkManager : MonoBehaviour
 
     }
 
-    void Update()
+    #region GUI methods
+    void InitGUIStyles()
     {
-        if (isRefreshingHostList && MasterServer.PollHostList().Length > 0)
+        //Making styles for buttons, labels and textFields (input).
+        buttonTextStyle = new GUIStyle(GUI.skin.button);
+        labelTextStyle = new GUIStyle(GUI.skin.label);
+        inputTextStyle = new GUIStyle(GUI.skin.textField);
+
+        buttonTextStyle.fontStyle = FontStyle.Bold;
+        buttonTextStyle.normal.textColor = Color.yellow;
+        labelTextStyle.fontStyle = FontStyle.Bold;
+        labelTextStyle.normal.textColor = Color.yellow;
+        inputTextStyle.fontStyle = FontStyle.Bold;
+        inputTextStyle.normal.textColor = Color.yellow;
+
+        //Making styles for boxes
+        boxStyle = new GUIStyle(GUI.skin.box);
+        boxStyle.fontStyle = FontStyle.Bold;
+        boxStyle.fontSize = 18;
+        boxStyle.normal.textColor = Color.yellow;
+        boxStyle.alignment = TextAnchor.UpperCenter;
+
+        //Setting background of StartPage
+        backgroundStyle = new GUIStyle(GUI.skin.box);
+        backgroundStyle.normal.background = (Texture2D)Resources.Load("crimescene", typeof(Texture2D));
+        GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle);
+    }
+    void ShowMakeRoomDialog()
+    {
+        GUI.Label(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 50, 250, 30), "Insert your game room name:", labelTextStyle);
+        gameName = GUI.TextField(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 90, 280, 30), gameName, inputTextStyle).Trim();
+        if (GUI.Button(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 130, 80, 30), "Make room", buttonTextStyle))
         {
-            isRefreshingHostList = false;
-            hostList = MasterServer.PollHostList();
+            if (string.IsNullOrEmpty(gameName))
+                gameName = "DefaultRoomName";
+            Network.InitializeServer(5, 25000, !Network.HavePublicAddress());
+            MasterServer.RegisterHost(typeName, gameName);
+            show = false;
+            serverStarted = true;
+
         }
 
+        if (GUI.Button(new Rect(makeRoomBox.x + 210, makeRoomBox.y + 130, 80, 30), "Cancel", buttonTextStyle))
+        {
+            gameName = "";
+            show = false;
+        }
     }
 
-
-		
-	
-
-    //Network methods
-    private void StartServer()
+    void ShowPlayerNameBoxDialog()
     {
-		show = true;
+        GUI.Label(new Rect(playerNameBox.x + 10, playerNameBox.y + 50, 250, 30), "Enter your name:", labelTextStyle);
+        publicPlayerName = GUI.TextField(new Rect(playerNameBox.x + 10, playerNameBox.y + 90, 280, 30), publicPlayerName, inputTextStyle).Trim();
+    }
 
-	}
-	//function caled in onGui Gui.Window
-	void DialogWindow ()
+    private void ShowHostsList()
     {
-		GUI.Label (new Rect (boxRect.x + 10, boxRect.y + 50, 250, 30), "Insert your game room name:");
-		GUI.SetNextControlName("gamename");
-		gameName = GUI.TextField (new Rect(boxRect.x+10,boxRect.y+90,280,30), gameName).Trim ();
-		GUI.FocusControl("gamename");
-		if ((Event.current.isKey && (Event.current.keyCode== KeyCode.Return) && (GUI.GetNameOfFocusedControl()=="gamename")) || GUI.Button (new Rect (boxRect.x + 10, boxRect.y + 130, 80, 30), "Make room")) {
-			
-			if (string.IsNullOrEmpty (gameName))
-				gameName = "DefaultRoomName";
-			Network.InitializeServer (5, 25000, !Network.HavePublicAddress ());
-			MasterServer.RegisterHost (typeName, gameName);
-			show = false;
-			serverStarted = true;
-			
-		}
+        GUI.Label(new Rect(hostsBox.x + 50, hostsBox.y + 45, 200, 30), "Refresh list of rooms", labelTextStyle);
+        if (GUI.Button(new Rect(hostsBox.x + 10, hostsBox.y + 40, 30, 30), "R", buttonTextStyle) || !isRefreshedFirstTime)
+        {
+            RefreshHostList();
+            isRefreshedFirstTime = true;
+        }
 
-		if (GUI.Button (new Rect (boxRect.x+210,boxRect.y+130,80,30), "Cancel")) {
-			gameName="";
-			show = false;
-		}
+        if (hostList != null)
+        {
+            for (int i = 0; i < hostList.Length; i++)
+            {
+                if (GUI.Button(new Rect(hostsBox.x + 10, hostsBox.y + 80 + 35 * i, 280, 30), hostList[i].gameName, buttonTextStyle))
+                    JoinServer(hostList[i]);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Network methods
 
 
-	
-
-	} 
-	
-	public bool ServerStarted()
+    public bool ServerStarted()
     {
         return serverStarted;
     }
@@ -202,7 +244,9 @@ public class NetworkManager : MonoBehaviour
         Debug.Log("Number of players: " + numOfPlayer + 1);
     }
 
-    //Game Logic methods
+    #endregion
+
+    #region GameLogic
     private void SpawnPlayer()
     {
         Debug.Log("connected: " + numOfPlayer);
@@ -215,6 +259,8 @@ public class NetworkManager : MonoBehaviour
         var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
         playerObject.SetNum(numOfPlayer);
         playerObject.SetMaterial(numOfPlayer);
+        Debug.Log(publicPlayerName);
+        playerObject.SetPublicName(publicPlayerName);
         playerObject.tag = "Player";
         //Setting up the cameras
         if (playerObject.networkView.isMine)
@@ -228,6 +274,9 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Get and Set methods
     //Method for to check if game is started.
     public bool GameStarted()
     {
@@ -244,7 +293,9 @@ public class NetworkManager : MonoBehaviour
         return numOfPlayer;
     }
 
-    // Wrapper methods
+    #endregion
+
+    #region RPC Wrappers
     private void ChangePlayersConnected(int numberOfPlayers)
     {
         networkView.RPC("ChangePlayersConnectedNetwork", RPCMode.AllBuffered, numberOfPlayers);
@@ -254,6 +305,9 @@ public class NetworkManager : MonoBehaviour
     {
         networkView.RPC("StartGameNetwork", RPCMode.AllBuffered);
     }
+    #endregion
+
+    #region RPC
 
     // RPC methods, actual methods for changing values. They have wrappers so we can control which peers we want to notify
     // about changes and how. Basically wrappers are not needed, but I like to write, cause I think its cleaner and doesnt force
@@ -270,4 +324,6 @@ public class NetworkManager : MonoBehaviour
         gameStarted = true;
         startGameDialog = false;
     }
+
+    #endregion
 }
