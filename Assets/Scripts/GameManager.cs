@@ -64,6 +64,10 @@ public class GameManager : MonoSingleton<GameManager>
 
     private BoardScript board;
     private bool questionIsAsked;
+    /// <summary>
+    /// List of connected players, used for message when waiting for game.
+    /// </summary>
+    private List<string> connectedPlayers = new List<string>();
 
     // Use this for initialization
     void Start()
@@ -286,6 +290,11 @@ public class GameManager : MonoSingleton<GameManager>
         return questionIsAsked;
     }
 
+    public List<string> ConnectedPlayers()
+    {
+        return connectedPlayers;
+    }
+
     /// <summary>
     /// Setter for GameManager.onTurn field.
     /// NOTE: This setter affects all the clones of this object as it is wrapper for RPC call.
@@ -334,6 +343,11 @@ public class GameManager : MonoSingleton<GameManager>
     public Pair<int, Triple<Rooms, Characters, Weapons>> AskedQuestion()
     {
         return question;
+    }
+
+    public void AddPlayerToConnectedPlayers(string Name)
+    {
+        networkView.RPC("AddPlayerToConnectedPlayersRPC", RPCMode.AllBuffered, Name);
     }
     #endregion
 
@@ -395,6 +409,12 @@ public class GameManager : MonoSingleton<GameManager>
         question.Second.First = (Rooms)room;
         question.Second.Second = (Characters)person;
         question.Second.Third = (Weapons)weapon;
+    }
+
+    [RPC]
+    private void AddPlayerToConnectedPlayersRPC(string Name)
+    {
+        connectedPlayers.Add(Name);
     }
 
     #endregion

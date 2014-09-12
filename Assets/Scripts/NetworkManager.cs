@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 public class NetworkManager : MonoBehaviour
@@ -35,6 +36,7 @@ public class NetworkManager : MonoBehaviour
     private GUIStyle buttonTextStyle;
     private GUIStyle labelTextStyle;
     private GUIStyle inputTextStyle;
+    private GUIStyle bigLabelStyle;
     private GUIStyle boxStyle;
     private GUIStyle backgroundStyle;
     private bool isRefreshedFirstTime = false;
@@ -111,15 +113,26 @@ public class NetworkManager : MonoBehaviour
         // start game dialog
         if ((Network.isClient || Network.isServer) && startGameDialog)
         {
+            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle);
+            GUI.Label(new Rect(Screen.width / 2 - 400, 20, 800, 100), "The game will begin in just a second! Please wait for more players to connect. ", bigLabelStyle);
+            string textMessage = "Connected players are:";
+            List<string> connectedPlayers= GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().ConnectedPlayers();
+            foreach (var playerN in connectedPlayers)
+            {
+                textMessage += "\n" + playerN + " ";
+            }
             if (Network.isServer)
             {
+               
                 if (numOfPlayersConnected < minimumNumberOfPlayers)
                 {
-                    GUI.Label(new Rect(10, 10, 100, 20), "Waiting for more people to connect!");
+
+                    GUI.Label(new Rect(Screen.width / 2 - 200, 200, 400, 200), textMessage, bigLabelStyle);
                 }
                 else
                 {
-                    if (GUI.Button(new Rect(100, 100, 250, 100), "Start game!"))
+                    GUI.Label(new Rect(Screen.width / 2 - 200, 200, 400, 200), textMessage, bigLabelStyle);
+                    if (GUI.Button(new Rect(10, 300, 250, 100), "Start game!",buttonTextStyle))
                     {
                         StartGame();
                     }
@@ -128,7 +141,7 @@ public class NetworkManager : MonoBehaviour
             }
             if (Network.isClient)
             {
-                GUI.Label(new Rect(10, 10, 100, 20), "Waiting for game to start");
+                GUI.Label(new Rect(Screen.width / 2 - 200, 400, 400, 200), textMessage, bigLabelStyle);
             }
         }
 
@@ -141,6 +154,7 @@ public class NetworkManager : MonoBehaviour
         buttonTextStyle = new GUIStyle(GUI.skin.button);
         labelTextStyle = new GUIStyle(GUI.skin.label);
         inputTextStyle = new GUIStyle(GUI.skin.textField);
+        bigLabelStyle = new GUIStyle(GUI.skin.label);
 
         buttonTextStyle.fontStyle = FontStyle.Bold;
         buttonTextStyle.normal.textColor = Color.yellow;
@@ -148,7 +162,11 @@ public class NetworkManager : MonoBehaviour
         labelTextStyle.normal.textColor = Color.yellow;
         inputTextStyle.fontStyle = FontStyle.Bold;
         inputTextStyle.normal.textColor = Color.yellow;
-
+        bigLabelStyle.fontStyle = FontStyle.Bold;
+        bigLabelStyle.normal.textColor = Color.yellow;
+        bigLabelStyle.fontSize = 30;
+        bigLabelStyle.alignment = TextAnchor.UpperCenter;
+        bigLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         //Making styles for boxes
         boxStyle = new GUIStyle(GUI.skin.box);
         boxStyle.fontStyle = FontStyle.Bold;
@@ -174,7 +192,7 @@ public class NetworkManager : MonoBehaviour
             MasterServer.RegisterHost(typeName, gameName);
             show = false;
             serverStarted = true;
-
+            SetListConnectedPlayers();
         }
 
         if (GUI.Button(new Rect(makeRoomBox.x + 210, makeRoomBox.y + 130, 80, 30), "Cancel", buttonTextStyle))
@@ -204,9 +222,22 @@ public class NetworkManager : MonoBehaviour
             for (int i = 0; i < hostList.Length; i++)
             {
                 if (GUI.Button(new Rect(hostsBox.x + 10, hostsBox.y + 80 + 35 * i, 280, 30), hostList[i].gameName, buttonTextStyle))
+                {
+                    //SetListConnectedPlayers();
                     JoinServer(hostList[i]);
+                }
             }
         }
+    }
+
+    private void SetListConnectedPlayers()
+    {
+        string playerName = "Player" + numOfPlayer;
+        if (string.IsNullOrEmpty(publicPlayerName))
+            publicPlayerName = playerName;
+
+        GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().AddPlayerToConnectedPlayers(publicPlayerName);
+
     }
 
     #endregion
@@ -232,6 +263,8 @@ public class NetworkManager : MonoBehaviour
     {
         numOfPlayer = hostData.connectedPlayers;
         Network.Connect(hostData);
+        //SetListConnectedPlayers();
+
     }
 
     void OnConnectedToServer()
@@ -243,6 +276,7 @@ public class NetworkManager : MonoBehaviour
         }
         ChangePlayersConnected(numOfPlayer + 1);
         Debug.Log("Number of players: " + numOfPlayer + 1);
+        SetListConnectedPlayers();
     }
 
     #endregion
@@ -260,7 +294,7 @@ public class NetworkManager : MonoBehaviour
         var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
         playerObject.SetNum(numOfPlayer);
         playerObject.SetMaterial(numOfPlayer);
-        Debug.Log(publicPlayerName);
+
         playerObject.SetPublicName(publicPlayerName);
         playerObject.tag = "Player";
         //Setting up the cameras
