@@ -222,6 +222,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// </summary>
     private void InitSolution()
     {
+        Random.seed = System.DateTime.Now.Second;
         int whichRoom = Random.Range(0, allRooms.Count - 2); // Hallway is not a valid room
         int whichPerson = Random.Range(0, allCharacters.Count - 1);
         int whichWeapon = Random.Range(0, allWeapons.Count - 1);

@@ -79,7 +79,7 @@ public class Algorithms
 {
     public static void Shuffle<T>(List<T> list)
     {
-        System.Random rng = new System.Random();
+        System.Random rng = new System.Random(System.DateTime.Now.Second);
         int n = list.Count;
         while (n > 1)
         {
