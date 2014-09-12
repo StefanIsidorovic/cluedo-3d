@@ -39,6 +39,8 @@ public class NetworkManager : MonoBehaviour
     private GUIStyle bigLabelStyle;
     private GUIStyle boxStyle;
     private GUIStyle backgroundStyle;
+    private GUIStyle smallLabelStyle;
+    //private GUIStyle boxStyleBackground;
     private bool isRefreshedFirstTime = false;
     #endregion
 
@@ -114,25 +116,30 @@ public class NetworkManager : MonoBehaviour
         if ((Network.isClient || Network.isServer) && startGameDialog)
         {
             GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle);
-            GUI.Label(new Rect(Screen.width / 2 - 400, 20, 800, 100), "The game will begin in just a second! Please wait for more players to connect. ", bigLabelStyle);
-            string textMessage = "Connected players are:";
+            GUI.Label(new Rect(20, 20, 300, 60), "The game will begin in just a second! Please wait for more players to connect. Minimum number of player is " + minimumNumberOfPlayers + ".", smallLabelStyle);
+            //GUI.Box(new Rect(Screen.width / 2 - 320, 80, 640, 480), "", boxStyleBackground);
+            string textMessage = "Investigators:" + "\n";
             List<string> connectedPlayers= GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().ConnectedPlayers();
+            int i = 1;
             foreach (var playerN in connectedPlayers)
             {
-                textMessage += "\n" + playerN + " ";
+                textMessage += "\n" + i + ". " +playerN + " ";
+                i += 1;
             }
             if (Network.isServer)
             {
                
                 if (numOfPlayersConnected < minimumNumberOfPlayers)
                 {
-
-                    GUI.Label(new Rect(Screen.width / 2 - 200, 200, 400, 200), textMessage, bigLabelStyle);
+                    GUI.enabled= false;
+                    GUI.Button(new Rect(Screen.width / 2 - 75, Screen.height - 160, 150, 80), "Wait for more!", buttonTextStyle);
+                    GUI.enabled = true;
+                    GUI.Label(new Rect(Screen.width - 250, 20, 300, 200), textMessage, bigLabelStyle);
                 }
                 else
                 {
-                    GUI.Label(new Rect(Screen.width / 2 - 200, 200, 400, 200), textMessage, bigLabelStyle);
-                    if (GUI.Button(new Rect(10, 300, 250, 100), "Start game!",buttonTextStyle))
+                    GUI.Label(new Rect(Screen.width -250, 20, 300, 200), textMessage, bigLabelStyle);
+                    if (GUI.Button(new Rect(Screen.width/2 - 75, Screen.height - 160, 150, 80), "Start game!", buttonTextStyle))
                     {
                         StartGame();
                     }
@@ -141,7 +148,7 @@ public class NetworkManager : MonoBehaviour
             }
             if (Network.isClient)
             {
-                GUI.Label(new Rect(Screen.width / 2 - 200, 400, 400, 200), textMessage, bigLabelStyle);
+                GUI.Label(new Rect(Screen.width - 250, 20, 300, 200), textMessage, bigLabelStyle);
             }
         }
 
@@ -155,6 +162,8 @@ public class NetworkManager : MonoBehaviour
         labelTextStyle = new GUIStyle(GUI.skin.label);
         inputTextStyle = new GUIStyle(GUI.skin.textField);
         bigLabelStyle = new GUIStyle(GUI.skin.label);
+        smallLabelStyle = new GUIStyle(GUI.skin.label);
+       // boxStyleBackground = new GUIStyle(GUI.skin.box); 
 
         buttonTextStyle.fontStyle = FontStyle.Bold;
         buttonTextStyle.normal.textColor = Color.yellow;
@@ -164,9 +173,15 @@ public class NetworkManager : MonoBehaviour
         inputTextStyle.normal.textColor = Color.yellow;
         bigLabelStyle.fontStyle = FontStyle.Bold;
         bigLabelStyle.normal.textColor = Color.yellow;
-        bigLabelStyle.fontSize = 30;
+        bigLabelStyle.fontSize = 17;
         bigLabelStyle.alignment = TextAnchor.UpperCenter;
-        bigLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
+        //bigLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
+        //boxStyleBackground.normal.background = (Texture2D)Resources.Load("labelBackground2", typeof(Texture2D));
+
+        smallLabelStyle.fontStyle = FontStyle.Bold;
+        smallLabelStyle.normal.textColor = Color.yellow;
+        smallLabelStyle.alignment = TextAnchor.MiddleCenter;
+        //smallLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         //Making styles for boxes
         boxStyle = new GUIStyle(GUI.skin.box);
         boxStyle.fontStyle = FontStyle.Bold;
