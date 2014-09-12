@@ -103,7 +103,7 @@ public class NetworkManager : MonoBehaviour
             ShowMakeRoomDialog();
 
             //Third line
-            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, Screen.height);
+            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, Screen.height/2);
             GUI.Box(hostsBox, "Enter an existing room", boxStyle);
             ShowHostsList();
 
@@ -155,6 +155,7 @@ public class NetworkManager : MonoBehaviour
         boxStyle.fontSize = 18;
         boxStyle.normal.textColor = Color.yellow;
         boxStyle.alignment = TextAnchor.UpperCenter;
+        boxStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
 
         //Setting background of StartPage
         backgroundStyle = new GUIStyle(GUI.skin.box);
