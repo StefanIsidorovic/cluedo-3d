@@ -13,7 +13,6 @@ public class CharacterControl : MonoBehaviour
     {
         board = GameObject.Find("Board").gameObject.GetComponent<BoardScript>();
         numOfMoves = 0;
-        publicName = "";
     }
 
     void Update()
