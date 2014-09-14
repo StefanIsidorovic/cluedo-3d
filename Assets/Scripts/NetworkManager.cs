@@ -109,18 +109,6 @@ public class NetworkManager : MonoBehaviour
             GUI.Box(makeRoomBox, "Make a new room", boxStyle);
             ShowMakeRoomDialog();
 
-           // scrollPosition = GUI.BeginScrollView(
-           //new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
-           //scrollPosition,
-           //new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
-           //     );
-
-            //scrollPosition = GUI.BeginScrollView(
-            //    new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, 200),
-            //    scrollPosition,
-            //    new Rect(0, 40, 260, 190)
-            //    );
-
             //Third line
             hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, 200);
             GUI.Box(hostsBox, "Enter an existing room", boxStyle);

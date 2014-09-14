@@ -19,6 +19,17 @@ public class GUIScript : MonoBehaviour
     private Dictionary<int, Texture2D> cardTextures;
     private Vector2 scrollPosition = Vector2.zero;
     private object[] dropdownCharacters, dropdownWeapons;
+    private GUIStyle sideBarStyle;
+    private GUIStyle labelSideBarStyle;
+    // helper variebles for defining Rectangles for positions of elements.
+    // Height of space intended for dices.
+    private int heightCoef = 0;
+    // width of textbox.
+    private int textBoxWidth = 140;
+    private int leftMarginSideBar = 10;
+    #endregion
+
+    #region Variables for dices box
     public List<Texture2D> dieFacesVector;
     public bool dicesThrown = false;
     public int num1 = 0;
@@ -27,11 +38,6 @@ public class GUIScript : MonoBehaviour
     private int onTurn;
     private int numOfMoves;
     private GUIStyle dicesBoxStyle;
-    // helper variebles for defining Rectangles for positions of elements.
-    // Height of space intended for dices.
-    private int heightCoef = 0;
-    // width of textbox.
-    private int textBoxWidth = 160;
     #endregion
 
     #region Askdialog - Popuplist variables
@@ -42,9 +48,7 @@ public class GUIScript : MonoBehaviour
     #endregion
 
     private int playerNum;
-
     private bool askDialogShow = false, someoneAsking = false, guardAsking = false;
-
     private Triple<Rooms, Characters, Weapons> askedFor;
 
     #region Askdialog position variables
@@ -162,7 +166,6 @@ public class GUIScript : MonoBehaviour
     #region Rest Of GUI
     private void ShowSideBar()
     {
-
         // Generate 2d part for throwing dices 
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         GameObject myPlayer = null;
@@ -186,55 +189,60 @@ public class GUIScript : MonoBehaviour
             }
         }
         //SideBar
+        sideBarStyle = new GUIStyle(GUI.skin.box);
+        sideBarStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+
+        labelSideBarStyle = new GUIStyle(GUI.skin.label);
+        labelSideBarStyle.fontSize = 18;
+        labelSideBarStyle.fontStyle = FontStyle.Bold;
 
         scrollPosition = GUI.BeginScrollView(
-            new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
+            new Rect(Screen.width -300, 0, 300, Screen.height),
             scrollPosition,
-            new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
+            new Rect(0, 0, 300, 21 * 20 + 60 + heightCoef + 80)
         );
 
-        GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80), "");
-
+        GUI.Box(new Rect(0, 0, 300, 21 * 20 + 60 + heightCoef + 80), "", sideBarStyle);
 
         //generate checkboxes on sideBar 
-        GUI.Label(new Rect(0, 0 + heightCoef, 80, 20), "Rooms");
+        GUI.Label(new Rect(leftMarginSideBar, 20, 80, 30), "Rooms", labelSideBarStyle);
         int i = 0;
         foreach (var item1 in gameManager.AllRooms())
         {
             if (item1 != Rooms.Hallway)
             {
                 string item = EnumConverter.ToString(item1);
-                toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 20 + heightCoef, 110, 20), toogle[item], item);
-                textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 20 + heightCoef, textBoxWidth, 20), textBoxes[item]);
+                toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20), toogle[item], item);
+                textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60, textBoxWidth, 20), textBoxes[item]);
                 i++;
             }
         }
-        GUI.Label(new Rect(0, i * 20 + 20 + heightCoef, 80, 20), "Persons");
+        GUI.Label(new Rect(leftMarginSideBar, i * 22 + 60, 80, 30), "Persons", labelSideBarStyle);
         foreach (var item1 in gameManager.AllCharacters())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 40 + heightCoef, 110, 20), toogle[item], item);
-            textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 40 + heightCoef, textBoxWidth, 20), textBoxes[item]);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20), toogle[item], item);
+            textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60 + 35, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
-        GUI.Label(new Rect(0, i * 20 + 40 + heightCoef, 80, 20), "Weapons");
+        GUI.Label(new Rect(leftMarginSideBar, i * 22 + 110, 80, 30), "Weapons", labelSideBarStyle);
         foreach (var item1 in gameManager.AllWeapons())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 60 + heightCoef, 110, 20), toogle[item], item);
-            textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 60 + heightCoef, textBoxWidth, 20), textBoxes[item]);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20), toogle[item], item);
+            textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 140, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
         if (gameManager.OnTurn() == playerNum)
         {
             if (board.WhereAmI(playerNum) == Rooms.Hallway)
                 GUI.enabled = false;
-            if (GUI.Button(new Rect(60, i * 21 + 60 + heightCoef, 100, 30), "Ask!"))
+            if (GUI.Button(new Rect(30, i * 22 + 160, 100, 30), "Ask!"))
             {
                 askDialogShow = true;
             }
 
-            if (GUI.Button(new Rect(60, i * 21 + 90 + heightCoef, 100, 30), "Master Ask!"))
+            if (GUI.Button(new Rect(160, i * 22 + 160, 100, 30), "Master Ask!"))
             {
                 questionAsk = true;
             }
