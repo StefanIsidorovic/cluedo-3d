@@ -173,8 +173,13 @@ public class GUIScript : MonoBehaviour
     {
         // Generate 2d part for throwing dices 
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
+        //style
+        sideBarStyle = new GUIStyle(GUI.skin.box);
+        sideBarStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+
         // label with a message to all players
-        GUI.Label(new Rect(0, 0, 250, 600), TextMessageForAllPlayers());
+        GUI.Box(new Rect(0, 0, 240, Screen.height), "", sideBarStyle);
+        GUI.Label(new Rect(10, 0, 230, Screen.height), TextMessageForAllPlayers());
 
 
         GameObject myPlayer = null;
@@ -731,7 +736,7 @@ public class GUIScript : MonoBehaviour
     {
         PublicPlayerName = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().PublicName();
         int dicesSum = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().DicesSum();
-        if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool)
+        if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !questionAsk)
         {
             if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " + dicesSum + " moves."))
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " +
@@ -747,7 +752,7 @@ public class GUIScript : MonoBehaviour
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!"))
                 SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!\n" + textMessageForAllPlayers);
         }
-        else if (questionAsk == true)
+        else if (questionAsk == true || askDialogShowQuestion || asking )
         {
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!"))
                 SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!\n" + textMessageForAllPlayers);
