@@ -23,6 +23,10 @@ public class GUIScript : MonoBehaviour
     public bool dicesThrown = false;
     public int num1 = 0;
     public int num2 = 0;
+    private bool showDicesBox = false;
+    private int onTurn;
+    private int numOfMoves;
+    private GUIStyle dicesBoxStyle;
     // helper variebles for defining Rectangles for positions of elements.
     // Height of space intended for dices.
     private int heightCoef = 0;
@@ -65,6 +69,7 @@ public class GUIScript : MonoBehaviour
     // #NOTE: Move rect and help variables from functions;
     void Start()
     {
+        onTurn = 0;
         backOfCard = (Texture2D)Resources.Load("BackOfCard", typeof(Texture2D));
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
@@ -158,24 +163,8 @@ public class GUIScript : MonoBehaviour
     private void ShowSideBar()
     {
 
-        scrollPosition = GUI.BeginScrollView(
-            new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
-            scrollPosition,
-            new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
-        );
-
-        GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80), "");
-
-        // Generate 2d part for throwing dices - everything about this part is within a group.
-
-        GUI.BeginGroup(new Rect(0, 0, Percentage(Screen.width, 25) - 25, heightCoef - 10));
-
-        //two rect for presenting the dices and centering them 
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25) / 2 - 60, 20, 40, 40), dieFacesVector[num1]);
-        GUI.Box(new Rect((Percentage(Screen.width, 25) - 25) / 2 + 20, 20, 40, 40), dieFacesVector[num2]);
-        //chacking if this player is on turn
-
-        int onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
+        // Generate 2d part for throwing dices 
+        onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         GameObject myPlayer = null;
         int numberOfPlayers = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().NumberOfPlayersConnected();
 
@@ -187,33 +176,38 @@ public class GUIScript : MonoBehaviour
         }
         if (myPlayer != null)
         {
-            //int playerNum = myPlayer.gameObject.GetComponent<CharacterControl>().GetPlayerNum();
-            if (playerNum != onTurn || dicesThrown)
-                GUI.enabled = false;
-            int numberOfMovesMade = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
-            if (GUI.Button(new Rect((Percentage(Screen.width, 25) - 25) / 2 - 50, 80, 100, 50), "Throw dices!"))
+            if (playerNum == onTurn)
             {
-                ThrowDices();
-                GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1 + num2));
+                numOfMoves = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
+                Debug.Log(numOfMoves);
+                if( numOfMoves == 0 && !dicesThrown)
+                    showDicesBox = true;
+                drowDices();
             }
-            if ((numberOfMovesMade == (num1 + num2)))
-            {
-                dicesThrown = false;
-            }
-            if (playerNum != onTurn || dicesThrown)
-                GUI.enabled = true;
         }
-        GUI.EndGroup();
+        //SideBar
 
-        //generate elements
+        scrollPosition = GUI.BeginScrollView(
+            new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
+            scrollPosition,
+            new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
+        );
+
+        GUI.Box(new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80), "");
+
+
+        //generate checkboxes on sideBar 
         GUI.Label(new Rect(0, 0 + heightCoef, 80, 20), "Rooms");
         int i = 0;
         foreach (var item1 in gameManager.AllRooms())
         {
-            string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 20 + heightCoef, 110, 20), toogle[item], item);
-            textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 20 + heightCoef, textBoxWidth, 20), textBoxes[item]);
-            i++;
+            if (item1 != Rooms.Hallway)
+            {
+                string item = EnumConverter.ToString(item1);
+                toogle[item] = GUI.Toggle(new Rect(0, i * 20 + 20 + heightCoef, 110, 20), toogle[item], item);
+                textBoxes[item] = GUI.TextField(new Rect(120, i * 20 + 20 + heightCoef, textBoxWidth, 20), textBoxes[item]);
+                i++;
+            }
         }
         GUI.Label(new Rect(0, i * 20 + 20 + heightCoef, 80, 20), "Persons");
         foreach (var item1 in gameManager.AllCharacters())
@@ -643,8 +637,53 @@ public class GUIScript : MonoBehaviour
             num1 = Random.Range(1, 6);
             num2 = Random.Range(1, 6);
             dicesThrown = true;
+            GUI.Box(new Rect(50, 30, 40, 40), dieFacesVector[num1]);
+            GUI.Box(new Rect(110, 30, 40, 40), dieFacesVector[num2]);
+            GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().SetDicesSum((num1 + num2));
         }
 
+    }
+
+    private void drowDices()
+    {
+        dicesBoxStyle = new GUIStyle(GUI.skin.box);
+        dicesBoxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        int numOfMovesMade = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().NumOfMoves();
+        if ((numOfMovesMade == (num1 + num2)))
+        {
+            dicesThrown = false;
+        }
+        if (showDicesBox)
+        {
+            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 100, 200, 200), "",dicesBoxStyle);
+            GUI.BeginGroup(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 100, 200, 200));
+
+            //two rect for presenting the dices and centering them 
+            GUI.Box(new Rect(50, 30, 40, 40), dieFacesVector[num1]);
+            GUI.Box(new Rect(110, 30, 40, 40), dieFacesVector[num2]);
+
+            if (dicesThrown)
+                GUI.enabled = false;
+            if (GUI.Button(new Rect(50, 90, 100, 40), "Throw dices!"))
+            {
+                ThrowDices();
+            }
+
+            if ((numOfMovesMade == (num1 + num2)))
+            {
+                dicesThrown = false;
+                showDicesBox = false;
+            }
+
+            if ( dicesThrown)
+                GUI.enabled = true;
+
+            if (GUI.Button(new Rect(50, 150, 100, 40), "Close!"))
+            {
+                showDicesBox = false;
+            }
+            GUI.EndGroup();
+        }
     }
     #endregion
 }

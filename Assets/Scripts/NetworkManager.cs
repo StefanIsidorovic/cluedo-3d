@@ -33,6 +33,7 @@ public class NetworkManager : MonoBehaviour
     private Rect makeRoomBox;
     private Rect playerNameBox;
     private Rect hostsBox;
+    private Rect aboutCluedoBox;
     private GUIStyle buttonTextStyle;
     private GUIStyle labelTextStyle;
     private GUIStyle inputTextStyle;
@@ -40,6 +41,8 @@ public class NetworkManager : MonoBehaviour
     private GUIStyle boxStyle;
     private GUIStyle backgroundStyle;
     private GUIStyle smallLabelStyle;
+    private Vector2 scrollPosition = Vector2.zero;
+
     //private GUIStyle boxStyleBackground;
     private bool isRefreshedFirstTime = false;
     #endregion
@@ -106,10 +109,37 @@ public class NetworkManager : MonoBehaviour
             GUI.Box(makeRoomBox, "Make a new room", boxStyle);
             ShowMakeRoomDialog();
 
+           // scrollPosition = GUI.BeginScrollView(
+           //new Rect(Percentage(Screen.width, 75), 0, Percentage(Screen.width, 25), Screen.height),
+           //scrollPosition,
+           //new Rect(0, 0, Percentage(Screen.width, 25) - 25, 21 * 20 + 60 + heightCoef + 80)
+           //     );
+
+            //scrollPosition = GUI.BeginScrollView(
+            //    new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, 200),
+            //    scrollPosition,
+            //    new Rect(0, 40, 260, 190)
+            //    );
+
             //Third line
-            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, Screen.height/2);
+            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, 200);
             GUI.Box(hostsBox, "Enter an existing room", boxStyle);
             ShowHostsList();
+
+
+            GUI.Box(new Rect(Screen.width / 4 - 150, Screen.height / 2 + 100, 965, 350), "" ,boxStyle);
+            GUI.Label(new Rect(Screen.width/4 - 140, Screen.height/2 +100 , 965, 350), "* Cluedo is a board game that requires the use"+ 
+            "of reasoning and logic skills and has a murder and mystery theme.\n" +
+            "* Cluedo was designed by Anthony Pratt, a successful musician, who thought of the game during World War II.\n" +
+            "* The game was first made in 1949 by Waddingtons who changed the name from ‘Murder’ (which the Pratt’s had called it) to ‘Cluedo’.\n"+
+            "* In North America, Cluedo is known as Clue and some of the character’s names are changed.\n"+
+            "* Cluedo was first designed to have 11 rooms, 10 characters and 9 weapons instead of the typical 9 rooms, 6 characters and six weapons.\n"+
+            "* Elva Pratt, Anthony’s wife, designed the original artwork for the Cluedo board.\n"+
+            "* ‘Cluedo’ is a combination of the word ‘clue’ and ‘ludo’, ‘ludo’ being Latin for ‘play’.\n"+
+            "* Although Cluedo was initially designed as a game, it has been turned into films, books and other types of media.\n"+
+            "* The murder victim of Cluedo is Dr Black, or Mr Boddy.\n" +
+            "* The typical weapons of Cluedo are the candlestick, dagger, revolver, lead pipe, wrench and the rope, however, Pratt’s original game included an axe, bomb, syringe and poison as well as some other interesting weapons.", labelTextStyle);
+
 
         }
         // start game dialog
@@ -188,7 +218,7 @@ public class NetworkManager : MonoBehaviour
         boxStyle.fontSize = 18;
         boxStyle.normal.textColor = Color.yellow;
         boxStyle.alignment = TextAnchor.UpperCenter;
-        boxStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
+        boxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
 
         //Setting background of StartPage
         backgroundStyle = new GUIStyle(GUI.skin.box);
