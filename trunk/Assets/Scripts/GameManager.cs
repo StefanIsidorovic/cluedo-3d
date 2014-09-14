@@ -114,12 +114,9 @@ public class GameManager : MonoSingleton<GameManager>
             // Test if players are spawn and get current player 
             string playerName = "Player" + onTurn;
             var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
-
-            // TODO: Remove constant and get real value from dices.
+            
             if ((dicesSum == playerObject.NumOfMoves()) || questionIsAsked)
             {
-                //if (dicesSum == playerObject.NumOfMoves() && board.WhereAmI(onTurn) != Rooms.Hallway && !questionIsAsked)
-                //    return;
                 playerObject.SetNumOfMoves(0);
                 SetTurn((onTurn + 1) % numOfPlayers);
                 SetDicesSum(INVALID_DICES_SUM);
