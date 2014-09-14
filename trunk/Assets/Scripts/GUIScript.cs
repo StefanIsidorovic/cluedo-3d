@@ -38,6 +38,7 @@ public class GUIScript : MonoBehaviour
     private int onTurn;
     private int numOfMoves;
     private GUIStyle dicesBoxStyle;
+    private GUIStyle labelDicesStyle;
     #endregion
 
     #region Askdialog - Popuplist variables
@@ -63,10 +64,13 @@ public class GUIScript : MonoBehaviour
     private bool questionAsk = false;
     private bool infoBox = false;
     private string infoBoxLabel = "";
+    private string textMessageForAllPlayers;
 
     private Triple<int, int, int> playersWhoHaveCards;
     private bool questionToogle = false;
     private int numberOfProcessedPlayers = 0;
+
+    string PublicPlayerName;
 
     private bool endGameInfo = false;
     // #TODO: Refactor code.
@@ -74,6 +78,7 @@ public class GUIScript : MonoBehaviour
     void Start()
     {
         onTurn = 0;
+        textMessageForAllPlayers = "";
         backOfCard = (Texture2D)Resources.Load("BackOfCard", typeof(Texture2D));
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
@@ -168,6 +173,10 @@ public class GUIScript : MonoBehaviour
     {
         // Generate 2d part for throwing dices 
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
+        // label with a message to all players
+        GUI.Label(new Rect(0, 0, 250, 200), TextMessageForAllPlayers());
+
+
         GameObject myPlayer = null;
         int numberOfPlayers = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().NumberOfPlayersConnected();
 
@@ -181,9 +190,11 @@ public class GUIScript : MonoBehaviour
         {
             if (playerNum == onTurn)
             {
+                GenerateMessageForAllPlayers();
+
                 numOfMoves = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
                 Debug.Log(numOfMoves);
-                if( numOfMoves == 0 && !dicesThrown)
+                if (numOfMoves == 0 && !dicesThrown)
                     showDicesBox = true;
                 drowDices();
             }
@@ -197,7 +208,7 @@ public class GUIScript : MonoBehaviour
         labelSideBarStyle.fontStyle = FontStyle.Bold;
 
         scrollPosition = GUI.BeginScrollView(
-            new Rect(Screen.width -300, 0, 300, Screen.height),
+            new Rect(Screen.width - 300, 0, 300, Screen.height),
             scrollPosition,
             new Rect(0, 0, 300, 21 * 20 + 60 + heightCoef + 80)
         );
@@ -513,6 +524,15 @@ public class GUIScript : MonoBehaviour
     {
         networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum);
     }
+
+    public string TextMessageForAllPlayers()
+    {
+        return textMessageForAllPlayers;
+    }
+    public void SetTextMessageForAllPlayers(string text)
+    {
+        networkView.RPC("SetTextMessageForAllPlayersRPC", RPCMode.AllBuffered, text);
+    }
     #endregion
 
     #region RPC
@@ -576,6 +596,13 @@ public class GUIScript : MonoBehaviour
 
         //endgame logic for other components
     }
+
+    [RPC]
+    private void SetTextMessageForAllPlayersRPC(string text)
+    {
+        textMessageForAllPlayers = text;
+    }
+
     #endregion
 
     #region HelperMethods
@@ -603,7 +630,7 @@ public class GUIScript : MonoBehaviour
 
         widthAskDialog = 450;//Percentage(Screen.width, 50);
         heightAskDialog = 250;//Percentage(Screen.height, 75);
-        boxForChosingCards = new Rect((Percentage(Screen.width, 75)) / 2 - 220, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
+        boxForChosingCards = new Rect(Screen.width / 2 - 220, Screen.height / 2 - 125, widthAskDialog, heightAskDialog);
         stepW = widthAskDialog / 21;
         stepH = heightAskDialog / 24;
 
@@ -635,6 +662,7 @@ public class GUIScript : MonoBehaviour
     void BeginAskDialogBox()
     {
         GUIStyle style = new GUIStyle(GUI.skin.box);
+        style.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
         GUI.BeginGroup(boxForChosingCards, style);
     }
 
@@ -656,6 +684,10 @@ public class GUIScript : MonoBehaviour
     {
         dicesBoxStyle = new GUIStyle(GUI.skin.box);
         dicesBoxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+
+        labelDicesStyle = new GUIStyle(GUI.skin.label);
+        labelDicesStyle.fontStyle = FontStyle.Bold;
+        labelDicesStyle.alignment = TextAnchor.MiddleCenter;
         int numOfMovesMade = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().NumOfMoves();
         if ((numOfMovesMade == (num1 + num2)))
         {
@@ -663,12 +695,13 @@ public class GUIScript : MonoBehaviour
         }
         if (showDicesBox)
         {
-            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 100, 200, 200), "",dicesBoxStyle);
+            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 100, 200, 200), "", dicesBoxStyle);
             GUI.BeginGroup(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 100, 200, 200));
 
+            GUI.Label(new Rect(0, 10, 200, 30), "It's your turn!", labelDicesStyle);
             //two rect for presenting the dices and centering them 
-            GUI.Box(new Rect(50, 30, 40, 40), dieFacesVector[num1]);
-            GUI.Box(new Rect(110, 30, 40, 40), dieFacesVector[num2]);
+            GUI.Box(new Rect(50, 40, 40, 40), dieFacesVector[num1]);
+            GUI.Box(new Rect(110, 40, 40, 40), dieFacesVector[num2]);
 
             if (dicesThrown)
                 GUI.enabled = false;
@@ -683,7 +716,7 @@ public class GUIScript : MonoBehaviour
                 showDicesBox = false;
             }
 
-            if ( dicesThrown)
+            if (dicesThrown)
                 GUI.enabled = true;
 
             if (GUI.Button(new Rect(50, 150, 100, 40), "Close!"))
@@ -693,5 +726,22 @@ public class GUIScript : MonoBehaviour
             GUI.EndGroup();
         }
     }
+
+    private void GenerateMessageForAllPlayers()
+    {
+        PublicPlayerName = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().PublicName();
+        int dicesSum = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().DicesSum();
+        if (dicesSum > 0 && askDialogShow == false)
+            SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " +
+                dicesSum + " moves.");
+        else if (dicesSum <= 0 && askDialogShow == false)
+            SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet.");
+
+        if (askDialogShow == true)
+            SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!");
+        else if (questionAsk == true)
+            SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!");
+    }
     #endregion
+
 }
