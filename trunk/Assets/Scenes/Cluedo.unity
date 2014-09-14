@@ -9446,7 +9446,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsGameStatic: 0
-  GUIObject: {fileID: 0}
 --- !u!4 &399530593
 Transform:
   m_ObjectHideFlags: 0
@@ -49817,20 +49816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ec547e5b3cff8b429a1110c3d3aa929, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boxRect:
-    serializedVersion: 2
-    x: -8
-    y: 167
-    width: 300
-    height: 300
-  playerMaterials:
-  - {fileID: 2100000, guid: 1b8e82c2f8f05e640a69b98cbf8605b3, type: 2}
-  - {fileID: 2100000, guid: 1085751c52bfbc94486047d60a79ae25, type: 2}
-  - {fileID: 2100000, guid: 354459efb0fca2c4fb9ddf3c6de89c76, type: 2}
-  - {fileID: 2100000, guid: 69a9191593aebf546a70557d57c282c0, type: 2}
-  - {fileID: 2100000, guid: d262f1a7db56da04aa819b93ae7f7c48, type: 2}
-  - {fileID: 2100000, guid: f01c7118cde535c4d8f29b09370a9c3b, type: 2}
-  playerPrefab: {fileID: 100000, guid: 1f4e3e6420240614181df5800922ec9a, type: 2}
+  minimumNumberOfPlayers: 2
   startPositions:
   - {x: 8, y: 2, z: 15}
   - {x: 14, y: 2, z: 8}
@@ -49852,7 +49838,14 @@ MonoBehaviour:
   - {x: 90, y: 0, z: 0}
   - {x: 90, y: 90, z: 0}
   - {x: 90, y: 90, z: 0}
-  minimumNumberOfPlayers: 2
+  playerPrefab: {fileID: 100000, guid: 1f4e3e6420240614181df5800922ec9a, type: 2}
+  playerMaterials:
+  - {fileID: 2100000, guid: 1b8e82c2f8f05e640a69b98cbf8605b3, type: 2}
+  - {fileID: 2100000, guid: 1085751c52bfbc94486047d60a79ae25, type: 2}
+  - {fileID: 2100000, guid: 354459efb0fca2c4fb9ddf3c6de89c76, type: 2}
+  - {fileID: 2100000, guid: 69a9191593aebf546a70557d57c282c0, type: 2}
+  - {fileID: 2100000, guid: d262f1a7db56da04aa819b93ae7f7c48, type: 2}
+  - {fileID: 2100000, guid: f01c7118cde535c4d8f29b09370a9c3b, type: 2}
 --- !u!148 &1983822641
 NetworkView:
   m_ObjectHideFlags: 0

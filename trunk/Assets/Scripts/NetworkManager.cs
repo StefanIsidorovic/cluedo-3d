@@ -217,7 +217,7 @@ public class NetworkManager : MonoBehaviour
     {
         GUI.Label(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 50, 250, 30), "Insert your game room name:", labelTextStyle);
         gameName = GUI.TextField(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 90, 280, 30), gameName, inputTextStyle).Trim();
-        if (GUI.Button(new Rect(makeRoomBox.x + 10, makeRoomBox.y + 130, 80, 30), "Make room", buttonTextStyle))
+        if (GUI.Button(new Rect(makeRoomBox.x + 110, makeRoomBox.y + 130, 80, 30), "Make room", buttonTextStyle))
         {
             if (string.IsNullOrEmpty(gameName))
                 gameName = "DefaultRoomName";
@@ -226,12 +226,6 @@ public class NetworkManager : MonoBehaviour
             show = false;
             serverStarted = true;
             SetListConnectedPlayers();
-        }
-
-        if (GUI.Button(new Rect(makeRoomBox.x + 210, makeRoomBox.y + 130, 80, 30), "Cancel", buttonTextStyle))
-        {
-            gameName = "";
-            show = false;
         }
     }
 

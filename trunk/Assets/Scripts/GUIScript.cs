@@ -340,12 +340,13 @@ public class GUIScript : MonoBehaviour
                 }
                 else
                 {
-                    if (GUI.Button(new Rect(60, stepH * 21, 130, 30), "Ask!"))
+                    if (GUI.Button(new Rect(80, stepH * 21, 130, 30), "Ask!"))
                     {
                         Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
                         if (gameManager.CheckSolution(questionCards))
                         {
                             EndGameRPC(playerNum);
+
                         }
                         else
                         {
@@ -355,7 +356,7 @@ public class GUIScript : MonoBehaviour
                         }
                     }
 
-                    if (GUI.Button(new Rect(200, stepH * 21, 130, 30), "Cancel"))
+                    if (GUI.Button(new Rect(240, stepH * 21, 130, 30), "Cancel"))
                     {
                         questionAsk = false;
                     }
@@ -724,7 +725,7 @@ public class GUIScript : MonoBehaviour
             if (dicesThrown)
                 GUI.enabled = true;
 
-            if (GUI.Button(new Rect(50, 150, 100, 40), "Close!"))
+            if (GUI.Button(new Rect(50, 150, 100, 40), "Close!") || askDialogShow == true)
             {
                 showDicesBox = false;
             }
@@ -742,20 +743,51 @@ public class GUIScript : MonoBehaviour
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " +
             dicesSum + " moves.\n" + textMessageForAllPlayers);
         }
-        else if (dicesSum <= 0 && askDialogShow == false &&!askDialogShowQuestion && !askDialogShowCardsBool)
+        else if (dicesSum <= 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool)
         {
             if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet."))
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet.\n" + textMessageForAllPlayers);
         }
         if (askDialogShow == true || askDialogShowQuestion || askDialogShowCardsBool)
         {
-            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!"))
+            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!")
+                &&
+                !textMessageForAllPlayers.StartsWith(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
+                    ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + "."))
                 SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!\n" + textMessageForAllPlayers);
+
+            if (cardCharacter != 0 && cardWeapon != 0)
+            {
+                if (!textMessageForAllPlayers.StartsWith( PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
+                    ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + "."))
+                    SetTextMessageForAllPlayers(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
+                    ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + ".\n" + textMessageForAllPlayers);
+            }
+            //if (gameManager.QuestionIsAsked())//numberOfProcessedPlayers == (gameManager.NumOfPlayers()-1))
+            //{
+            //    int zbir = 0;
+            //    if (playersWhoHaveCards.First != -1)
+            //        zbir++;
+            //    if (playersWhoHaveCards.Second != -1)
+            //        zbir++;
+            //    if (playersWhoHaveCards.Third != -1)
+            //        zbir++;
+
+            //    if (!textMessageForAllPlayers.StartsWith(zbir + " cards shown!"))
+            //        SetTextMessageForAllPlayers(zbir + " cards shown!\n" + textMessageForAllPlayers);
+            //}
+                
         }
-        else if (questionAsk == true || askDialogShowQuestion || asking )
+        else if (questionAsk == true)
         {
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!"))
                 SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!\n" + textMessageForAllPlayers);
+        }
+
+        if (!questionAsk && infoBox == true)
+        {
+            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
+                SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
         }
     }
     #endregion
