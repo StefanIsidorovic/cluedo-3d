@@ -54,7 +54,7 @@ public class GUIScript : MonoBehaviour
     private Triple<Rooms, Characters, Weapons> askedFor;
 
     #region Askdialog position variables
-    private Rect firstCard, secondCard, thirdCard, firstCardLabel, secondCardLabel, thirdCardLabel;
+    private Rect firstCard, secondCard, thirdCard, firstCardLabel, secondCardLabel, thirdCardLabel, twoOneCard, twoTwoCard, twoOneCardLabel, twoTwoCardLabel;
     private int stepW, stepH, widthAskDialog, heightAskDialog;
     private bool asking = false, askDialogShowCardsBool = false, askDialogShowQuestion = false;
     private int playerAsking = -1;
@@ -100,21 +100,26 @@ public class GUIScript : MonoBehaviour
             toogle.Add(strItem, false);
             textBoxes.Add(strItem, "");
             if (item != Rooms.Hallway)
-                cardTextures.Add((int)item, (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D)));
+            {
+                Texture2D temp = (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D));
+                cardTextures.Add((int)item, temp);
+            }
         }
         foreach (var item in gameManager.AllWeapons())
         {
             string strItem = EnumConverter.ToString(item);
             toogle.Add(strItem, false);
             textBoxes.Add(strItem, "");
-            cardTextures.Add((int)item, (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D)));
+            Texture2D temp = (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D));
+            cardTextures.Add((int)item, temp);
         }
         foreach (var item in gameManager.AllCharacters())
         {
             string strItem = EnumConverter.ToString(item);
             toogle.Add(strItem, false);
             textBoxes.Add(strItem, "");
-            cardTextures.Add((int)item, (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D)));
+            Texture2D temp = (Texture2D)Resources.Load("Cards/" + strItem, typeof(Texture2D));
+            cardTextures.Add((int)item, temp);
         }
         dieFacesVector = new List<Texture2D>();
         dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/images", typeof(Texture2D)));
@@ -400,10 +405,6 @@ public class GUIScript : MonoBehaviour
                     doneChoosing(1);
                 }
             }
-            else
-            {
-                GUI.DrawTexture(firstCard, cardTextures[(int)askedFor.First]);
-            }
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.Second))
             {
                 if (GUI.Button(secondCard, cardTextures[(int)askedFor.Second]))
@@ -412,10 +413,6 @@ public class GUIScript : MonoBehaviour
                 }
 
             }
-            else
-            {
-                GUI.DrawTexture(secondCard, cardTextures[(int)askedFor.Second]);
-            }
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.Third))
             {
                 if (GUI.Button(thirdCard, cardTextures[(int)askedFor.Third]))
@@ -423,10 +420,7 @@ public class GUIScript : MonoBehaviour
                     doneChoosing(3);
                 }
             }
-            else
-            {
-                GUI.DrawTexture(thirdCard, cardTextures[(int)askedFor.Third]);
-            }
+
         }
         GUI.EndGroup();
     }
@@ -435,14 +429,38 @@ public class GUIScript : MonoBehaviour
     {
         BeginAskDialogBox();
         {
-            GUI.DrawTexture(firstCard, me || playersWhoHaveCards.First == playerNum ? cardTextures[(int)askedFor.First] : backOfCard);
-            GUI.DrawTexture(secondCard, me || playersWhoHaveCards.Second == playerNum ? cardTextures[(int)askedFor.Second] : backOfCard);
-            GUI.DrawTexture(thirdCard, me || playersWhoHaveCards.Third == playerNum ? cardTextures[(int)askedFor.Third] : backOfCard);
 
+            int numOfShowedCards = 0;
+            if ((int)playersWhoHaveCards.First != -1) numOfShowedCards++;
+            if ((int)playersWhoHaveCards.Second != -1) numOfShowedCards++;
+            if ((int)playersWhoHaveCards.Third != -1) numOfShowedCards++;
+
+            bool trigger = false;
             string player1 = "", player2 = "", player3 = "";
             if (playersWhoHaveCards.First != -1)
             {
                 player1 = GameObject.Find("Player" + playersWhoHaveCards.First).gameObject.GetComponent<CharacterControl>().PublicName();
+                Rect temp = new Rect(0,0,0,0);
+                Rect tempLabel = new Rect(0,0,0,0);
+                if (numOfShowedCards == 1)
+                {
+                    temp = secondCard;
+                    tempLabel = secondCardLabel;
+                }
+                if (numOfShowedCards == 2)
+                {
+                    temp = twoOneCard;
+                    tempLabel = twoOneCardLabel;
+                    trigger = true;
+                }
+                if (numOfShowedCards == 3)
+                {
+                    temp = firstCard;
+                    tempLabel = firstCardLabel;
+                }
+
+                GUI.DrawTexture(temp, me || playersWhoHaveCards.First == playerNum ? cardTextures[(int)askedFor.First] : backOfCard);
+                GUI.Label(tempLabel, playersWhoHaveCards.First != -1 ? player1 + " showed card!" : "None of other players show card!");
                 if (string.IsNullOrEmpty(player1))
                     player1 = "Player" + playersWhoHaveCards.First;
             }
@@ -450,6 +468,34 @@ public class GUIScript : MonoBehaviour
             if (playersWhoHaveCards.Second != -1)
             {
                 player2 = GameObject.Find("Player" + playersWhoHaveCards.Second).gameObject.GetComponent<CharacterControl>().PublicName();
+                Rect temp = new Rect(0, 0, 0, 0);
+                Rect tempLabel = new Rect(0, 0, 0, 0);
+                if (numOfShowedCards == 1)
+                {
+                    temp = secondCard;
+                    tempLabel = secondCardLabel;
+                }
+                if (numOfShowedCards == 2)
+                {
+                    if (!trigger)
+                    {
+                        temp = twoOneCard;
+                        tempLabel = twoOneCardLabel;
+                        trigger = true;
+                    }
+                    else
+                    {
+                        temp = twoTwoCard;
+                        tempLabel = twoTwoCardLabel;
+                    }
+                }
+                if (numOfShowedCards == 3)
+                {
+                    temp = secondCard;
+                    tempLabel = secondCardLabel;
+                }
+                GUI.Label(tempLabel, playersWhoHaveCards.Second != -1 ? player2 + " showed card!" : "None of other players show card!");
+                GUI.DrawTexture(temp, me || playersWhoHaveCards.Second == playerNum ? cardTextures[(int)askedFor.Second] : backOfCard);
                 if (string.IsNullOrEmpty(player2))
                     player2 = "Player" + playersWhoHaveCards.Second;
             }
@@ -457,13 +503,29 @@ public class GUIScript : MonoBehaviour
             if (playersWhoHaveCards.Third != -1)
             {
                 player3 = GameObject.Find("Player" + playersWhoHaveCards.Third).gameObject.GetComponent<CharacterControl>().PublicName();
+                Rect temp = new Rect(0, 0, 0, 0);
+                Rect tempLabel = new Rect(0, 0, 0, 0);
+                if (numOfShowedCards == 1)
+                {
+                    temp = secondCard;
+                    tempLabel = secondCardLabel;
+                }
+                if (numOfShowedCards == 2)
+                {
+                    temp = twoTwoCard;
+                    tempLabel = twoTwoCardLabel;
+                }
+                if (numOfShowedCards == 3)
+                {
+                    temp = thirdCard;
+                    tempLabel = thirdCardLabel;
+                }
+                GUI.Label(tempLabel, playersWhoHaveCards.Third != -1 ? player3 + " showed card!" : "None of other players show card!");
+                GUI.DrawTexture(temp, me || playersWhoHaveCards.Third == playerNum ? cardTextures[(int)askedFor.Third] : backOfCard);
                 if (string.IsNullOrEmpty(player3))
                     player3 = "Player" + playersWhoHaveCards.Third;
             }
 
-            GUI.Label(firstCardLabel, playersWhoHaveCards.First != -1 ? player1 + " showed card!" : "None of other players show card!");
-            GUI.Label(secondCardLabel, playersWhoHaveCards.Second != -1 ? player2 + " showed card!" : "None of other players show card!");
-            GUI.Label(thirdCardLabel, playersWhoHaveCards.Third != -1 ? player3 + " showed card!" : "None of other players show card!");
 
             if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Ok.Close window."))
             {
@@ -680,6 +742,12 @@ public class GUIScript : MonoBehaviour
         secondCard = new Rect(180, 7 * stepH, 90, 13 * stepH);
         thirdCard = new Rect(330, 7 * stepH, 90, 13 * stepH);
 
+        twoOneCard = new Rect(75, 7 * stepH, 90, 13 * stepH);
+        twoTwoCard = new Rect(225, 7 * stepH, 90, 13 * stepH);
+
+        twoOneCardLabel = new Rect(75, stepH * 3, 90, 20);
+        twoTwoCardLabel = new Rect(225, stepH * 3, 90, 20);
+
         firstCardLabel = new Rect(30, stepH * 3, 90, 20);
         secondCardLabel = new Rect(180, stepH * 3, 90, 20);
         thirdCardLabel = new Rect(330, stepH * 3, 90, 20);
@@ -699,6 +767,7 @@ public class GUIScript : MonoBehaviour
         setPlayerHasCardRPC(playerNum, choice);
         increaseNumberOfProcessedPlayersRPC();
         asking = false;
+        askDialogShowCardsBool = false;
     }
 
     void BeginAskDialogBox()
@@ -794,7 +863,7 @@ public class GUIScript : MonoBehaviour
 
             if (cardCharacter != 0 && cardWeapon != 0)
             {
-                if (!textMessageForAllPlayers.StartsWith( PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
+                if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
                     ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + "."))
                     SetTextMessageForAllPlayers(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
                     ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + ".\n" + textMessageForAllPlayers);
@@ -812,7 +881,7 @@ public class GUIScript : MonoBehaviour
             //    if (!textMessageForAllPlayers.StartsWith(zbir + " cards shown!"))
             //        SetTextMessageForAllPlayers(zbir + " cards shown!\n" + textMessageForAllPlayers);
             //}
-                
+
         }
         else if (questionAsk == true)
         {
