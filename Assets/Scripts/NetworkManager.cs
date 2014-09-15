@@ -72,6 +72,7 @@ public class NetworkManager : MonoBehaviour
     public Material[] playerMaterials;
     // Variable for network manager to know which player is his, for later spawning.
     private int numOfPlayer = 0;
+	private int hosts;
     #endregion
 
     //#TODO: Disconnect logic.
@@ -237,24 +238,36 @@ public class NetworkManager : MonoBehaviour
 
     private void ShowHostsList()
     {
-        GUI.Label(new Rect(hostsBox.x + 50, hostsBox.y + 45, 200, 30), "Refresh list of rooms", labelTextStyle);
-        if (GUI.Button(new Rect(hostsBox.x + 10, hostsBox.y + 40, 30, 30), "R", buttonTextStyle) || !isRefreshedFirstTime)
+		if (hostList == null)
+						hosts = 0;
+				else
+						hosts = hostList.Length;
+
+
+        GUI.Label(new Rect(hostsBox.x+50,hostsBox.y + 45, 200, 30), "Refresh list of rooms", labelTextStyle);
+        if (GUI.Button(new Rect(hostsBox.x+10, hostsBox.y +40, 30, 30), "R", buttonTextStyle) || !isRefreshedFirstTime)
         {
             RefreshHostList();
             isRefreshedFirstTime = true;
         }
 
+		scrollPosition = GUI.BeginScrollView(new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10+70, 300, 130),
+		                                     scrollPosition, new Rect(0, 0, hostsBox.width-5, (hosts<4)?130:(hosts*45) )
+		                                     );
+		//GUI.Button (new Rect (0, 400, 100, 100), "lol");
         if (hostList != null)
         {
             for (int i = 0; i < hostList.Length; i++)
             {
-                if (GUI.Button(new Rect(hostsBox.x + 10, hostsBox.y + 80 + 35 * i, 280, 30), hostList[i].gameName, buttonTextStyle))
+                if (GUI.Button(new Rect( 10,5+35 * i, 270, 30), hostList[i].gameName, buttonTextStyle))
                 {
                     //SetListConnectedPlayers();
                     JoinServer(hostList[i]);
                 }
             }
         }
+
+		GUI.EndScrollView ();
     }
 
     private void SetListConnectedPlayers()

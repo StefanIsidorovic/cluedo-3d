@@ -27,6 +27,7 @@ public class GUIScript : MonoBehaviour
     // width of textbox.
     private int textBoxWidth = 140;
     private int leftMarginSideBar = 10;
+	private bool finishedAsking=false;
     #endregion
 
     #region Variables for dices box
@@ -70,6 +71,9 @@ public class GUIScript : MonoBehaviour
     private bool questionToogle = false;
     private int numberOfProcessedPlayers = 0;
 
+	private Triple<int, int, int> solutions;
+	private int WhoWon;
+
     string PublicPlayerName;
 
     private bool endGameInfo = false;
@@ -77,6 +81,7 @@ public class GUIScript : MonoBehaviour
     // #NOTE: Move rect and help variables from functions;
     void Start()
     {
+		solutions = new Triple<int, int, int>(-1, -1, -1);
         onTurn = 0;
         textMessageForAllPlayers = "";
         backOfCard = (Texture2D)Resources.Load("BackOfCard", typeof(Texture2D));
@@ -126,6 +131,9 @@ public class GUIScript : MonoBehaviour
             InfoBox();
         }
 
+		if (endGameInfo) {
+						EndGameDialog ();
+				}
         InitAskDialogPositionVariables();
         if (GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() && !endGameInfo)
         {
@@ -228,7 +236,7 @@ public class GUIScript : MonoBehaviour
             if (item1 != Rooms.Hallway)
             {
                 string item = EnumConverter.ToString(item1);
-                toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20), toogle[item], item);
+				toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20),gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
                 textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60, textBoxWidth, 20), textBoxes[item]);
                 i++;
             }
@@ -237,7 +245,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllCharacters())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20), toogle[item], item);
+			toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20),  gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60 + 35, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -245,7 +253,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllWeapons())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20), toogle[item], item);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20),gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 140, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -253,10 +261,13 @@ public class GUIScript : MonoBehaviour
         {
             if (board.WhereAmI(playerNum) == Rooms.Hallway)
                 GUI.enabled = false;
+			if(!finishedAsking){
             if (GUI.Button(new Rect(30, i * 22 + 160, 100, 30), "Ask!"))
             {
-                askDialogShow = true;
-            }
+				askDialogShow = true;
+
+
+			}}
 
             if (GUI.Button(new Rect(160, i * 22 + 160, 100, 30), "Master Ask!"))
             {
@@ -334,6 +345,7 @@ public class GUIScript : MonoBehaviour
                                 setQuestionRPC((int)whereAmI, cardCharacter, cardWeapon);
                                 setAskingRPC(true, playerNum);
                                 increaseNumberOfProcessedPlayersRPC();
+								finishedAsking = true;
 
                             }
                     }
@@ -343,9 +355,10 @@ public class GUIScript : MonoBehaviour
                     if (GUI.Button(new Rect(80, stepH * 21, 130, 30), "Ask!"))
                     {
                         Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
-                        if (gameManager.CheckSolution(questionCards))
+                        if (gameManager.CheckSolution(questionCards) )
                         {
-                            EndGameRPC(playerNum);
+							solutions=questionCards;
+                            EndGameRPC(playerNum,questionCards.First,questionCards.Second,questionCards.Third);
 
                         }
                         else
@@ -496,6 +509,26 @@ public class GUIScript : MonoBehaviour
         GUI.EndGroup();
     }
 
+	private void EndGameDialog()
+	{
+		BeginAskDialogBox();
+		{
+			GUI.Label(new Rect(20,stepH*3,200,30),"Player "+ WhoWon+" won!");
+
+			GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
+			GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
+			GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
+
+				if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "EXIT!"))
+			{
+				// #TODO: end game
+			}
+			
+		}
+		GUI.EndGroup();
+	}
+
+
     #endregion
 
     #region setters
@@ -526,9 +559,9 @@ public class GUIScript : MonoBehaviour
         networkView.RPC("increaseNumberOfProcessedPlayers", RPCMode.AllBuffered);
     }
 
-    void EndGameRPC(int playerNum)
+    void EndGameRPC(int playerNum, int room, int character, int weapon)
     {
-        networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum);
+        networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum,room,character,weapon);
     }
 
     public string TextMessageForAllPlayers()
@@ -591,14 +624,17 @@ public class GUIScript : MonoBehaviour
         asking = false;
         playerAsking = -1;
         numberOfProcessedPlayers = 0;
+		finishedAsking = false;
     }
     [RPC]
-    void EndGame(int playerWon)
+    void EndGame(int playerWon, int room, int character, int weapon)
     {
         ResetGUIVariables();
         endGameInfo = true;
-        infoBox = true;
-        infoBoxLabel = "Player " + playerWon + " wins! Congrats!";
+		solutions.First = room;
+		solutions.Second = character;
+		solutions.Third = weapon;
+		WhoWon = playerWon;
 
         //endgame logic for other components
     }
