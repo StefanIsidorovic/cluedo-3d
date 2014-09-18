@@ -184,6 +184,7 @@ public class GUIScript : MonoBehaviour
     #region Rest Of GUI
     private void ShowSideBar()
     {
+        Debug.Log("On turn je "+gameManager.OnTurn());
         // Generate 2d part for throwing dices 
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         //style
@@ -195,18 +196,11 @@ public class GUIScript : MonoBehaviour
         GUI.Label(new Rect(10, 0, 230, Screen.height), TextMessageForAllPlayers());
 
 
-        GameObject myPlayer = null;
-        int numberOfPlayers = GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().NumberOfPlayersConnected();
+        GameObject myPlayer = GameObject.Find("Player" + playerNum);
 
-        for (int j = 0; j < numberOfPlayers; j++)
-        {
-            var player = GameObject.Find("Player" + j);
-            if (player != null && player.networkView.isMine)
-                myPlayer = GameObject.Find("Player" + j);
-        }
         if (myPlayer != null)
         {
-            if (playerNum == onTurn)
+            if (playerNum == gameManager.OnTurn())
             {
                 GenerateMessageForAllPlayers();
 
@@ -395,9 +389,6 @@ public class GUIScript : MonoBehaviour
         // Dimensions of dialog box
         BeginAskDialogBox();
         {
-            //GUIStyle style = new GUIStyle();
-            //style.stretchHeight = style.stretchWidth = true;
-            //style.border.left = style.border.right = style.border.bottom = style.border.top = 0;
             if (gameManager.PlayerHasCard(playerNum, (int)askedFor.First))
             {
                 if (GUI.Button(firstCard, cardTextures[(int)askedFor.First]))
@@ -531,7 +522,7 @@ public class GUIScript : MonoBehaviour
             {
                 numberOfProcessedPlayers = 0;
                 ResetGUIVariables();
-                dicesThrown = false;
+                
                 if (me)
                     gameManager.SetQuestionIsAsked(true);
             }
@@ -687,6 +678,9 @@ public class GUIScript : MonoBehaviour
         playerAsking = -1;
         numberOfProcessedPlayers = 0;
 		finishedAsking = false;
+        dicesThrown = false;
+        num1 = 0;
+        num2 = 0;
     }
     [RPC]
     void EndGame(int playerWon, int room, int character, int weapon)
@@ -799,10 +793,12 @@ public class GUIScript : MonoBehaviour
         labelDicesStyle = new GUIStyle(GUI.skin.label);
         labelDicesStyle.fontStyle = FontStyle.Bold;
         labelDicesStyle.alignment = TextAnchor.MiddleCenter;
-        int numOfMovesMade = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().NumOfMoves();
+        int numOfMovesMade = GameObject.Find("Player" + gameManager.OnTurn()).gameObject.GetComponent<CharacterControl>().NumOfMoves();
         if ((numOfMovesMade == (num1 + num2)))
         {
             dicesThrown = false;
+            num2 = 0;
+            num1 = 0;
         }
         if (showDicesBox)
         {
@@ -825,6 +821,8 @@ public class GUIScript : MonoBehaviour
             {
                 dicesThrown = false;
                 showDicesBox = false;
+                num2 = 0;
+                num1 = 0;
             }
 
             if (dicesThrown)
@@ -840,7 +838,7 @@ public class GUIScript : MonoBehaviour
 
     private void GenerateMessageForAllPlayers()
     {
-        PublicPlayerName = GameObject.Find("Player" + onTurn).gameObject.GetComponent<CharacterControl>().PublicName();
+        PublicPlayerName = GameObject.Find("Player" + gameManager.OnTurn()).gameObject.GetComponent<CharacterControl>().PublicName();
         int dicesSum = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().DicesSum();
         if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !questionAsk)
         {
@@ -868,19 +866,6 @@ public class GUIScript : MonoBehaviour
                     SetTextMessageForAllPlayers(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
                     ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + ".\n" + textMessageForAllPlayers);
             }
-            //if (gameManager.QuestionIsAsked())//numberOfProcessedPlayers == (gameManager.NumOfPlayers()-1))
-            //{
-            //    int zbir = 0;
-            //    if (playersWhoHaveCards.First != -1)
-            //        zbir++;
-            //    if (playersWhoHaveCards.Second != -1)
-            //        zbir++;
-            //    if (playersWhoHaveCards.Third != -1)
-            //        zbir++;
-
-            //    if (!textMessageForAllPlayers.StartsWith(zbir + " cards shown!"))
-            //        SetTextMessageForAllPlayers(zbir + " cards shown!\n" + textMessageForAllPlayers);
-            //}
 
         }
         else if (questionAsk == true)
