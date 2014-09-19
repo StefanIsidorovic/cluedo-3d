@@ -39,7 +39,7 @@ public class CharacterControl : MonoBehaviour
             var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
 
             //Player must throw dices before his movement
-            if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM)
+            if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM || gameManager.OnTurn() != playerNum)
                 return;
 
             // Rotate coordinate system and then move, if move fails rotate to original position
