@@ -189,11 +189,11 @@ public class GUIScript : MonoBehaviour
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         //style
         sideBarStyle = new GUIStyle(GUI.skin.box);
-        sideBarStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        //sideBarStyle.normal.background = (Texture2D)Resources.Load("house", typeof(Texture2D));
 
         // label with a message to all players
-        GUI.Box(new Rect(0, 0, 240, Screen.height), "", sideBarStyle);
-        GUI.Label(new Rect(10, 0, 230, Screen.height), TextMessageForAllPlayers());
+        GUI.Box(new Rect(0, 25, 240, Screen.height), "", sideBarStyle);
+        GUI.Label(new Rect(10, 25, 230, Screen.height), TextMessageForAllPlayers());
 
 
         GameObject myPlayer = GameObject.Find("Player" + playerNum);
@@ -213,14 +213,14 @@ public class GUIScript : MonoBehaviour
         }
         //SideBar
         sideBarStyle = new GUIStyle(GUI.skin.box);
-        sideBarStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        //sideBarStyle.normal.background = (Texture2D)Resources.Load("house", typeof(Texture2D));
 
         labelSideBarStyle = new GUIStyle(GUI.skin.label);
         labelSideBarStyle.fontSize = 18;
         labelSideBarStyle.fontStyle = FontStyle.Bold;
 
         scrollPosition = GUI.BeginScrollView(
-            new Rect(Screen.width - 300, 0, 300, Screen.height),
+            new Rect(Screen.width - 300, 25, 300, Screen.height),
             scrollPosition,
             new Rect(0, 0, 300, 21 * 20 + 60 + heightCoef + 80)
         );
@@ -788,7 +788,7 @@ public class GUIScript : MonoBehaviour
     private void drowDices()
     {
         dicesBoxStyle = new GUIStyle(GUI.skin.box);
-        dicesBoxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        //dicesBoxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
 
         labelDicesStyle = new GUIStyle(GUI.skin.label);
         labelDicesStyle.fontStyle = FontStyle.Bold;
