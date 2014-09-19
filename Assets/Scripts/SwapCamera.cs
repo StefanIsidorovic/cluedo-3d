@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SwapCamera : MonoBehaviour {
+public class SwapCamera : MonoSingleton<SwapCamera>
+{
 
     /// <summary>
     /// Main Camera
@@ -13,16 +14,18 @@ public class SwapCamera : MonoBehaviour {
     /// </summary>
     public Camera cam2;
 
-	void Start () {
+    void Start()
+    {
         cam1.enabled = false;
         cam2.enabled = true;
-	}
-	
-	void Update () {
+    }
+
+    void Update()
+    {
         if (Input.GetKeyDown(KeyCode.C))
         {
             cam1.enabled = !cam1.enabled;
             cam2.enabled = !cam2.enabled;
         }
-	}
+    }
 }

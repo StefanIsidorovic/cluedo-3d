@@ -42,12 +42,12 @@ public class Popup
             // Get our list of strings
             if (typeof(Characters) == typeof(T))
             {
-                startValue = EnumeratorConstants.CharacterStartValue;
+                startValue = Constants.CHARACTER_START_VALUE;
                 enums = !enums ? true : false;
             }
             if (typeof(Weapons) == typeof(T))
             {
-                startValue = EnumeratorConstants.WeaponStartValue;
+                startValue = Constants.WEAPON_START_VALUE;
                 enums = !enums ? true : false;
             }
             string[] text = new string[6];

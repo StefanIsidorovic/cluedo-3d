@@ -67,6 +67,11 @@ public class NetworkManager : MonoBehaviour
                                                        new Vector3(90, 0, 0), 
                                                        new Vector3(90, 90, 0), 
                                                        new Vector3(90, 90, 0)};
+    /// <summary>
+    /// Array of angles in degrees. These angles are used to change coordinate system rotation of player prefabs
+    /// so their x axis would be theirs front.
+    /// </summary>
+    private int[] spawnAngles = {180, 270, 0, 0, 90, 90};
 
     #endregion
 
@@ -370,7 +375,7 @@ public class NetworkManager : MonoBehaviour
     {
         Debug.Log("connected: " + numOfPlayer);
 
-        var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayer], Quaternion.identity, 0);
+        var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayer], Quaternion.Euler(0, spawnAngles[numOfPlayer], 0), 0);
 
         string playerName = "Player" + numOfPlayer;
         spawnedPlayer.name = playerName;
@@ -390,6 +395,7 @@ public class NetworkManager : MonoBehaviour
 
             var camera2 = GameObject.Find("TopViewCamera");
             camera2.transform.rotation = Quaternion.Euler(startTopViewCameraRotations[numOfPlayer]);
+            camera2.GetComponent<TopViewCameraRotation>().target = camera2.transform.rotation;
         }
     }
 

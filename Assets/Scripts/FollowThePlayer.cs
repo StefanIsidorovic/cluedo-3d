@@ -14,6 +14,7 @@ public class FollowThePlayer : MonoBehaviour
         if (!target)
             return;
 
-        transform.position = new Vector3(target.position.x, 6, target.position.z);
+        transform.position = new Vector3(target.position.x, 2, target.position.z);
+        transform.rotation = Quaternion.Lerp(transform.rotation, target.rotation, Constants.MAIN_CAMERA_ROTATION_SPEED);
     }
 }

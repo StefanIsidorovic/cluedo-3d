@@ -3,11 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public static class EnumeratorConstants
+public static class Constants
 {
-    public const int RoomStartValue = 1;
-    public const int CharacterStartValue = 100;
-    public const int WeaponStartValue = 1000;
+    #region Enum constants
+    public const int ROOM_START_VALUE = 1;
+    public const int CHARACTER_START_VALUE = 100;
+    public const int WEAPON_START_VALUE = 1000;
+    #endregion
+
+    #region Camera constants
+    public const float TOP_CAMERA_ROTATION_SPEED = 0.3F;
+    public const float MAIN_CAMERA_ROTATION_SPEED = 0.1F;
+    #endregion
 }
 
 /// <summary>
@@ -15,7 +22,7 @@ public static class EnumeratorConstants
 /// </summary>
 public enum Rooms : int
 {
-    Studio = EnumeratorConstants.RoomStartValue, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
+    Studio = Constants.ROOM_START_VALUE, Hall, GuestsRoom, SleepingRoom, DiningRoom, Cabinet, Kitchen, Billiard, Library, Hallway
 };
 
 /// <summary>
@@ -23,7 +30,7 @@ public enum Rooms : int
 /// </summary>
 public enum Characters : int
 {
-    MrsScarlet = EnumeratorConstants.CharacterStartValue, MrBlack, MrsBlue, MrGreen, MrYellow, MrsWhite
+    MrsScarlet = Constants.CHARACTER_START_VALUE, MrBlack, MrsBlue, MrGreen, MrYellow, MrsWhite
 };
 
 /// <summary>
@@ -31,7 +38,7 @@ public enum Characters : int
 /// </summary>
 public enum Weapons : int
 {
-    Candlestick = EnumeratorConstants.WeaponStartValue, Knife, LeadPipe, Revolver, Rope, Wrench
+    Candlestick = Constants.WEAPON_START_VALUE, Knife, LeadPipe, Revolver, Rope, Wrench
 };
 
 public class Pair<T1, T2>
