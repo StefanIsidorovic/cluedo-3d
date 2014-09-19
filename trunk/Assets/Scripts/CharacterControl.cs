@@ -8,11 +8,28 @@ public class CharacterControl : MonoBehaviour
     private int numOfMoves; // Number of made moves in current series of moves
     private string publicName; //Name that player choose
 
+    private static Vector3 faceForward = new Vector3(0, 0, -1);
+    private static Vector3 faceBackwards = new Vector3(0, 0, 1);
+    private static Vector3 faceLeft = new Vector3(1, 0, 0);
+    private static Vector3 faceRight = new Vector3(-1, 0, 0);
+    private static Vector3 yAxis = new Vector3(0, 1, 0);
+    private static Vector3 zAxis = new Vector3(0, 0, 1);
+
+    private Vector3 oldPosition;
+    private Vector3 newPosition;
+    private float lerpPosition, lerpTime;
+    private bool moveStarted;
+
     // Use this for initialization
     void Start()
     {
         board = GameObject.Find("Board").gameObject.GetComponent<BoardScript>();
+        oldPosition = transform.position;
+        newPosition = transform.position;
+        lerpPosition = 0F;
+        lerpTime = 0.75F;
         numOfMoves = 0;
+        moveStarted = false;
     }
 
     void Update()
@@ -25,15 +42,50 @@ public class CharacterControl : MonoBehaviour
             if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM)
                 return;
 
-            int onTurn = gameManager.OnTurn();
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
-                MoveLeft(onTurn);
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-                MoveRight(onTurn);
-            else if (Input.GetKeyDown(KeyCode.UpArrow))
-                MoveUp(onTurn);
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-                MoveDown(onTurn);
+            // Rotate coordinate system and then move, if move fails rotate to original position
+            if (!moveStarted)
+            {
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    Move(270);
+                }
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    Move(90);
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    Move(0);
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    Move(180);
+                }
+            }
+
+            // Move player in a smooth fashion
+            if (transform.position != newPosition)
+            {
+                lerpPosition += Time.deltaTime / lerpTime;
+                transform.position = Vector3.Lerp(oldPosition, newPosition, lerpPosition);
+                moveStarted = true;
+            }
+            else
+            {
+                oldPosition = newPosition;
+                lerpPosition = 0F;
+                
+                // Increase number of moves when done moving
+                if (moveStarted)
+                {
+                    var currentPosition = board.PlayerPos(playerNum);
+                    if (board.board[currentPosition.X, currentPosition.Z] == (int)Rooms.Hallway)
+                    {
+                        SetNumOfMoves(numOfMoves + 1);
+                    }
+                    moveStarted = false;
+                }
+            }
         }
     }
 
@@ -54,209 +106,49 @@ public class CharacterControl : MonoBehaviour
 
     #region Move functions
 
-    public void MoveLeft(int onTurn)
+    public bool Move(int angle)
     {
-        var playerPos = board.PlayerPos(playerNum);
-        int xPos = playerPos.X;
-        int zPos = playerPos.Z;
+        // Save rotation, rotate, get current position and decode move
+        var saveRotation = transform.rotation;
+        transform.Rotate(yAxis, angle);
+        var currentPosition = board.PlayerPos(playerNum);
+        var nextPosition = NextPosition(currentPosition);
 
-        if (playerNum == 0 && onTurn == playerNum)
+        // Set next position if move is valid (board and new position for "this")
+        if (board.IsValid(playerNum, currentPosition.X, currentPosition.Z, nextPosition.X, nextPosition.Z))
         {
-            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
-                transform.Translate(1, 0, 0);
+            // Update positions
+            newPosition = transform.position + transform.forward;
+            board.SetPlayerPosition(playerNum, nextPosition.X, nextPosition.Z);
 
-                if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
+            // Update top view camera
+            var topViewCamera = GameObject.Find("TopViewCamera");
+            topViewCamera.GetComponent<TopViewCameraRotation>().target = topViewCamera.transform.rotation * Quaternion.Euler(0, 0, -angle);
+            return true;
         }
-        else if (playerNum == 1 && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
-                transform.Translate(0, 0, -1);
-
-                if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
-                transform.Translate(-1, 0, 0);
-
-                if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
-                transform.Translate(0, 0, 1);
-                if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
+        
+        // Move wasn't successful so player needs to be rotated to original position
+        transform.rotation = saveRotation;
+        return false;
     }
 
-    public void MoveRight(int onTurn)
+    private BoardScript.PlayerPosition NextPosition(BoardScript.PlayerPosition currentPosition)
     {
-        var playerPos = board.PlayerPos(playerNum);
-        int xPos = playerPos.X;
-        int zPos = playerPos.Z;
-
-        if (playerNum == 0 && onTurn == playerNum)
+        if (transform.forward == faceForward)
         {
-            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
-                transform.Translate(-1, 0, 0);
-
-                if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
+            return new BoardScript.PlayerPosition(currentPosition.X, currentPosition.Z + 1);
         }
-        else if (playerNum == 1 && onTurn == playerNum)
+        else if (transform.forward == faceBackwards)
         {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
-                transform.Translate(0, 0, 1);
-                if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
+            return new BoardScript.PlayerPosition(currentPosition.X, currentPosition.Z - 1);
         }
-        else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
+        else if (transform.forward == faceLeft)
         {
-            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
-                transform.Translate(1, 0, 0);
-
-                if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
+            return new BoardScript.PlayerPosition(currentPosition.X - 1, currentPosition.Z);
         }
-        else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
+        else
         {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
-                transform.Translate(0, 0, -1);
-
-                if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-    }
-
-    public void MoveUp(int onTurn)
-    {
-        var playerPos = board.PlayerPos(playerNum);
-        int xPos = playerPos.X;
-        int zPos = playerPos.Z;
-
-        if (playerNum == 0 && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
-                transform.Translate(0, 0, -1);
-
-                if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if (playerNum == 1 && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
-                transform.Translate(-1, 0, 0);
-
-                if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
-                transform.Translate(0, 0, 1);
-
-                if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
-                transform.Translate(1, 0, 0);
-
-                if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-    }
-
-    public void MoveDown(int onTurn)
-    {
-        var playerPos = board.PlayerPos(playerNum);
-        int xPos = playerPos.X;
-        int zPos = playerPos.Z;
-
-        if (playerNum == 0 && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos - 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos - 1);
-                transform.Translate(0, 0, 1);
-
-                if (board.board[xPos, zPos - 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if (playerNum == 1 && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos - 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos - 1, zPos);
-                transform.Translate(1, 0, 0);
-
-                if (board.board[xPos - 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 2 || playerNum == 3) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos, zPos + 1))
-            {
-                board.SetPlayerPosition(playerNum, xPos, zPos + 1);
-                transform.Translate(0, 0, -1);
-
-                if (board.board[xPos, zPos + 1] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
-        }
-        else if ((playerNum == 4 || playerNum == 5) && onTurn == playerNum)
-        {
-            if (board.IsValid(playerNum, xPos, zPos, xPos + 1, zPos))
-            {
-                board.SetPlayerPosition(playerNum, xPos + 1, zPos);
-                transform.Translate(-1, 0, 0);
-
-                if (board.board[xPos + 1, zPos] == (int)Rooms.Hallway)
-                    SetNumOfMoves(numOfMoves + 1);
-            }
+            return new BoardScript.PlayerPosition(currentPosition.X + 1, currentPosition.Z);
         }
     }
 
