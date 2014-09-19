@@ -40,11 +40,15 @@ public class NetworkManager : MonoBehaviour
     private GUIStyle bigLabelStyle;
     private GUIStyle boxStyle;
     private GUIStyle backgroundStyle;
+    private GUIStyle backgroundStyle2;
     private GUIStyle smallLabelStyle;
+    private GUIStyle refreshButtonStyle;
     private Vector2 scrollPosition = Vector2.zero;
 
     //private GUIStyle boxStyleBackground;
     private bool isRefreshedFirstTime = false;
+    public bool showTextAboutCluedo = false;
+
     #endregion
 
     #region Camera
@@ -101,42 +105,37 @@ public class NetworkManager : MonoBehaviour
             //StartPage
 
             //First line
-            playerNameBox = new Rect(Screen.width / 4 - 150, Screen.height / 10, 300, 200);
-            GUI.Box(playerNameBox, "You can choose your name!", boxStyle);
+            playerNameBox = new Rect(Screen.width/2-150, Screen.height /4 - 100, 300, 200);
+            GUI.Box(playerNameBox, "Welcome detective!", boxStyle);
             ShowPlayerNameBoxDialog();
 
-            //Second line
-            makeRoomBox = new Rect(Screen.width / 2 - 150, Screen.height / 10, 300, 200);
-            GUI.Box(makeRoomBox, "Make a new room", boxStyle);
-            ShowMakeRoomDialog();
+            if (!showTextAboutCluedo)
+            {
+                //Second line
+                makeRoomBox = new Rect(Screen.width - 350, Screen.height / 4 - 100, 300, 200);
+                GUI.Box(makeRoomBox, "Make a new room", boxStyle);
+                ShowMakeRoomDialog();
 
-            //Third line
-            hostsBox = new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10, 300, 200);
-            GUI.Box(hostsBox, "Enter an existing room", boxStyle);
-            ShowHostsList();
-
-
-            GUI.Box(new Rect(Screen.width / 4 - 150, Screen.height / 2 + 100, 965, 350), "" ,boxStyle);
-            GUI.Label(new Rect(Screen.width/4 - 140, Screen.height/2 +100 , 965, 350), "* Cluedo is a board game that requires the use"+ 
-            "of reasoning and logic skills and has a murder and mystery theme.\n" +
-            "* Cluedo was designed by Anthony Pratt, a successful musician, who thought of the game during World War II.\n" +
-            "* The game was first made in 1949 by Waddingtons who changed the name from ‘Murder’ (which the Pratt’s had called it) to ‘Cluedo’.\n"+
-            "* In North America, Cluedo is known as Clue and some of the character’s names are changed.\n"+
-            "* Cluedo was first designed to have 11 rooms, 10 characters and 9 weapons instead of the typical 9 rooms, 6 characters and six weapons.\n"+
-            "* Elva Pratt, Anthony’s wife, designed the original artwork for the Cluedo board.\n"+
-            "* ‘Cluedo’ is a combination of the word ‘clue’ and ‘ludo’, ‘ludo’ being Latin for ‘play’.\n"+
-            "* Although Cluedo was initially designed as a game, it has been turned into films, books and other types of media.\n"+
-            "* The murder victim of Cluedo is Dr Black, or Mr Boddy.\n" +
-            "* The typical weapons of Cluedo are the candlestick, dagger, revolver, lead pipe, wrench and the rope, however, Pratt’s original game included an axe, bomb, syringe and poison as well as some other interesting weapons.", labelTextStyle);
-
+                //Third line
+                hostsBox = new Rect(Screen.width - 350, Screen.height / 2 - 50, 300, 200);
+                GUI.Box(hostsBox, "Enter an existing room", boxStyle);
+                ShowHostsList();
+            }
+            else
+            {
+                ShowTextAboutCluedo();
+            }
 
         }
         // start game dialog
         if ((Network.isClient || Network.isServer) && startGameDialog)
         {
-            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle);
+            GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle2);
             GUI.Label(new Rect(20, 20, 300, 60), "The game will begin in just a second! Please wait for more players to connect. Minimum number of player is " + minimumNumberOfPlayers + ".", smallLabelStyle);
-            //GUI.Box(new Rect(Screen.width / 2 - 320, 80, 640, 480), "", boxStyleBackground);
+
+            if (showTextAboutCluedo)
+                ShowTextAboutCluedo();
+
             string textMessage = "Investigators:" + "\n";
             List<string> connectedPlayers= GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().ConnectedPlayers();
             int i = 1;
@@ -153,11 +152,13 @@ public class NetworkManager : MonoBehaviour
                     GUI.enabled= false;
                     GUI.Button(new Rect(Screen.width / 2 - 75, Screen.height - 160, 150, 80), "Wait for more!", buttonTextStyle);
                     GUI.enabled = true;
-                    GUI.Label(new Rect(Screen.width - 250, 20, 300, 200), textMessage, bigLabelStyle);
+                    if(!showTextAboutCluedo)
+                        GUI.Label(new Rect(Screen.width - 250, 20, 300, 200), textMessage, bigLabelStyle);
                 }
                 else
                 {
-                    GUI.Label(new Rect(Screen.width -250, 20, 300, 200), textMessage, bigLabelStyle);
+                    if(!showTextAboutCluedo)
+                        GUI.Label(new Rect(Screen.width -250, 20, 300, 200), textMessage, bigLabelStyle);
                     if (GUI.Button(new Rect(Screen.width/2 - 75, Screen.height - 160, 150, 80), "Start game!", buttonTextStyle))
                     {
                         StartGame();
@@ -174,6 +175,30 @@ public class NetworkManager : MonoBehaviour
     }
 
     #region GUI methods
+
+    void ShowTextAboutCluedo()
+    {
+        Rect aboutCluedoRect = new Rect(Screen.width - 500, Screen.height / 4 - 100, 500, Screen.height * 3 / 4);
+        GUI.Box(aboutCluedoRect, "About Cluedo", boxStyle);
+
+        string aboutCluedo = "* Cluedo is a board game that requires the use" +
+        "of reasoning and logic skills and has a murder and mystery theme.\n" +
+        "* Cluedo was designed by Anthony Pratt, a successful musician, who thought of the game during World War II.\n" +
+        "* The game was first made in 1949 by Waddingtons who changed the name from ‘Murder’ (which the Pratt’s had called it) to ‘Cluedo’.\n" +
+        "* In North America, Cluedo is known as Clue and some of the character’s names are changed.\n" +
+        "* Cluedo was first designed to have 11 rooms, 10 characters and 9 weapons instead of the typical 9 rooms, 6 characters and six weapons.\n" +
+        "* Elva Pratt, Anthony’s wife, designed the original artwork for the Cluedo board.\n" +
+        "* ‘Cluedo’ is a combination of the word ‘clue’ and ‘ludo’, ‘ludo’ being Latin for ‘play’.\n" +
+        "* Although Cluedo was initially designed as a game, it has been turned into films, books and other types of media.\n" +
+        "* The murder victim of Cluedo is Dr Black, or Mr Boddy.\n" +
+        "* The typical weapons of Cluedo are the candlestick, dagger, revolver, lead pipe, wrench and the rope, however, Pratt’s original game included an axe, bomb, syringe and poison as well as some other interesting weapons.";
+        GUI.TextArea(new Rect(aboutCluedoRect.x + 50, aboutCluedoRect.y + 50, 400, Screen.height * 3 / 5), aboutCluedo);
+        if (GUI.Button(new Rect(aboutCluedoRect.x + 350, aboutCluedoRect.y + Screen.height * 3 / 5 + 50, 100, 30), "Close", buttonTextStyle))
+        {
+            showTextAboutCluedo = !showTextAboutCluedo;
+        }
+    }
+
     void InitGUIStyles()
     {
         //Making styles for buttons, labels and textFields (input).
@@ -185,34 +210,47 @@ public class NetworkManager : MonoBehaviour
        // boxStyleBackground = new GUIStyle(GUI.skin.box); 
 
         buttonTextStyle.fontStyle = FontStyle.Bold;
-        buttonTextStyle.normal.textColor = Color.yellow;
+        buttonTextStyle.normal.textColor = Color.gray;
         labelTextStyle.fontStyle = FontStyle.Bold;
-        labelTextStyle.normal.textColor = Color.yellow;
+        labelTextStyle.normal.textColor = Color.gray;
         inputTextStyle.fontStyle = FontStyle.Bold;
-        inputTextStyle.normal.textColor = Color.yellow;
+        inputTextStyle.normal.textColor = Color.gray;
         bigLabelStyle.fontStyle = FontStyle.Bold;
-        bigLabelStyle.normal.textColor = Color.yellow;
+        bigLabelStyle.normal.textColor = Color.gray;
         bigLabelStyle.fontSize = 17;
         bigLabelStyle.alignment = TextAnchor.UpperCenter;
         //bigLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         //boxStyleBackground.normal.background = (Texture2D)Resources.Load("labelBackground2", typeof(Texture2D));
 
         smallLabelStyle.fontStyle = FontStyle.Bold;
-        smallLabelStyle.normal.textColor = Color.yellow;
+        smallLabelStyle.normal.textColor = Color.gray;
         smallLabelStyle.alignment = TextAnchor.MiddleCenter;
         //smallLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         //Making styles for boxes
         boxStyle = new GUIStyle(GUI.skin.box);
         boxStyle.fontStyle = FontStyle.Bold;
         boxStyle.fontSize = 18;
-        boxStyle.normal.textColor = Color.yellow;
+        boxStyle.normal.textColor = Color.gray;
         boxStyle.alignment = TextAnchor.UpperCenter;
-        boxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        //boxStyle.normal.background = (Texture2D)Resources.Load("Boxes/cluedo", typeof(Texture2D));
+
+        //Refresh button
+        refreshButtonStyle = new GUIStyle(buttonTextStyle);
+
+        refreshButtonStyle.normal.background = (Texture2D)Resources.Load("refresh", typeof(Texture2D));
+        refreshButtonStyle.active.background = (Texture2D)Resources.Load("refresh2", typeof(Texture2D));
+        refreshButtonStyle.focused.background = refreshButtonStyle.normal.background;
+        refreshButtonStyle.hover.background = refreshButtonStyle.normal.background;
+
 
         //Setting background of StartPage
         backgroundStyle = new GUIStyle(GUI.skin.box);
-        backgroundStyle.normal.background = (Texture2D)Resources.Load("crimescene", typeof(Texture2D));
+        backgroundStyle.normal.background = (Texture2D)Resources.Load("mysteryMan", typeof(Texture2D));
         GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle);
+
+        //Setting background of RoomPage
+        backgroundStyle2 = new GUIStyle(GUI.skin.box);
+        backgroundStyle2.normal.background = (Texture2D)Resources.Load("mysteryMan2", typeof(Texture2D));
     }
     void ShowMakeRoomDialog()
     {
@@ -227,13 +265,17 @@ public class NetworkManager : MonoBehaviour
             show = false;
             serverStarted = true;
             SetListConnectedPlayers();
+            showTextAboutCluedo = false;
         }
     }
 
     void ShowPlayerNameBoxDialog()
     {
+        labelTextStyle.alignment = TextAnchor.MiddleCenter;
+        boxStyle.fontSize = 25;
         GUI.Label(new Rect(playerNameBox.x + 10, playerNameBox.y + 50, 250, 30), "Enter your name:", labelTextStyle);
         publicPlayerName = GUI.TextField(new Rect(playerNameBox.x + 10, playerNameBox.y + 90, 280, 30), publicPlayerName, inputTextStyle).Trim();
+        boxStyle.fontSize = 18;
     }
 
     private void ShowHostsList()
@@ -245,13 +287,14 @@ public class NetworkManager : MonoBehaviour
 
 
         GUI.Label(new Rect(hostsBox.x+50,hostsBox.y + 45, 200, 30), "Refresh list of rooms", labelTextStyle);
-        if (GUI.Button(new Rect(hostsBox.x+10, hostsBox.y +40, 30, 30), "R", buttonTextStyle) || !isRefreshedFirstTime)
+
+        if (GUI.Button(new Rect(hostsBox.x+10, hostsBox.y +40, 32, 32), "", refreshButtonStyle) || !isRefreshedFirstTime)
         {
             RefreshHostList();
             isRefreshedFirstTime = true;
         }
 
-		scrollPosition = GUI.BeginScrollView(new Rect(Screen.width * 3 / 4 - 150, Screen.height / 10+70, 300, 130),
+		scrollPosition = GUI.BeginScrollView(new Rect(hostsBox.x, hostsBox.y+70, 300, 130),
 		                                     scrollPosition, new Rect(0, 0, hostsBox.width-5, (hosts<4)?130:(hosts*45) )
 		                                     );
 		//GUI.Button (new Rect (0, 400, 100, 100), "lol");
@@ -263,6 +306,7 @@ public class NetworkManager : MonoBehaviour
                 {
                     //SetListConnectedPlayers();
                     JoinServer(hostList[i]);
+                    showTextAboutCluedo = false;
                 }
             }
         }
