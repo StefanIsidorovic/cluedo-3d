@@ -193,7 +193,22 @@ public class GUIScript : MonoBehaviour
 
         // label with a message to all players
         GUI.Box(new Rect(0, 25, 240, Screen.height), "", sideBarStyle);
-        GUI.Label(new Rect(10, 25, 230, Screen.height), TextMessageForAllPlayers());
+        GUI.Label(new Rect(10, 25, 230, Screen.height - 150), TextMessageForAllPlayers());
+        GUIStyle leaveButtonStyle = new GUIStyle(GUI.skin.button);
+        leaveButtonStyle.normal.background = (Texture2D)Resources.Load("leave", typeof(Texture2D));
+        leaveButtonStyle.active.background = leaveButtonStyle.normal.background;
+        leaveButtonStyle.hover.background = leaveButtonStyle.normal.background;
+
+        if (GUI.Button(new Rect(10, Screen.height - 100, 50, 100), "", leaveButtonStyle))
+        {
+            LeaveGameAndBackToTheStartPage();
+        }
+
+        GUIStyle leaveLabelStyle = new GUIStyle(GUI.skin.label);
+        leaveButtonStyle.fontSize = 20;
+        leaveButtonStyle.normal.textColor = Color.gray;
+        leaveButtonStyle.alignment = TextAnchor.MiddleCenter;
+        GUI.Label(new Rect(80, Screen.height - 70, 200, 50), "<size=20>Leave Game</size>", leaveLabelStyle);
 
 
         GameObject myPlayer = GameObject.Find("Player" + playerNum);
@@ -290,6 +305,11 @@ public class GUIScript : MonoBehaviour
         }
 
         GUI.EndGroup();
+    }
+
+    private void LeaveGameAndBackToTheStartPage()
+    {
+        throw new System.NotImplementedException();
     }
     #endregion
 
