@@ -184,7 +184,6 @@ public class GUIScript : MonoBehaviour
     #region Rest Of GUI
     private void ShowSideBar()
     {
-        Debug.Log("On turn je "+gameManager.OnTurn());
         // Generate 2d part for throwing dices 
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         //style
@@ -220,7 +219,6 @@ public class GUIScript : MonoBehaviour
                 GenerateMessageForAllPlayers();
 
                 numOfMoves = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
-                Debug.Log(numOfMoves);
                 if (numOfMoves == 0 && !dicesThrown)
                     showDicesBox = true;
                 drowDices();
@@ -302,6 +300,8 @@ public class GUIScript : MonoBehaviour
         if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Close"))
         {
             infoBox = false;
+                gameManager.SetQuestionIsAsked(true);
+                ResetGUIVariables();
         }
 
         GUI.EndGroup();
@@ -848,7 +848,7 @@ public class GUIScript : MonoBehaviour
             if (dicesThrown)
                 GUI.enabled = true;
 
-            if (GUI.Button(new Rect(50, 150, 100, 40), "Close!") || askDialogShow == true)
+            if (GUI.Button(new Rect(50, 150, 100, 40), "Close!") || askDialogShow == true || questionAsk == true)
             {
                 showDicesBox = false;
             }
@@ -860,13 +860,14 @@ public class GUIScript : MonoBehaviour
     {
         PublicPlayerName = GameObject.Find("Player" + gameManager.OnTurn()).gameObject.GetComponent<CharacterControl>().PublicName();
         int dicesSum = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().DicesSum();
-        if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !questionAsk)
+        if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !questionAsk && !infoBox)
         {
-            if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " + dicesSum + " moves."))
+            if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " + dicesSum + " moves.") &&
+                !textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " +
             dicesSum + " moves.\n" + textMessageForAllPlayers);
         }
-        else if (dicesSum <= 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool)
+        else if (dicesSum <= 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !infoBox)
         {
             if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet."))
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet.\n" + textMessageForAllPlayers);
@@ -894,9 +895,9 @@ public class GUIScript : MonoBehaviour
                 SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!\n" + textMessageForAllPlayers);
         }
 
-        if (!questionAsk && infoBox == true)
+        if (infoBox == true && !questionAsk)
         {
-            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
+            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.") )
                 SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
         }
     }
