@@ -92,11 +92,6 @@ public class NetworkManager : MonoBehaviour
     }
     void Update()
     {
-        if (isRefreshingHostList && MasterServer.PollHostList().Length > 0)
-        {
-            isRefreshingHostList = false;
-            hostList = MasterServer.PollHostList();
-        }
 
     }
     void OnGUI()
@@ -341,10 +336,16 @@ public class NetworkManager : MonoBehaviour
 
     private void RefreshHostList()
     {
-        if (!isRefreshingHostList)
+        Debug.Log("RefreshHostList!!");
+        MasterServer.ClearHostList();
+        MasterServer.RequestHostList(typeName);
+    }
+
+    void OnMasterServerEvent(MasterServerEvent msEvent)
+    {
+        if (msEvent == MasterServerEvent.HostListReceived)
         {
-            isRefreshingHostList = true;
-            MasterServer.RequestHostList(typeName);
+            hostList = MasterServer.PollHostList();
         }
     }
 
