@@ -27,7 +27,7 @@ public class CharacterControl : MonoBehaviour
         oldPosition = transform.position;
         newPosition = transform.position;
         lerpPosition = 0F;
-        lerpTime = 0.75F;
+        lerpTime = 0.30F;
         numOfMoves = 0;
         moveStarted = false;
     }

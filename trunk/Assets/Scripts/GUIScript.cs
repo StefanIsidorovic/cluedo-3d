@@ -901,6 +901,14 @@ public class GUIScript : MonoBehaviour
                 SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
         }
     }
+
+    public void ResetDicesBox()
+    {
+        dicesThrown = false;
+        num1 = 0;
+        num2 = 0;
+        GameObject.Find("Player" + playerNum).gameObject.GetComponent<CharacterControl>().SetNumOfMoves(0);
+    }
     #endregion
 
 }
