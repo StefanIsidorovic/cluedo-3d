@@ -83,16 +83,25 @@ public class NetworkManager : MonoBehaviour
     private int numOfPlayer = 0;
 	private int hosts;
     #endregion
-
+    
+    private bool guardNum = true;
     //#TODO: Disconnect logic.
     //#TODO: Chat and name logic. 
 
     void Start()
     {
     }
+
     void Update()
     {
-
+        if (Network.isClient)
+        {
+            if (numOfPlayersConnected > 0 && guardNum)
+            {
+                guardNum = false;
+                SetListConnectedPlayers();
+            }
+        }
     }
     void OnGUI()
     {
@@ -351,10 +360,15 @@ public class NetworkManager : MonoBehaviour
 
     private void JoinServer(HostData hostData)
     {
-        numOfPlayer = hostData.connectedPlayers;
         Network.Connect(hostData);
         //SetListConnectedPlayers();
 
+    }
+
+    void OnPlayerConnected(NetworkPlayer player)
+    {
+        SetPlayerNum(player, Network.connections.Length);
+        ChangePlayersConnected(Network.connections.Length+1);
     }
 
     void OnConnectedToServer()
@@ -364,9 +378,8 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Too many players in game!");
             return;
         }
-        ChangePlayersConnected(numOfPlayer + 1);
-        Debug.Log("Number of players: " + numOfPlayer + 1);
-        SetListConnectedPlayers();
+        
+        
     }
 
     #endregion
@@ -431,6 +444,11 @@ public class NetworkManager : MonoBehaviour
     {
         networkView.RPC("StartGameNetwork", RPCMode.AllBuffered);
     }
+
+    private void SetPlayerNum(NetworkPlayer player, int num)
+    {
+        networkView.RPC("SetPlayerNumNetwork", RPCMode.AllBuffered, player, num);
+    }
     #endregion
 
     #region RPC
@@ -438,6 +456,14 @@ public class NetworkManager : MonoBehaviour
     // RPC methods, actual methods for changing values. They have wrappers so we can control which peers we want to notify
     // about changes and how. Basically wrappers are not needed, but I like to write, cause I think its cleaner and doesnt force
     // you to learn Unity Network part if you dont want to.
+    [RPC]
+    private void SetPlayerNumNetwork(NetworkPlayer player, int num)
+    {
+        if (Network.player == player)
+        {
+            numOfPlayer = num;
+        }
+    }
     [RPC]
     private void ChangePlayersConnectedNetwork(int num)
     {
