@@ -16,3 +16,7 @@ Na ovaj objekat treba nakaciti skripte NetworkManager (na koji treba nakaciti Pl
 
 *Main camera*
 Nakaciti skriptu FollowThePlayer
+
+*TopViewCamera
+
+Nakaciti skripte MenuScript i TopViewCameraRotation
