@@ -37,6 +37,7 @@ public class CharacterControl : MonoBehaviour
     private Vector3 newPosition;
     private float lerpPosition, lerpTime;
     private bool moveStarted;
+    private int spawnAngle;
 
     // Use this for initialization
     void Start()
@@ -48,6 +49,7 @@ public class CharacterControl : MonoBehaviour
         lerpTime = 0.30F;
         numOfMoves = 0;
         moveStarted = false;
+        spawnAngle = playersSpawnAngles[playerNum];
     }
 
     void Update()
@@ -132,7 +134,7 @@ public class CharacterControl : MonoBehaviour
         // system to original one in case of top view camera.
         if (CameraControler.Instance.IsTopViewCamera)
         {
-            transform.rotation = Quaternion.Euler(0, CharacterControl.playersSpawnAngles[playerNum], 0);
+            transform.rotation = Quaternion.Euler(0, spawnAngle, 0);
         }
 
         // Save rotation, rotate, get current position and decode move
