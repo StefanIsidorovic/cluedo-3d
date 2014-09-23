@@ -353,46 +353,66 @@ public class NetworkManager : MonoBehaviour
         int disconnectedPlayer = mapNetworkPlayerToPlayerNum[player];
         Network.RemoveRPCs(player);
         Network.DestroyPlayerObjects(player);
-        Debug.Log("Disconnected (NetworkManager):" + disconnectedPlayer);
 
-        // Fix GameManager instance
-        var gameManager = GameManager.Instance;
-        gameManager.FixCardsAfterPlayerWasDisconnected(disconnectedPlayer);
-        gameManager.SetNumOfPlayers(gameManager.NumOfPlayers() - 1);
-        
-        // Fix player's number stored in NetworkManager and GUIScript
-        DecrementNumOfMyPlayer(disconnectedPlayer);
-        gameManager.GUI().GetComponent<GUIScript>().UpdatePlayerNumber();
-
-        // Remove disconnected player's position from game board
-        BoardScript.Instance.RemoveDisconnectedPlayer(disconnectedPlayer);
-
-        // Fix all players numbers
-        for (int i = disconnectedPlayer+1; i < gameManager.NumOfPlayers()+1; i++)
+        if (GameStarted())
         {
-            var currentPlayer = GameObject.Find("Player" + i);
-            currentPlayer.GetComponent<CharacterControl>().SetNum(i - 1);
-            currentPlayer.name = "Player" + (i - 1);            
+            // Fix GameManager instance and everything else below this block if and only if game started
+            var gameManager = GameManager.Instance;
+            gameManager.FixCardsAfterPlayerWasDisconnected(disconnectedPlayer);
+            gameManager.SetNumOfPlayers(gameManager.NumOfPlayers() - 1);
+            if (gameManager.NumOfPlayers() == 1)
+            {
+                // In case when only server player is present in game show him that he won
+                var solution = gameManager.Solution();
+                gameManager.GUI().GetComponent<GUIScript>().EndGame(0, solution.First, solution.Second, solution.Third);
+                return;
+            }
+
+            // Fix player's number stored in NetworkManager and GUIScript, also fix number of connected players in NetworkManager
+            DecrementNumOfMyPlayer(disconnectedPlayer);
+            gameManager.GUI().GetComponent<GUIScript>().UpdatePlayerNumber();
+            ChangePlayersConnected(numOfPlayersConnected - 1);
+
+            // Remove disconnected player's position from game board
+            BoardScript.Instance.RemoveDisconnectedPlayer(disconnectedPlayer);
+
+            // Fix all players numbers
+            for (int i = disconnectedPlayer + 1; i < gameManager.NumOfPlayers() + 1; i++)
+            {
+                var currentPlayer = GameObject.Find("Player" + i);
+                currentPlayer.GetComponent<CharacterControl>().SetNum(i - 1);
+                currentPlayer.name = "Player" + (i - 1);
+            }
+
+            #region Explanation of code below
+            /// Update who is on turn after current move finishes. Given that player 'x' leaves the game and
+            /// player 'y' is on turn there are 3 cases of interest:
+            ///  1) x < y  => In this case GameManager.onTurn should be decremented. We have that player y is moving
+            ///               and cause of disconnection of player x they became player y-1. After that everything should work normal. 
+            ///  2) x > y  => In this case GameManager.onTurn field should be incremented as normal cause next player on turn
+            ///               will not be affected by x's disconnection.
+            ///  3) x == y => In this case GameManager.onTurn field must remain the same cause all player numbers
+            ///               higher than x will be decremented, so x+1 player who should be on turn next will actually 
+            ///               be player number x.
+            #endregion
+            if (disconnectedPlayer < gameManager.OnTurn())
+            {
+                // Note: Case when gameManager.OnTurn() == 0 cannot happen cause player 0 is always a server so this is safe.
+                gameManager.SetTurn(gameManager.OnTurn() - 1);
+            }
+            else if (disconnectedPlayer == gameManager.OnTurn())
+            {
+                gameManager.SetTurn(gameManager.OnTurn() % gameManager.NumOfPlayers());
+                gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
+                gameManager.SetQuestionIsAsked(false);
+            }
         }
-
-        // Update who is on turn after current move finishes. Given that player 'x' leaves the game and
-        // player 'y' is on turn there are 3 cases of interest:
-        //  1) x < y  => In this case GameManager.onTurn field must remain the same cause all player numbers
-        //               higher than x will be decremented, so x+1 player who should be on turn next will actually 
-        //               be player number x.
-        //  2) x > y  => In this case GameManager.onTurn field should be incremented as normal cause next player on turn
-        //               will not be affected by x's disconnection.
-        //  3) x == y => This is last one, GameManager.onTurn field must remain for the same reason as stated in case 1).
-        //               Additionally, GUI window for throwing dices must be shown to the previous player x+1 and now player x.
-        if (disconnectedPlayer < gameManager.OnTurn())
+        else
         {
-            gameManager.SetTurn(gameManager.OnTurn() % gameManager.NumOfPlayers());
-        }
-        else if (disconnectedPlayer == gameManager.OnTurn())
-        {
-            gameManager.SetTurn(gameManager.OnTurn() % gameManager.NumOfPlayers());
-            gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
-            gameManager.SetQuestionIsAsked(false);
+            var gameManager = GameManager.Instance;
+            gameManager.RemovePlayerFromConnectedPlayers(disconnectedPlayer);
+            gameManager.SetNumOfPlayers(gameManager.NumOfPlayers() - 1);
+            ChangePlayersConnected(numOfPlayersConnected - 1);
         }
     }
 

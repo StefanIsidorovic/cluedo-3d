@@ -585,7 +585,7 @@ public class GUIScript : MonoBehaviour
         BeginAskDialogBox();
         {
             PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
-
+            GUI.Label(new Rect(125, stepH * 3, 200, 30), PublicPlayerName + " won!");
             GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
             GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
             GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
@@ -598,7 +598,6 @@ public class GUIScript : MonoBehaviour
         }
         GUI.EndGroup();
     }
-
 
     #endregion
 
@@ -705,8 +704,9 @@ public class GUIScript : MonoBehaviour
         num1 = 0;
         num2 = 0;
     }
+    
     [RPC]
-    void EndGame(int playerWon, int room, int character, int weapon)
+    public void EndGame(int playerWon, int room, int character, int weapon)
     {
         ResetGUIVariables();
         endGameInfo = true;
