@@ -586,7 +586,8 @@ public class GUIScript : MonoBehaviour
 	{
 		BeginAskDialogBox();
 		{
-			GUI.Label(new Rect(20,stepH*3,200,30),"Player "+ WhoWon+" won!");
+            PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
+			GUI.Label(new Rect(125,stepH*3,200,30), PublicPlayerName +" won!");
 
 			GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
 			GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
