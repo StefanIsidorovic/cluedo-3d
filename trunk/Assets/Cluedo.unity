@@ -9442,7 +9442,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 399530591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13bf1a5ca3cb84a41bec1e02c84476d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a7fa781b08579843898e162196216d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   IsGameStatic: 0
@@ -15528,12 +15528,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 666510922}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ed69249406747b4d9489491e0db413f, type: 3}
+  m_Script: {fileID: 11500000, guid: bfc25ee7bf466094b872858ffa099aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   IsGameStatic: 0
-  cam1: {fileID: 796045245}
-  cam2: {fileID: 769749540}
 --- !u!4 &666510924
 Transform:
   m_ObjectHideFlags: 0
@@ -17307,7 +17305,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 724045888}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 09533fbbffde24241b4af2438c9346c8, type: 3}
+  m_Script: {fileID: 11500000, guid: 5a53c05767c80fc499871688f7d2b7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!82 &724045891
@@ -17318,7 +17316,7 @@ AudioSource:
   m_GameObject: {fileID: 724045888}
   m_Enabled: 1
   serializedVersion: 3
-  m_audioClip: {fileID: 8300000, guid: 0d5fdbcbcb5825c41ac8d4b2590b9d4d, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dde4c65a5b271b145836543936611e48, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -18981,6 +18979,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e25b10285a0dcc498bec4fa9dd12661, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsGameStatic: 0
+  target: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &769749543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19003,8 +19003,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b0e779d453ab8f4d9898afc16291b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsGameStatic: 0
-  target: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &769749545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19777,10 +19775,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 796045241}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50763d4a21e7a524ca3512bd560c1d17, type: 3}
+  m_Script: {fileID: 11500000, guid: 75f40154b9cb8654396a42a35798e883, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 400000, guid: 1f4e3e6420240614181df5800922ec9a, type: 2}
+  target: {fileID: 0}
 --- !u!1 &797647578
 GameObject:
   m_ObjectHideFlags: 0
@@ -49968,27 +49966,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimumNumberOfPlayers: 2
   showTextAboutCluedo: 0
-  startPositions:
-  - {x: 8, y: 2, z: 15}
-  - {x: 14, y: 2, z: 8}
-  - {x: 9, y: 2, z: -7}
-  - {x: 0, y: 2, z: -7}
-  - {x: -8, y: 2, z: -1}
-  - {x: -8, y: 2, z: 8}
-  startCameraRotations:
-  - {x: 45, y: 180, z: 0}
-  - {x: 45, y: -90, z: 0}
-  - {x: 45, y: 0, z: 0}
-  - {x: 45, y: 0, z: 0}
-  - {x: 45, y: 90, z: 0}
-  - {x: 45, y: 90, z: 0}
-  startTopViewCameraRotations:
-  - {x: 90, y: 180, z: 0}
-  - {x: 90, y: 270, z: 0}
-  - {x: 90, y: 0, z: 0}
-  - {x: 90, y: 0, z: 0}
-  - {x: 90, y: 90, z: 0}
-  - {x: 90, y: 90, z: 0}
   playerPrefab: {fileID: 100000, guid: 1f4e3e6420240614181df5800922ec9a, type: 2}
   playerMaterials:
   - {fileID: 2100000, guid: c9b8d9a2022a2f542b24aaea854c4d93, type: 2}

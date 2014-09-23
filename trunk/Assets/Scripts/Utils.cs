@@ -11,8 +11,12 @@ public static class Constants
     public const int WEAPON_START_VALUE = 1000;
     #endregion
 
-    #region Camera constants
-    public const float TOP_CAMERA_ROTATION_SPEED = 0.3F;
+    #region Camera constants and camera readonly data
+    // Constants
+
+    /// <summary>
+    /// Controls rotation speed of first person camera.
+    /// </summary>
     public const float MAIN_CAMERA_ROTATION_SPEED = 0.1F;
     #endregion
 }
@@ -56,8 +60,8 @@ public class Pair<T1, T2>
     public T2 Second { get { return second; } set { second = value; } }
 }
 
-public class Triple<T1, T2, T3>  
-    where T1:  IComparable 
+public class Triple<T1, T2, T3>
+    where T1 : IComparable
     where T2 : IComparable
     where T3 : IComparable
 {
@@ -234,7 +238,7 @@ public class EnumConverter
                 return Rooms.Library;
             case "Hallway":
                 return Rooms.Hallway;
-            
+
             // Characters
             case "Mrs. Scarlet":
                 return Characters.MrsScarlet;

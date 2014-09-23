@@ -61,8 +61,13 @@ public class GameManager : MonoSingleton<GameManager>
     /// When player asks a question what is asked is saved here so it can be reused in GUI.
     /// </summary>
     private Pair<int, Triple<Rooms, Characters, Weapons>> question;
-
+    /// <summary>
+    /// Reference to board on which players are moving.
+    /// </summary>
     private BoardScript board;
+    /// <summary>
+    /// Internal flag that is true if question was asked.
+    /// </summary>
     private bool questionIsAsked;
     /// <summary>
     /// List of connected players, used for message when waiting for game.
@@ -267,6 +272,13 @@ public class GameManager : MonoSingleton<GameManager>
     #endregion
 
     #region Get and set methods
+
+    public void HandleFinishedMove()
+    {
+        SetTurn(onTurn);
+        SetDicesSum(INVALID_DICES_SUM);
+        SetQuestionIsAsked(false);
+    }
 
     /// <summary>
     /// Getter for GameManager.onTurn field.

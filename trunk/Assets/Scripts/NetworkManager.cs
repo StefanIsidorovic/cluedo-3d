@@ -51,28 +51,7 @@ public class NetworkManager : MonoBehaviour
 
     #endregion
 
-    #region Camera
-    public Vector3[] startPositions = { new Vector3(8, 2, 15), new Vector3(14, 2, 8), new Vector3(9, 2, -7), new Vector3(0, 2, -7), new Vector3(-8, 2, -1), new Vector3(-8, 2, 8) };
-    public Vector3[] startCameraRotations = { 
-                                                new Vector3(45, 180, 0), 
-                                                new Vector3(45, -90, 0), 
-                                                new Vector3(45, 0, 0), 
-                                                new Vector3(45, 0, 0), 
-                                                new Vector3(45, 90, 0), 
-                                                new Vector3(45, 90, 0) };
-    public Vector3[] startTopViewCameraRotations = {
-                                                       new Vector3(90, 180, 0), 
-                                                       new Vector3(90, 270, 0), 
-                                                       new Vector3(90, 0, 0), 
-                                                       new Vector3(90, 0, 0), 
-                                                       new Vector3(90, 90, 0), 
-                                                       new Vector3(90, 90, 0)};
-    /// <summary>
-    /// Array of angles in degrees. These angles are used to change coordinate system rotation of player prefabs
-    /// so their x axis would be theirs front.
-    /// </summary>
-    private int[] spawnAngles = {180, 270, 0, 0, 90, 90};
-
+    #region Camera region here is deprecated, constants and readonly fields are moved to Utils.cs to Constants class. This message will be removed in one of next commits.
     #endregion
 
     #region Player data
@@ -389,7 +368,7 @@ public class NetworkManager : MonoBehaviour
     {
         Debug.Log("connected: " + numOfPlayer);
 
-        var spawnedPlayer = Network.Instantiate(playerPrefab, startPositions[numOfPlayer], Quaternion.Euler(0, spawnAngles[numOfPlayer], 0), 0);
+        var spawnedPlayer = Network.Instantiate(playerPrefab, CharacterControl.playersStartPositions[numOfPlayer], Quaternion.Euler(0, CharacterControl.playersSpawnAngles[numOfPlayer], 0), 0);
 
         string playerName = "Player" + numOfPlayer;
         spawnedPlayer.name = playerName;
@@ -403,13 +382,12 @@ public class NetworkManager : MonoBehaviour
         //Setting up the cameras
         if (playerObject.networkView.isMine)
         {
-            var camera1 = GameObject.Find("Main Camera");
-            camera1.GetComponent<FollowThePlayer>().target = playerObject.transform;
-            camera1.transform.rotation = Quaternion.Euler(startCameraRotations[numOfPlayer]);
+            var mainCamera = GameObject.Find("Main Camera");
+            mainCamera.GetComponent<FollowThePlayer>().target = playerObject.transform;
+            mainCamera.transform.rotation = Quaternion.Euler(CameraControler.mainCameraStartingRotation[numOfPlayer]);
 
-            var camera2 = GameObject.Find("TopViewCamera");
-            camera2.transform.rotation = Quaternion.Euler(startTopViewCameraRotations[numOfPlayer]);
-            camera2.GetComponent<TopViewCameraRotation>().target = camera2.transform.rotation;
+            var topViewCamera = GameObject.Find("TopViewCamera");
+            topViewCamera.transform.rotation = Quaternion.Euler(CameraControler.topViewCameraStartingRotation[numOfPlayer]);
         }
     }
 
