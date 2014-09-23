@@ -27,7 +27,7 @@ public class GUIScript : MonoBehaviour
     // width of textbox.
     private int textBoxWidth = 140;
     private int leftMarginSideBar = 10;
-	private bool finishedAsking=false;
+    private bool finishedAsking = false;
     #endregion
 
     #region Variables for dices box
@@ -71,8 +71,8 @@ public class GUIScript : MonoBehaviour
     private bool questionToogle = false;
     private int numberOfProcessedPlayers = 0;
 
-	private Triple<int, int, int> solutions;
-	private int WhoWon;
+    private Triple<int, int, int> solutions;
+    private int WhoWon;
 
     string PublicPlayerName;
 
@@ -81,7 +81,7 @@ public class GUIScript : MonoBehaviour
     // #NOTE: Move rect and help variables from functions;
     void Start()
     {
-		solutions = new Triple<int, int, int>(-1, -1, -1);
+        solutions = new Triple<int, int, int>(-1, -1, -1);
         onTurn = 0;
         textMessageForAllPlayers = "";
         backOfCard = (Texture2D)Resources.Load("BackOfCard", typeof(Texture2D));
@@ -136,9 +136,10 @@ public class GUIScript : MonoBehaviour
             InfoBox();
         }
 
-		if (endGameInfo) {
-						EndGameDialog ();
-				}
+        if (endGameInfo)
+        {
+            EndGameDialog();
+        }
         InitAskDialogPositionVariables();
         if (GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted() && !endGameInfo)
         {
@@ -200,7 +201,7 @@ public class GUIScript : MonoBehaviour
 
         if (GUI.Button(new Rect(10, Screen.height - 100, 50, 100), "", leaveButtonStyle))
         {
-            LeaveGameAndBackToTheStartPage();
+            //#TODO: Disconnect this player from server
         }
 
         GUIStyle leaveLabelStyle = new GUIStyle(GUI.skin.label);
@@ -217,7 +218,6 @@ public class GUIScript : MonoBehaviour
             if (playerNum == gameManager.OnTurn())
             {
                 GenerateMessageForAllPlayers();
-
                 numOfMoves = myPlayer.gameObject.GetComponent<CharacterControl>().NumOfMoves();
                 if (numOfMoves == 0 && !dicesThrown)
                     showDicesBox = true;
@@ -248,7 +248,7 @@ public class GUIScript : MonoBehaviour
             if (item1 != Rooms.Hallway)
             {
                 string item = EnumConverter.ToString(item1);
-				toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20),gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
+                toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
                 textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60, textBoxWidth, 20), textBoxes[item]);
                 i++;
             }
@@ -257,7 +257,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllCharacters())
         {
             string item = EnumConverter.ToString(item1);
-			toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20),  gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60 + 35, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -265,7 +265,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllWeapons())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20),gameManager.PlayerHasCard(playerNum,(int)EnumConverter.ToEnum(item))?true: toogle[item], item);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 140, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -273,13 +273,15 @@ public class GUIScript : MonoBehaviour
         {
             if (board.WhereAmI(playerNum) == Rooms.Hallway)
                 GUI.enabled = false;
-			if(!finishedAsking){
-            if (GUI.Button(new Rect(30, i * 22 + 160, 100, 30), "Ask!"))
+            if (!finishedAsking)
             {
-				askDialogShow = true;
+                if (GUI.Button(new Rect(30, i * 22 + 160, 100, 30), "Ask!"))
+                {
+                    askDialogShow = true;
 
 
-			}}
+                }
+            }
 
             if (GUI.Button(new Rect(160, i * 22 + 160, 100, 30), "Master Ask!"))
             {
@@ -300,17 +302,13 @@ public class GUIScript : MonoBehaviour
         if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Close"))
         {
             infoBox = false;
-                gameManager.SetQuestionIsAsked(true);
-                ResetGUIVariables();
+            gameManager.SetQuestionIsAsked(true);
+            ResetGUIVariables();
         }
 
         GUI.EndGroup();
     }
 
-    private void LeaveGameAndBackToTheStartPage()
-    {
-        throw new System.NotImplementedException();
-    }
     #endregion
 
     #region Ask Dialog Elements
@@ -364,7 +362,7 @@ public class GUIScript : MonoBehaviour
                                 setQuestionRPC((int)whereAmI, cardCharacter, cardWeapon);
                                 setAskingRPC(true, playerNum);
                                 increaseNumberOfProcessedPlayersRPC();
-								finishedAsking = true;
+                                finishedAsking = true;
 
                             }
                     }
@@ -374,10 +372,10 @@ public class GUIScript : MonoBehaviour
                     if (GUI.Button(new Rect(80, stepH * 21, 130, 30), "Ask!"))
                     {
                         Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
-                        if (gameManager.CheckSolution(questionCards) )
+                        if (gameManager.CheckSolution(questionCards))
                         {
-							solutions=questionCards;
-                            EndGameRPC(playerNum,questionCards.First,questionCards.Second,questionCards.Third);
+                            solutions = questionCards;
+                            EndGameRPC(playerNum, questionCards.First, questionCards.Second, questionCards.Third);
 
                         }
                         else
@@ -451,8 +449,8 @@ public class GUIScript : MonoBehaviour
             if (playersWhoHaveCards.First != -1)
             {
                 player1 = GameObject.Find("Player" + playersWhoHaveCards.First).gameObject.GetComponent<CharacterControl>().PublicName();
-                Rect temp = new Rect(0,0,0,0);
-                Rect tempLabel = new Rect(0,0,0,0);
+                Rect temp = new Rect(0, 0, 0, 0);
+                Rect tempLabel = new Rect(0, 0, 0, 0);
                 if (numOfShowedCards == 1)
                 {
                     temp = secondCard;
@@ -542,7 +540,7 @@ public class GUIScript : MonoBehaviour
             {
                 numberOfProcessedPlayers = 0;
                 ResetGUIVariables();
-                
+
                 if (me)
                     gameManager.SetQuestionIsAsked(true);
             }
@@ -582,25 +580,24 @@ public class GUIScript : MonoBehaviour
         GUI.EndGroup();
     }
 
-	private void EndGameDialog()
-	{
-		BeginAskDialogBox();
-		{
+    private void EndGameDialog()
+    {
+        BeginAskDialogBox();
+        {
             PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
-			GUI.Label(new Rect(125,stepH*3,200,30), PublicPlayerName +" won!");
 
-			GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
-			GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
-			GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
+            GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
+            GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
+            GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
 
-				if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "EXIT!"))
-			{
-				// #TODO: end game
-			}
-			
-		}
-		GUI.EndGroup();
-	}
+            if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "EXIT!"))
+            {
+                // #TODO: end game
+            }
+
+        }
+        GUI.EndGroup();
+    }
 
 
     #endregion
@@ -635,7 +632,7 @@ public class GUIScript : MonoBehaviour
 
     void EndGameRPC(int playerNum, int room, int character, int weapon)
     {
-        networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum,room,character,weapon);
+        networkView.RPC("EndGame", RPCMode.AllBuffered, playerNum, room, character, weapon);
     }
 
     public string TextMessageForAllPlayers()
@@ -698,7 +695,7 @@ public class GUIScript : MonoBehaviour
         asking = false;
         playerAsking = -1;
         numberOfProcessedPlayers = 0;
-		finishedAsking = false;
+        finishedAsking = false;
         dicesThrown = false;
         num1 = 0;
         num2 = 0;
@@ -708,10 +705,10 @@ public class GUIScript : MonoBehaviour
     {
         ResetGUIVariables();
         endGameInfo = true;
-		solutions.First = room;
-		solutions.Second = character;
-		solutions.Third = weapon;
-		WhoWon = playerWon;
+        solutions.First = room;
+        solutions.Second = character;
+        solutions.Third = weapon;
+        WhoWon = playerWon;
 
         //endgame logic for other components
     }
@@ -809,8 +806,6 @@ public class GUIScript : MonoBehaviour
     private void drowDices()
     {
         dicesBoxStyle = new GUIStyle(GUI.skin.box);
-        //dicesBoxStyle.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
-
         labelDicesStyle = new GUIStyle(GUI.skin.label);
         labelDicesStyle.fontStyle = FontStyle.Bold;
         labelDicesStyle.alignment = TextAnchor.MiddleCenter;
@@ -898,7 +893,7 @@ public class GUIScript : MonoBehaviour
 
         if (infoBox == true && !questionAsk)
         {
-            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.") )
+            if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
                 SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
         }
     }

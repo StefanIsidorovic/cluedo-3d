@@ -3,6 +3,24 @@ using System.Collections;
 
 public class CharacterControl : MonoBehaviour
 {
+    /// <summary>
+    /// Starting coordinates on board for players.
+    /// </summary>
+    public static readonly Vector3[] playersStartPositions = { 
+                                                                new Vector3(8, 2, 15), 
+                                                                new Vector3(14, 2, 8), 
+                                                                new Vector3(9, 2, -7), 
+                                                                new Vector3(0, 2, -7), 
+                                                                new Vector3(-8, 2, -1), 
+                                                                new Vector3(-8, 2, 8) 
+                                                             };
+
+    /// <summary>
+    /// Array of angles in degrees. These angles are used to change coordinate system rotation of player prefabs
+    /// so their 'z' axis would be theirs front.
+    /// </summary>
+    public static readonly int[] playersSpawnAngles = { 180, 270, 0, 0, 90, 90 };
+
     private BoardScript board; // Provides data about players on map and map itself
     private int playerNum; // Number of this player
     private int numOfMoves; // Number of made moves in current series of moves
@@ -36,13 +54,12 @@ public class CharacterControl : MonoBehaviour
     {
         if (networkView.isMine)
         {
+            //Player must throw dices before his movement and it must be his turn to play
             var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
-
-            //Player must throw dices before his movement
             if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM || gameManager.OnTurn() != playerNum)
                 return;
 
-            // Rotate coordinate system and then move, if move fails rotate to original position
+            // Start move on arrow key pressed only if another move isn't in progress
             if (!moveStarted)
             {
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -72,6 +89,7 @@ public class CharacterControl : MonoBehaviour
             }
             else
             {
+                // Reset move variables 
                 oldPosition = newPosition;
                 lerpPosition = 0F;
                 
@@ -108,6 +126,15 @@ public class CharacterControl : MonoBehaviour
 
     public bool Move(int angle)
     {
+        // When "TopViewCamera" is changed to "Main Camera" and the move is made on "Main Camera" player's
+        // coordinate system will be turned in direction of move. After that changing to "TopViewCamera"
+        // gives player with bad coordinate system for top view moving. So we need to check and reset coordinate
+        // system to original one in case of top view camera.
+        if (CameraControler.Instance.IsTopViewCamera)
+        {
+            transform.rotation = Quaternion.Euler(0, CharacterControl.playersSpawnAngles[playerNum], 0);
+        }
+
         // Save rotation, rotate, get current position and decode move
         var saveRotation = transform.rotation;
         transform.Rotate(yAxis, angle);
@@ -121,9 +148,11 @@ public class CharacterControl : MonoBehaviour
             newPosition = transform.position + transform.forward;
             board.SetPlayerPosition(playerNum, nextPosition.X, nextPosition.Z);
 
-            // Update top view camera
-            var topViewCamera = GameObject.Find("TopViewCamera");
-            topViewCamera.GetComponent<TopViewCameraRotation>().target = topViewCamera.transform.rotation * Quaternion.Euler(0, 0, -angle);
+            // Update players coordinate system to original rotation in case of top view camera
+            if (CameraControler.Instance.IsTopViewCamera)
+            {
+                transform.rotation = Quaternion.Euler(0, CharacterControl.playersSpawnAngles[playerNum], 0);
+            }
             return true;
         }
         
