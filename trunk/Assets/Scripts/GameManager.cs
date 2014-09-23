@@ -72,8 +72,8 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// List of connected players, used for message when waiting for game.
     /// </summary>
-    private List<string> connectedPlayers = new List<string>();
-
+    private List<string> connectedPlayers;
+   
     // Use this for initialization
     void Start()
     {
@@ -93,6 +93,8 @@ public class GameManager : MonoSingleton<GameManager>
         cardsDistribution = new Dictionary<int, List<int>>();
         question = new Pair<int, Triple<Rooms, Characters, Weapons>>(GameManager.INVALID_PLAYER_NUM,
                                                                         new Triple<Rooms, Characters, Weapons>(Rooms.Hallway, Characters.MrBlack, Weapons.Candlestick));
+        connectedPlayers = new List<string>();
+
         GUIObject = new GameObject("GUI");
         GUIObject.AddComponent<GUIScript>();
         GUIObject.AddComponent<NetworkView>();
@@ -119,7 +121,7 @@ public class GameManager : MonoSingleton<GameManager>
             // Test if players are spawn and get current player 
             string playerName = "Player" + onTurn;
             var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
-            
+
             if ((dicesSum == playerObject.NumOfMoves()) || questionIsAsked)
             {
                 playerObject.SetNumOfMoves(0);
@@ -174,7 +176,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// Returns all cards that are dealt to player.
     /// </summary>
-    /// <param name="whichPlayer">Player whose cards are returned.</param>
+    /// <param name="disconnectedPlayer">Player whose cards are returned.</param>
     /// <returns>Returns list of cards as IEnumerable for given player.</returns>
     public IEnumerable<int> PlayerCards(int whichPlayer)
     {
@@ -204,7 +206,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// <summary>
     /// Checks if player has card.
     /// </summary>
-    /// <param name="whichPlayer">Player for which checking is done.</param>
+    /// <param name="disconnectedPlayer">Player for which checking is done.</param>
     /// <param name="card">Card to check for.</param>
     /// <returns>True if player has card, false otherwise.</returns>
     public bool PlayerHasCard(int whichPlayer, int card)
@@ -218,6 +220,11 @@ public class GameManager : MonoSingleton<GameManager>
         return realSolution.Equals(questionCards);
     }
 
+    public void FixCardsAfterPlayerWasDisconnected(int disconnectedPlayer)
+    {
+        DistributeDisconnectedPlayerCards(disconnectedPlayer);
+        UpdateKeysInCardsDistribution(disconnectedPlayer);
+    }
     #endregion
 
     #region Functions for cards dealing
@@ -261,7 +268,7 @@ public class GameManager : MonoSingleton<GameManager>
 
         // Shuffle and deal cards
         Algorithms.Shuffle<int>(allCards);
-        int currentPlayer = 0;
+        int currentPlayer = Random.Range(0, numOfPlayers - 1);
         foreach (var card in allCards)
         {
             DealCardToPlayer(card, currentPlayer);
@@ -269,15 +276,50 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
+    private void DistributeDisconnectedPlayerCards(int disconnectedPlayer)
+    {
+        // Get and shuffle cards
+        var cardsToDistribute = cardsDistribution[disconnectedPlayer];
+        Algorithms.Shuffle<int>(cardsToDistribute);
+
+        // Distribute it in round robin fashion skipping disconnected player
+        Random.seed = System.DateTime.Now.Second;
+        int currentPlayer = Random.Range(0, numOfPlayers - 1);
+        foreach (var card in cardsToDistribute)
+        {
+            if (currentPlayer == disconnectedPlayer)
+            {
+                currentPlayer = (currentPlayer + 1) % numOfPlayers;
+            }
+            DealCardToPlayer(card, currentPlayer);
+            currentPlayer = (currentPlayer + 1) % numOfPlayers;
+        }
+
+        // Remove his cards from cards distribution
+        RemoveCardsList(disconnectedPlayer);
+    }
+
+    private void UpdateKeysInCardsDistribution(int disconnectedPlayer)
+    {
+        for (int i = disconnectedPlayer + 1; i < numOfPlayers; ++i)
+        {
+            var saveCards = cardsDistribution[i];
+            RemoveCardsList(i);
+            CreateEmptyCardsList(i - 1);
+            foreach (var card in saveCards)
+            {
+                DealCardToPlayer(card, i - 1);
+            }
+        }
+    }
+
     #endregion
 
     #region Get and set methods
 
-    public void HandleFinishedMove()
+    public GameObject GUI()
     {
-        SetTurn(onTurn);
-        SetDicesSum(INVALID_DICES_SUM);
-        SetQuestionIsAsked(false);
+        return GUIObject;
     }
 
     /// <summary>
@@ -424,6 +466,18 @@ public class GameManager : MonoSingleton<GameManager>
     private void AddPlayerToConnectedPlayersRPC(string Name)
     {
         connectedPlayers.Add(Name);
+    }
+
+    [RPC]
+    private void RemoveCardsList(int key)
+    {
+        cardsDistribution.Remove(key);
+    }
+
+    [RPC]
+    private void CreateEmptyCardsList(int key)
+    {
+        cardsDistribution.Add(key, new List<int>());
     }
 
     #endregion

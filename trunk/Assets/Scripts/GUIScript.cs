@@ -201,7 +201,7 @@ public class GUIScript : MonoBehaviour
 
         if (GUI.Button(new Rect(10, Screen.height - 100, 50, 100), "", leaveButtonStyle))
         {
-            //#TODO: Disconnect this player from server
+            Network.CloseConnection(Network.connections[0], true);
         }
 
         GUIStyle leaveLabelStyle = new GUIStyle(GUI.skin.label);
@@ -643,6 +643,11 @@ public class GUIScript : MonoBehaviour
     {
         networkView.RPC("SetTextMessageForAllPlayersRPC", RPCMode.AllBuffered, text);
     }
+
+    public void UpdatePlayerNumber()
+    {
+        networkView.RPC("UpdatePlayerNumberRPC", RPCMode.AllBuffered);
+    }
     #endregion
 
     #region RPC
@@ -719,6 +724,11 @@ public class GUIScript : MonoBehaviour
         textMessageForAllPlayers = text;
     }
 
+    [RPC]
+    private void UpdatePlayerNumberRPC()
+    {
+        playerNum = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().NumOfMyPlayer();
+    }
     #endregion
 
     #region HelperMethods
@@ -896,14 +906,6 @@ public class GUIScript : MonoBehaviour
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
                 SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
         }
-    }
-
-    public void ResetDicesBox()
-    {
-        dicesThrown = false;
-        num1 = 0;
-        num2 = 0;
-        GameObject.Find("Player" + playerNum).gameObject.GetComponent<CharacterControl>().SetNumOfMoves(0);
     }
     #endregion
 

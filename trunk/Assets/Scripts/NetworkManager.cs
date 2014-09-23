@@ -14,7 +14,7 @@ public class NetworkManager : MonoBehaviour
     // Number of minimum players need to be so game could start, its for testing and debuging purposes
     // because its frustrating to start three instances everytime. By default is set to 3 but you can change it from Unity editor, NOT HERE!
     // Again, NOT HERE, in unity editor (inspector).
-    public int minimumNumberOfPlayers = 3;
+    public int minimumNumberOfPlayers = 2;
 
     // Variable for server to know how many players are there
     // you can change it to public so you can track changes in debug.
@@ -26,6 +26,8 @@ public class NetworkManager : MonoBehaviour
     // Do not change this to public, you have below method for checking if game is started.
     private bool gameStarted = false;
     private bool serverStarted = false;
+
+    private Dictionary<NetworkPlayer, int> mapNetworkPlayerToPlayerNum;
     #endregion
 
     #region GUI elements
@@ -51,24 +53,20 @@ public class NetworkManager : MonoBehaviour
 
     #endregion
 
-    #region Camera region here is deprecated, constants and readonly fields are moved to Utils.cs to Constants class. This message will be removed in one of next commits.
-    #endregion
-
     #region Player data
     private string publicPlayerName = "";
     public GameObject playerPrefab;
     public Material[] playerMaterials;
     // Variable for network manager to know which player is his, for later spawning.
     private int numOfPlayer = 0;
-	private int hosts;
+	  private int hosts;
     #endregion
     
     private bool guardNum = true;
-    //#TODO: Disconnect logic.
-    //#TODO: Chat and name logic. 
 
     void Start()
     {
+        mapNetworkPlayerToPlayerNum = new Dictionary<NetworkPlayer, int>();
     }
 
     void Update()
@@ -82,6 +80,7 @@ public class NetworkManager : MonoBehaviour
             }
         }
     }
+    
     void OnGUI()
     {
 
@@ -249,6 +248,7 @@ public class NetworkManager : MonoBehaviour
             if (string.IsNullOrEmpty(gameName))
                 gameName = "DefaultRoomName";
             Network.InitializeServer(5, 25000, !Network.HavePublicAddress());
+            mapNetworkPlayerToPlayerNum.Add(Network.player, 0);
             MasterServer.RegisterHost(typeName, gameName);
             show = false;
             serverStarted = true;
@@ -316,7 +316,6 @@ public class NetworkManager : MonoBehaviour
 
     #region Network methods
 
-
     public bool ServerStarted()
     {
         return serverStarted;
@@ -324,7 +323,6 @@ public class NetworkManager : MonoBehaviour
 
     private void RefreshHostList()
     {
-        Debug.Log("RefreshHostList!!");
         MasterServer.ClearHostList();
         MasterServer.RequestHostList(typeName);
     }
@@ -340,14 +338,62 @@ public class NetworkManager : MonoBehaviour
     private void JoinServer(HostData hostData)
     {
         Network.Connect(hostData);
-        //SetListConnectedPlayers();
-
     }
 
     void OnPlayerConnected(NetworkPlayer player)
     {
         SetPlayerNum(player, Network.connections.Length);
         ChangePlayersConnected(Network.connections.Length+1);
+        mapNetworkPlayerToPlayerNum.Add(player, Network.connections.Length);
+    }
+
+    void OnPlayerDisconnected(NetworkPlayer player)
+    {
+        // Find out which player disconnected and delete all of it's data
+        int disconnectedPlayer = mapNetworkPlayerToPlayerNum[player];
+        Network.RemoveRPCs(player);
+        Network.DestroyPlayerObjects(player);
+        Debug.Log("Disconnected (NetworkManager):" + disconnectedPlayer);
+
+        // Fix GameManager instance
+        var gameManager = GameManager.Instance;
+        gameManager.FixCardsAfterPlayerWasDisconnected(disconnectedPlayer);
+        gameManager.SetNumOfPlayers(gameManager.NumOfPlayers() - 1);
+        
+        // Fix player's number stored in NetworkManager and GUIScript
+        DecrementNumOfMyPlayer(disconnectedPlayer);
+        gameManager.GUI().GetComponent<GUIScript>().UpdatePlayerNumber();
+
+        // Remove disconnected player's position from game board
+        BoardScript.Instance.RemoveDisconnectedPlayer(disconnectedPlayer);
+
+        // Fix all players numbers
+        for (int i = disconnectedPlayer+1; i < gameManager.NumOfPlayers()+1; i++)
+        {
+            var currentPlayer = GameObject.Find("Player" + i);
+            currentPlayer.GetComponent<CharacterControl>().SetNum(i - 1);
+            currentPlayer.name = "Player" + (i - 1);            
+        }
+
+        // Update who is on turn after current move finishes. Given that player 'x' leaves the game and
+        // player 'y' is on turn there are 3 cases of interest:
+        //  1) x < y  => In this case GameManager.onTurn field must remain the same cause all player numbers
+        //               higher than x will be decremented, so x+1 player who should be on turn next will actually 
+        //               be player number x.
+        //  2) x > y  => In this case GameManager.onTurn field should be incremented as normal cause next player on turn
+        //               will not be affected by x's disconnection.
+        //  3) x == y => This is last one, GameManager.onTurn field must remain for the same reason as stated in case 1).
+        //               Additionally, GUI window for throwing dices must be shown to the previous player x+1 and now player x.
+        if (disconnectedPlayer < gameManager.OnTurn())
+        {
+            gameManager.SetTurn(gameManager.OnTurn() % gameManager.NumOfPlayers());
+        }
+        else if (disconnectedPlayer == gameManager.OnTurn())
+        {
+            gameManager.SetTurn(gameManager.OnTurn() % gameManager.NumOfPlayers());
+            gameManager.SetDicesSum(GameManager.INVALID_DICES_SUM);
+            gameManager.SetQuestionIsAsked(false);
+        }
     }
 
     void OnConnectedToServer()
@@ -357,8 +403,6 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Too many players in game!");
             return;
         }
-        
-        
     }
 
     #endregion
@@ -410,6 +454,11 @@ public class NetworkManager : MonoBehaviour
         return numOfPlayer;
     }
 
+    public void DecrementNumOfMyPlayer(int disconnectedPlayer)
+    {
+        networkView.RPC("DecrementNumOfMyPlayerRPC", RPCMode.AllBuffered, disconnectedPlayer);
+    }
+
     #endregion
 
     #region RPC Wrappers
@@ -455,5 +504,11 @@ public class NetworkManager : MonoBehaviour
         startGameDialog = false;
     }
 
+    [RPC]
+    private void DecrementNumOfMyPlayerRPC(int disconnectedPlayer)
+    {
+        if (Network.isClient && numOfPlayer > disconnectedPlayer)
+            --numOfPlayer;
+    }
     #endregion
 }

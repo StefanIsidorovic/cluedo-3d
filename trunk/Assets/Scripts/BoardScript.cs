@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BoardScript : MonoSingleton<BoardScript>
 {
@@ -106,7 +107,7 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <summary>
     /// Vector that contains players positions on board.
     /// </summary>
-    private PlayerPosition[] playersPosition = { new PlayerPosition(6, 0), new PlayerPosition(0,7),
+    private List<PlayerPosition> playersPosition = new List<PlayerPosition> { new PlayerPosition(6, 0), new PlayerPosition(0,7),
 		                                             new PlayerPosition(5, 22), new PlayerPosition(14,22), 
 		                                             new PlayerPosition(22, 16),new PlayerPosition(22,7)
                                                };
@@ -124,6 +125,11 @@ public class BoardScript : MonoSingleton<BoardScript>
     public PlayerPosition PlayerPos(int whichPlayer)
     {
         return playersPosition[whichPlayer];
+    }
+
+    public void RemoveDisconnectedPlayer(int disconnectedPlayer)
+    {
+        networkView.RPC("RemoveDisconnectedPlayerRPC", RPCMode.AllBuffered, disconnectedPlayer);
     }
 
     /// <summary>
@@ -178,7 +184,7 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <summary>
     /// Player can check if he is in any room or hallway using this method.
     /// </summary>
-    /// <param name="whichPlayer">Player asking for position.</param>
+    /// <param name="disconnectedPlayer">Player asking for position.</param>
     /// <returns>Room enum for player.</returns>
     public Rooms WhereAmI(int whichPlayer)
     {
@@ -194,7 +200,12 @@ public class BoardScript : MonoSingleton<BoardScript>
     [RPC]
     private void SetPlayerPositionRPC(int whichPlayer, int x, int z)
     {
-        playersPosition[whichPlayer].X = x;
-        playersPosition[whichPlayer].Z = z;
+        playersPosition[whichPlayer] = new PlayerPosition(x, z);
+    }
+
+    [RPC]
+    private void RemoveDisconnectedPlayerRPC(int disconnectedPlayer)
+    {
+        playersPosition.RemoveAt(disconnectedPlayer);
     }
 }
