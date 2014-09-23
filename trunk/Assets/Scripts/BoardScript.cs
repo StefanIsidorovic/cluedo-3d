@@ -155,7 +155,7 @@ public class BoardScript : MonoSingleton<BoardScript>
     /// <summary>
     /// Function that check if some move is valid.
     /// </summary>
-    /// <param name="playerNum"> Number of current player </param>
+    /// <param name="whichPlayer"> Number of current player </param>
     /// <param name="px"> current x coordinate </param>
     /// <param name="pz"> current z coordinate </param>
     /// <param name="npx"> potentional new x coordinate </param>

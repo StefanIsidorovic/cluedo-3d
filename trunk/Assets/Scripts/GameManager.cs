@@ -73,7 +73,7 @@ public class GameManager : MonoSingleton<GameManager>
     /// List of connected players, used for message when waiting for game.
     /// </summary>
     private List<string> connectedPlayers;
-   
+
     // Use this for initialization
     void Start()
     {
@@ -218,6 +218,11 @@ public class GameManager : MonoSingleton<GameManager>
     {
         Triple<int, int, int> realSolution = new Triple<int, int, int>((int)allRooms[solution.First], (int)allCharacters[solution.Second], (int)allWeapons[solution.Third]);
         return realSolution.Equals(questionCards);
+    }
+
+    public Triple<int, int, int> Solution()
+    {
+        return new Triple<int, int, int>((int)allRooms[solution.First], (int)allCharacters[solution.Second], (int)allWeapons[solution.Third]);
     }
 
     public void FixCardsAfterPlayerWasDisconnected(int disconnectedPlayer)
@@ -400,6 +405,11 @@ public class GameManager : MonoSingleton<GameManager>
     {
         networkView.RPC("AddPlayerToConnectedPlayersRPC", RPCMode.AllBuffered, Name);
     }
+
+    public void RemovePlayerFromConnectedPlayers(int whichPlayer)
+    {
+        networkView.RPC("RemovePlayerFromConnectedPlayersRPC", RPCMode.AllBuffered, whichPlayer);
+    }
     #endregion
 
     #region RPC set methods
@@ -469,6 +479,12 @@ public class GameManager : MonoSingleton<GameManager>
     }
 
     [RPC]
+    private void RemovePlayerFromConnectedPlayersRPC(int whichPlayer)
+    {
+        connectedPlayers.RemoveAt(whichPlayer);
+    }
+
+    [RPC]
     private void RemoveCardsList(int key)
     {
         cardsDistribution.Remove(key);
@@ -479,6 +495,5 @@ public class GameManager : MonoSingleton<GameManager>
     {
         cardsDistribution.Add(key, new List<int>());
     }
-
     #endregion
 }
