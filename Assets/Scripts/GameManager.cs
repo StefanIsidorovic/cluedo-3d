@@ -286,18 +286,32 @@ public class GameManager : MonoSingleton<GameManager>
         // Get and shuffle cards
         var cardsToDistribute = cardsDistribution[disconnectedPlayer];
         Algorithms.Shuffle<int>(cardsToDistribute);
+        #region Debug logging for cards
+        Debug.Log("Cards for dealing from disconnected player " + disconnectedPlayer + " are: ");
+        foreach (var card in cardsToDistribute)
+        {
+            Debug.Log(EnumConverter.ToString(card));
+        }
+        #endregion
 
         // Distribute it in round robin fashion skipping disconnected player
         Random.seed = System.DateTime.Now.Second;
         int currentPlayer = Random.Range(0, numOfPlayers - 1);
+        #region Debug logging for starting player
+        Debug.Log("Starting cards distribution from player: " + currentPlayer + ".");
+        Debug.Log("Total number of players is: " + numOfPlayers + ".");
+        #endregion
         foreach (var card in cardsToDistribute)
         {
             if (currentPlayer == disconnectedPlayer)
             {
                 currentPlayer = (currentPlayer + 1) % numOfPlayers;
+                Debug.Log("Current player to get card is disconnected player so currentPlayer is now " + currentPlayer + ".");
             }
+            Debug.Log("Dealing card " + EnumConverter.ToString(card) + " to player " + currentPlayer + ".");
             DealCardToPlayer(card, currentPlayer);
             currentPlayer = (currentPlayer + 1) % numOfPlayers;
+            Debug.Log("Next current player is " + currentPlayer + ".");
         }
 
         // Remove his cards from cards distribution
