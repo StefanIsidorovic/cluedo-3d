@@ -11,6 +11,7 @@ public class MenuScript : MonoBehaviour {
     bool show = false;
     bool buttonClicked = false;
 	private bool mute=false;
+	private bool emute=false;
 	private float volume=1.0f;
 
     private NetworkManager NetworkManagerScript;
@@ -18,6 +19,7 @@ public class MenuScript : MonoBehaviour {
     private GUIStyle ButtonStyle;
     private GUIStyle LabelStyle;
 	private GUIStyle OnStyle;
+
 
     void InitGUIStyles()
     {
@@ -36,12 +38,21 @@ public class MenuScript : MonoBehaviour {
 
 
 		OnStyle = new GUIStyle (GUI.skin.toggle);
-		OnStyle.normal.background =(Texture2D)Resources.Load("VolumeON", typeof(Texture2D));
+		OnStyle.fixedWidth = 30.0f;
+		OnStyle.fixedHeight = 23.0f;
+		OnStyle.imagePosition = ImagePosition.ImageOnly;
+		OnStyle.margin = new RectOffset (0, 0, 0, 0);
+		OnStyle.padding = new RectOffset (0,0,0,0);
+		OnStyle.border = new RectOffset (0,0,0,0);
+		OnStyle.normal.background = (Texture2D)Resources.Load("volume-up", typeof(Texture2D));
 		OnStyle.hover.background =OnStyle.normal.background;
 		OnStyle.active.background =OnStyle.normal.background;
-		OnStyle.onActive.background =(Texture2D)Resources.Load("VolumeOFF", typeof(Texture2D));
+		OnStyle.onActive.background =(Texture2D)Resources.Load("volume-muteR", typeof(Texture2D));
 		OnStyle.onHover.background = OnStyle.onActive.background;
 		OnStyle.onNormal.background = OnStyle.onActive.background;
+
+
+
 
 
 
@@ -51,19 +62,16 @@ public class MenuScript : MonoBehaviour {
     void OnGUI()
     {
         InitGUIStyles();
-
-        GUI.Box(new Rect(dropDownRect.x, dropDownRect.y, Screen.width, 25), "", MenuStyle);
-		volume=GUI.HorizontalSlider (new Rect(170, 7, 100,30 ),volume, 0.0f, 1.0f);
-		GameObject.Find ("MusicPlayer").gameObject.audio.volume = volume;
-		mute = GUI.Toggle (new Rect (135, 0, 30, 23), mute,"", OnStyle);
-		if (mute) {
-			GameObject.Find ("MusicPlayer").gameObject.audio.mute = true;
-
-		} else {
-			GameObject.Find ("MusicPlayer").gameObject.audio.mute = false;
-				}
-
-        if (GUI.Button(new Rect(dropDownRect.x + 2, dropDownRect.y+2, dropDownRect.width, 21), "", ButtonStyle))
+		GUI.Box(new Rect(dropDownRect.x, dropDownRect.y, Screen.width, 25), "", MenuStyle);
+		GUI.Label (new Rect (135, -2, 50, 30), "Music : ", LabelStyle);
+		mute = GUI.Toggle (new Rect (190, 0, 30, 23), mute,"", OnStyle);
+		Jukebox.Instance.audio.mute = mute;
+		volume=GUI.HorizontalSlider (new Rect(230, 7, 100,30 ),volume, 0.0f, 1.0f);
+		Jukebox.Instance.audio.volume = volume;
+		GUI.Label (new Rect(350,-2,50,30),"Effects : ", LabelStyle);
+		emute = GUI.Toggle (new Rect(410,0,30,23), emute,"",OnStyle);
+		Sounds.Instance.audio.mute=emute;
+		if (GUI.Button(new Rect(dropDownRect.x + 2, dropDownRect.y+2, dropDownRect.width, 21), "", ButtonStyle))
         {
             show = !show;
         }

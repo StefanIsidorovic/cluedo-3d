@@ -91,6 +91,7 @@ public class CharacterControl : MonoBehaviour
                 lerpPosition += Time.deltaTime / lerpTime;
                 transform.position = Vector3.Lerp(oldPosition, newPosition, lerpPosition);
                 moveStarted = true;
+				Sounds.Instance.PlayFootstep();
             }
             else
             {
