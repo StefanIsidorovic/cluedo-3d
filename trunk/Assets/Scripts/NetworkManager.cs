@@ -194,7 +194,6 @@ public class NetworkManager : MonoBehaviour
         inputTextStyle = new GUIStyle(GUI.skin.textField);
         bigLabelStyle = new GUIStyle(GUI.skin.label);
         smallLabelStyle = new GUIStyle(GUI.skin.label);
-       // boxStyleBackground = new GUIStyle(GUI.skin.box); 
 
         buttonTextStyle.fontStyle = FontStyle.Bold;
         buttonTextStyle.normal.textColor = Color.gray;
@@ -207,7 +206,6 @@ public class NetworkManager : MonoBehaviour
         bigLabelStyle.fontSize = 17;
         bigLabelStyle.alignment = TextAnchor.UpperCenter;
         //bigLabelStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
-        //boxStyleBackground.normal.background = (Texture2D)Resources.Load("labelBackground2", typeof(Texture2D));
 
         smallLabelStyle.fontStyle = FontStyle.Bold;
         smallLabelStyle.normal.textColor = Color.gray;
