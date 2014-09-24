@@ -93,19 +93,19 @@ public class NetworkManager : MonoBehaviour
 
             //First line
             playerNameBox = new Rect(Screen.width/2-150, Screen.height /4 - 100, 300, 200);
-            GUI.Box(playerNameBox, "<color=#292929><size=25>Welcome detective!</size></color>", boxStyle);
+            GUI.Box(playerNameBox, "<color=#FFFFFF><size=25>Welcome detective!</size></color>", boxStyle);
             ShowPlayerNameBoxDialog();
 
             if (!showTextAboutCluedo)
             {
                 //Second line
                 makeRoomBox = new Rect(Screen.width - 350, Screen.height / 4 - 100, 300, 200);
-                GUI.Box(makeRoomBox, "<color=#292929><size=25>Make a new room</size></color>", boxStyle);
+                GUI.Box(makeRoomBox, "<color=#FFFFFF><size=25>Make a new room</size></color>", boxStyle);
                 ShowMakeRoomDialog();
 
                 //Third line
                 hostsBox = new Rect(Screen.width - 350, Screen.height / 2 - 50, 300, 200);
-                GUI.Box(hostsBox, "<color=#292929><size=25>Enter an existing room</size></color>", boxStyle);
+                GUI.Box(hostsBox, "<color=#FFFFFF><size=25>Enter an existing room</size></color>", boxStyle);
                 ShowHostsList();
             }
             else
