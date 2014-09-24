@@ -12,8 +12,6 @@ public static class Constants
     #endregion
 
     #region Camera constants and camera readonly data
-    // Constants
-
     /// <summary>
     /// Controls rotation speed of first person camera.
     /// </summary>

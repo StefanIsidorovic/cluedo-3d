@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class Popup
 {
-    static int popupListHash = "PopupList".GetHashCode();
+    private static readonly int popupListHash = "PopupList".GetHashCode();
     // Delegate
     public delegate void ListCallBack();
 

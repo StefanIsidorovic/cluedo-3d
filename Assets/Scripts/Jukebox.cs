@@ -4,16 +4,17 @@ using System.Collections;
 
 
 
-public class Jukebox : MonoSingleton<Jukebox>{
+public class Jukebox : MonoSingleton<Jukebox>
+{
 
 
     // The audio source from where the sound will be playing.
-	private AudioSource source;
-	// AudioClip for all songs in directory Resourses/Songs
-	private AudioClip[] songs;
-	// The current song to be played;
+    private AudioSource source;
+    // AudioClip for all songs in directory Resourses/Songs
+    private AudioClip[] songs;
+    // The current song to be played;
     private int currentSong = 0;
- 	// Ensures that only one jukebox instance will be available throughout a gameplay.
+    // Ensures that only one jukebox instance will be available throughout a gameplay.
     private static Jukebox tmp;
     void Awake()
     {
@@ -31,31 +32,30 @@ public class Jukebox : MonoSingleton<Jukebox>{
 
     void Start()
     {
-			songs=Resources.LoadAll<AudioClip>("Songs");
-			if (songs == null) {
-								Debug.Log ("songs are not loaded");
-								Debug.Break ();
-						}
-       	 	Play ();
-           
-        
+        songs = Resources.LoadAll<AudioClip>("Songs");
+        if (songs == null)
+        {
+            Debug.Log("songs are not loaded");
+            Debug.Break();
+        }
+        Play();
     }
-  	/// Plays the next song, if there is no next song plays the first song again.
+    /// Plays the next song, if there is no next song plays the first song again.
     public void NextTrack()
     {
         Stop();
-        if (songs!=null)
+        if (songs != null)
         {
-           if (songs.Length > 1)
+            if (songs.Length > 1)
+            {
+                System.Random ran = new System.Random();
+                int newSong = currentSong;
+                do
                 {
-                    System.Random ran = new System.Random();
-					int newSong = currentSong;
-                    do
-                    {
-                      newSong = ran.Next(0, songs.Length);
-                    } while (newSong == currentSong);
-                    currentSong = newSong;
-                }
+                    newSong = ran.Next(0, songs.Length);
+                } while (newSong == currentSong);
+                currentSong = newSong;
+            }
             Play();
         }
     }
@@ -68,27 +68,33 @@ public class Jukebox : MonoSingleton<Jukebox>{
     /// Starts playing the song at currentSong in the song list.
     public void Play()
     {
-			if (songs != null) {
-								if (songs.Length > 0) {
-										currentSong = Mathf.Clamp (currentSong, 0, songs.Length - 1);
-										if (songs [currentSong] != null) {
-												source.clip = songs [currentSong];
-												source.Play ();
-												Invoke ("NextTrack", songs [currentSong].length);
-               
-										} else {
-												Debug.LogError (string.Format ("Songs element {0} is missing an Audio Clip.", currentSong));
-												NextTrack ();
-										}
-								}
-						}
+        if (songs != null)
+        {
+            if (songs.Length > 0)
+            {
+                currentSong = Mathf.Clamp(currentSong, 0, songs.Length - 1);
+                if (songs[currentSong] != null)
+                {
+                    source.clip = songs[currentSong];
+                    source.Play();
+                    Invoke("NextTrack", songs[currentSong].length);
+
+                }
+                else
+                {
+                    Debug.LogError(string.Format("Songs element {0} is missing an Audio Clip.", currentSong));
+                    NextTrack();
+                }
+            }
+        }
     }
 
-	public void Pause(){
-		source.Pause ();
-	}
+    public void Pause()
+    {
+        source.Pause();
+    }
 
 
 
-  
+
 }
