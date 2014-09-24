@@ -77,9 +77,10 @@ public class GUIScript : MonoBehaviour
     string PublicPlayerName;
 
     private bool endGameInfo = false;
-
+    private bool failedSolutionShow = false;
     private bool missedSolution = false;
     private float timeLeftInGame = 7.0F;
+    private string playerWhoWonPatch;
 
     // #TODO: Refactor code.
     // #NOTE: Move rect and help variables from functions;
@@ -129,6 +130,9 @@ public class GUIScript : MonoBehaviour
         dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/images", typeof(Texture2D)));
         for (int i = 1; i < 7; i++)
             dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/" + i, typeof(Texture2D)));
+
+        // Player who won name patch
+        playerWhoWonPatch = null;
     }
 
     void Update()
@@ -197,6 +201,11 @@ public class GUIScript : MonoBehaviour
         if (askDialogShowCardsBool)
         {
             AskDialog_ChooseCardsToShow();
+        }
+
+        if (failedSolutionShow && !missedSolution)
+        {
+            ShowFailedMasterQuestionCards();
         }
 
         if (numberOfProcessedPlayers == gameManager.NumOfPlayers() && GameObject.Find("NetworkManager").gameObject.GetComponent<NetworkManager>().GameStarted())
@@ -406,9 +415,9 @@ public class GUIScript : MonoBehaviour
                     if (GUI.Button(new Rect(80, stepH * 21, 130, 30), "Ask!"))
                     {
                         Triple<int, int, int> questionCards = new Triple<int, int, int>((int)whereAmI, cardCharacter, cardWeapon);
+                        solutions = questionCards;
                         if (gameManager.CheckSolution(questionCards))
                         {
-                            solutions = questionCards;
                             EndGameRPC(playerNum, questionCards.First, questionCards.Second, questionCards.Third);
                         }
                         else
@@ -417,6 +426,7 @@ public class GUIScript : MonoBehaviour
                             Sounds.Instance.PlayWrong();
                             missedSolution = true;
                             endGameInfo = true;
+                            SetFailedSolutionRPC(solutions.First, solutions.Second, solutions.Third);
                         }
                     }
 
@@ -609,14 +619,39 @@ public class GUIScript : MonoBehaviour
         GUI.EndGroup();
     }
 
+    private void ShowFailedMasterQuestionCards()
+    {
+        BeginAskDialogBox();
+        {
+            GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
+            GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
+            GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
+
+            GUI.Label(firstCardLabel, "Room");
+            GUI.Label(secondCardLabel, "Character");
+            GUI.Label(thirdCardLabel, "Weapon");
+
+            if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "Close dialog!"))
+            {
+                failedSolutionShow = false;
+            }
+
+        }
+        GUI.EndGroup();
+    }
+
     private void EndGameDialog()
     {
         BeginAskDialogBox();
         {
             if (!missedSolution)
             {
-                PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
-                GUI.Label(new Rect(125, stepH * 3, 200, 30), PublicPlayerName + " won!");
+                if (string.IsNullOrEmpty(playerWhoWonPatch))
+                {
+                    playerWhoWonPatch = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
+                }
+                
+                GUI.Label(new Rect(125, stepH * 3, 200, 30), playerWhoWonPatch + " won!");
             }
             if (missedSolution)
             {
@@ -649,7 +684,10 @@ public class GUIScript : MonoBehaviour
     {
         playerNum = num;
     }
-
+    void SetFailedSolutionRPC(int room, int character, int weapon)
+    {
+        networkView.RPC("SetFailedSolution", RPCMode.AllBuffered, room, character, weapon);
+    }
     void setAskingRPC(bool value, int player)
     {
         networkView.RPC("setAsking", RPCMode.AllBuffered, value, player);
@@ -731,6 +769,7 @@ public class GUIScript : MonoBehaviour
     [RPC]
     void ResetGUIVariables()
     {
+        failedSolutionShow = false;
         missedSolution = boolCh = boolWe = false;
         cardCharacter = cardWeapon = choseWe = choseCh = 0;
         weapon = "Choose weapon";
@@ -738,6 +777,7 @@ public class GUIScript : MonoBehaviour
         askButtonText = "Ask!";
         askDialogShow = someoneAsking = guardAsking = askDialogShowCardsBool = askDialogShowQuestion = questionAsk = false;
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
+        solutions = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
         asking = false;
         playerAsking = -1;
@@ -778,6 +818,15 @@ public class GUIScript : MonoBehaviour
     private void UpdatePlayerNumberRPC()
     {
         playerNum = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().NumOfMyPlayer();
+    }
+    [RPC]
+    private void SetFailedSolution(int room, int character, int weapon)
+    {
+        numberOfProcessedPlayers = 0;
+        failedSolutionShow = true;
+        solutions.First = room;
+        solutions.Second = character;
+        solutions.Third = weapon;
     }
     #endregion
 
