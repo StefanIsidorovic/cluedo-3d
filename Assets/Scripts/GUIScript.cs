@@ -189,7 +189,7 @@ public class GUIScript : MonoBehaviour
         onTurn = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().OnTurn();
         //style
         sideBarStyle = new GUIStyle(GUI.skin.box);
-        //sideBarStyle.normal.background = (Texture2D)Resources.Load("house", typeof(Texture2D));
+        sideBarStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
 
         // label with a message to all players
         GUI.Box(new Rect(0, 25, 240, Screen.height), "", sideBarStyle);
@@ -226,7 +226,7 @@ public class GUIScript : MonoBehaviour
         }
         //SideBar
         sideBarStyle = new GUIStyle(GUI.skin.box);
-        //sideBarStyle.normal.background = (Texture2D)Resources.Load("house", typeof(Texture2D));
+        sideBarStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
 
         labelSideBarStyle = new GUIStyle(GUI.skin.label);
         labelSideBarStyle.fontSize = 18;
@@ -384,6 +384,7 @@ public class GUIScript : MonoBehaviour
                             infoBox = true;
                             infoBoxLabel = "You are wrong!";
 							Sounds.Instance.PlayWrong();
+                            Network.CloseConnection(Network.connections[0], true);
 							// Wrong answer
                         }
                     }
@@ -801,7 +802,7 @@ public class GUIScript : MonoBehaviour
     void BeginAskDialogBox()
     {
         GUIStyle style = new GUIStyle(GUI.skin.box);
-        style.normal.background = (Texture2D)Resources.Load("proba2", typeof(Texture2D));
+        style.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         GUI.BeginGroup(boxForChosingCards, style);
     }
 
@@ -823,6 +824,7 @@ public class GUIScript : MonoBehaviour
     private void drowDices()
     {
         dicesBoxStyle = new GUIStyle(GUI.skin.box);
+        dicesBoxStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
         labelDicesStyle = new GUIStyle(GUI.skin.label);
         labelDicesStyle.fontStyle = FontStyle.Bold;
         labelDicesStyle.alignment = TextAnchor.MiddleCenter;
