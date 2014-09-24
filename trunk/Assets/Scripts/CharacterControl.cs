@@ -107,6 +107,12 @@ public class CharacterControl : MonoBehaviour
                         SetNumOfMoves(numOfMoves + 1);
                     }
                     moveStarted = false;
+
+                    // Update players coordinate system to original rotation in case of top view camera
+                    if (CameraControler.Instance.IsTopViewCamera)
+                    {
+                        transform.rotation = Quaternion.Euler(0, spawnAngle, 0);
+                    }
                 }
             }
         }
@@ -151,12 +157,6 @@ public class CharacterControl : MonoBehaviour
             // Update positions
             newPosition = transform.position + transform.forward;
             board.SetPlayerPosition(playerNum, nextPosition.X, nextPosition.Z);
-
-            // Update players coordinate system to original rotation in case of top view camera
-            if (CameraControler.Instance.IsTopViewCamera)
-            {
-                transform.rotation = Quaternion.Euler(0, CharacterControl.playersSpawnAngles[playerNum], 0);
-            }
             return true;
         }
         
@@ -189,6 +189,11 @@ public class CharacterControl : MonoBehaviour
 
     #region Get and set methods
 
+    public void CameraSwitchedToTopViewRotationAdjustment()
+    {
+        transform.rotation = Quaternion.Euler(0, spawnAngle, 0);
+    }
+
     public int GetPlayerNum()
     {
         return playerNum;
@@ -206,7 +211,7 @@ public class CharacterControl : MonoBehaviour
 
     public void SetMaterial(int mat)
     {
-        networkView.RPC("SetMaterialRPC", RPCMode.AllBuffered, mat);
+        //networkView.RPC("SetMaterialRPC", RPCMode.AllBuffered, mat);
     }
 
     public int NumOfMoves()
@@ -241,13 +246,13 @@ public class CharacterControl : MonoBehaviour
         numOfMoves = moves;
     }
 
-    [RPC]
-    private void SetMaterialRPC(int materialIndex)
-    {
-        Material mat = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().playerMaterials[materialIndex];
-        //transform.Find("PlayerGreen").renderer.material = mat;
-        //transform.Find("Sphere").renderer.material = mat;
-    }
+    //[RPC]
+    //private void SetMaterialRPC(int materialIndex)
+    //{
+    //    Material mat = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().playerMaterials[materialIndex];
+    //    transform.Find("PlayerGreen").renderer.material = mat;
+    //    transform.Find("Sphere").renderer.material = mat;
+    //}
 
     [RPC]
     private void SetPublicNameRPC(string playerName)

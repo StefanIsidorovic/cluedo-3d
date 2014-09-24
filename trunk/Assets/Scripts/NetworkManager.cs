@@ -439,19 +439,26 @@ public class NetworkManager : MonoBehaviour
 
         var playerObject = GameObject.Find(playerName).gameObject.GetComponent<CharacterControl>();
         playerObject.SetNum(numOfPlayer);
-        playerObject.SetMaterial(numOfPlayer);
+        // #Deprecated
+        //playerObject.SetMaterial(numOfPlayer); 
 
         playerObject.SetPublicName(publicPlayerName);
         playerObject.tag = "Player";
-        //Setting up the cameras
+        
+        // Setting up the cameras
         if (playerObject.networkView.isMine)
         {
+            // Set up Main Camera
             var mainCamera = GameObject.Find("Main Camera");
             mainCamera.GetComponent<FollowThePlayer>().target = playerObject.transform;
             mainCamera.transform.rotation = Quaternion.Euler(CameraControler.mainCameraStartingRotation[numOfPlayer]);
 
+            // Set up TopViewCamera
             var topViewCamera = GameObject.Find("TopViewCamera");
             topViewCamera.transform.rotation = Quaternion.Euler(CameraControler.topViewCameraStartingRotation[numOfPlayer]);
+
+            // Set tracking player for CameraSwapper
+            GameObject.Find("CameraSwapper").gameObject.GetComponent<CameraControler>().PlayerTracked = playerObject;
         }
     }
 
