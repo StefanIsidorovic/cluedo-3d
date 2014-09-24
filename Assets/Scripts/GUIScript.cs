@@ -77,6 +77,10 @@ public class GUIScript : MonoBehaviour
     string PublicPlayerName;
 
     private bool endGameInfo = false;
+
+    private bool missedSolution = false;
+    private float timeLeftInGame = 7.0F;
+
     // #TODO: Refactor code.
     // #NOTE: Move rect and help variables from functions;
     void Start()
@@ -125,6 +129,25 @@ public class GUIScript : MonoBehaviour
         dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/images", typeof(Texture2D)));
         for (int i = 1; i < 7; i++)
             dieFacesVector.Add((Texture2D)Resources.Load("dieFaces/" + i, typeof(Texture2D)));
+    }
+
+    void Update()
+    {
+        if (missedSolution)
+        {
+            timeLeftInGame -= Time.deltaTime;
+            if (timeLeftInGame < 0.0F)
+            {
+                if (Network.isServer)
+                {
+                    gameManager.ResetServerScene();
+                }
+                else if (Network.isClient)
+                {
+                    gameManager.ResetClientScene();
+                }
+            }
+        }
     }
 
     // GUI elements
@@ -387,16 +410,13 @@ public class GUIScript : MonoBehaviour
                         {
                             solutions = questionCards;
                             EndGameRPC(playerNum, questionCards.First, questionCards.Second, questionCards.Third);
-                            // Correct Answer
                         }
                         else
                         {
                             questionAsk = false;
-                            infoBox = true;
-                            infoBoxLabel = "You are wrong!";
                             Sounds.Instance.PlayWrong();
-                            Network.CloseConnection(Network.connections[0], true);
-                            // Wrong answer
+                            missedSolution = true;
+                            endGameInfo = true;
                         }
                     }
 
@@ -593,16 +613,30 @@ public class GUIScript : MonoBehaviour
     {
         BeginAskDialogBox();
         {
-            PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
-            GUI.Label(new Rect(125, stepH * 3, 200, 30), PublicPlayerName + " won!");
-            GUI.DrawTexture(firstCard, cardTextures[(int)solutions.First]);
-            GUI.DrawTexture(secondCard, cardTextures[(int)solutions.Second]);
-            GUI.DrawTexture(thirdCard, cardTextures[(int)solutions.Third]);
+            if (!missedSolution)
+            {
+                PublicPlayerName = GameObject.Find("Player" + WhoWon).gameObject.GetComponent<CharacterControl>().PublicName();
+                GUI.Label(new Rect(125, stepH * 3, 200, 30), PublicPlayerName + " won!");
+            }
+            if (missedSolution)
+            {
+                GUI.Label(new Rect(125, stepH * 3, 200, 30), "You're wrong! Solution is:");
+            }
+            var realSolution = gameManager.Solution();
+            GUI.DrawTexture(firstCard, missedSolution ? cardTextures[realSolution.First] : cardTextures[(int)solutions.First]);
+            GUI.DrawTexture(secondCard, missedSolution ? cardTextures[realSolution.Second] : cardTextures[(int)solutions.Second]);
+            GUI.DrawTexture(thirdCard, missedSolution ? cardTextures[realSolution.Third] : cardTextures[(int)solutions.Third]);
 
             if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "EXIT!"))
             {
-                // #todo this sucks
-                gameManager.ResetServerScene();
+                if (Network.isServer)
+                {
+                    gameManager.ResetServerScene();
+                }
+                else if (Network.isClient)
+                {
+                    gameManager.ResetClientScene();
+                }
             }
         }
         GUI.EndGroup();
@@ -697,7 +731,7 @@ public class GUIScript : MonoBehaviour
     [RPC]
     void ResetGUIVariables()
     {
-        boolCh = boolWe = false;
+        missedSolution = boolCh = boolWe = false;
         cardCharacter = cardWeapon = choseWe = choseCh = 0;
         weapon = "Choose weapon";
         character = "Choose character";
