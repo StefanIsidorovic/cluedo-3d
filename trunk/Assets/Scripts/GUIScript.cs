@@ -191,9 +191,12 @@ public class GUIScript : MonoBehaviour
         sideBarStyle = new GUIStyle(GUI.skin.box);
         sideBarStyle.normal.background = (Texture2D)Resources.Load("blackBackground", typeof(Texture2D));
 
+        GUIStyle messageStyleLabel = new GUIStyle(GUI.skin.label);
+        messageStyleLabel.alignment = TextAnchor.UpperCenter;
+
         // label with a message to all players
         GUI.Box(new Rect(0, 25, 240, Screen.height), "", sideBarStyle);
-        GUI.Label(new Rect(10, 25, 230, Screen.height - 150), TextMessageForAllPlayers());
+        GUI.Label(new Rect(10, 25, 230, Screen.height - 150), TextMessageForAllPlayers(),messageStyleLabel);
         GUIStyle leaveButtonStyle = new GUIStyle(GUI.skin.button);
         leaveButtonStyle.normal.background = (Texture2D)Resources.Load("leave", typeof(Texture2D));
         leaveButtonStyle.active.background = leaveButtonStyle.normal.background;
@@ -886,12 +889,12 @@ public class GUIScript : MonoBehaviour
             if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " + dicesSum + " moves.") &&
                 !textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
                 SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn and he/she is allowed to make " +
-            dicesSum + " moves.\n" + textMessageForAllPlayers);
+            dicesSum + " moves.\n ****************************\n" + textMessageForAllPlayers);
         }
         else if (dicesSum <= 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !infoBox)
         {
             if (!textMessageForAllPlayers.StartsWith("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet."))
-                SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet.\n" + textMessageForAllPlayers);
+                SetTextMessageForAllPlayers("It is " + PublicPlayerName + "'s turn, and he/she didn't throw dices yet.\n ****************************\n" + textMessageForAllPlayers);
         }
         if (askDialogShow == true || askDialogShowQuestion || askDialogShowCardsBool)
         {
@@ -899,27 +902,27 @@ public class GUIScript : MonoBehaviour
                 &&
                 !textMessageForAllPlayers.StartsWith(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
                     ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + "."))
-                SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!\n" + textMessageForAllPlayers);
+                SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask the question!\n ****************************\n" + textMessageForAllPlayers);
 
             if (cardCharacter != 0 && cardWeapon != 0)
             {
                 if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
                     ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + "."))
                     SetTextMessageForAllPlayers(PublicPlayerName + " asked for room - " + (Rooms)board.WhereAmI(playerNum) +
-                    ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + ".\n" + textMessageForAllPlayers);
+                    ", character - " + (Characters)cardCharacter + ", weapon - " + (Weapons)cardWeapon + ".\n ****************************\n" + textMessageForAllPlayers);
             }
 
         }
         else if (questionAsk == true)
         {
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!"))
-                SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!\n" + textMessageForAllPlayers);
+                SetTextMessageForAllPlayers(PublicPlayerName + " is currently in " + board.WhereAmI(playerNum) + " and wants to ask for final solution!\n ****************************\n" + textMessageForAllPlayers);
         }
 
         if (infoBox == true && !questionAsk)
         {
             if (!textMessageForAllPlayers.StartsWith(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game."))
-                SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n" + textMessageForAllPlayers);
+                SetTextMessageForAllPlayers(PublicPlayerName + " has made a mistake with final solution and he/she has been excluded from the game.\n ****************************\n" + textMessageForAllPlayers);
         }
     }
     #endregion

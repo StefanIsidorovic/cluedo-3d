@@ -430,7 +430,7 @@ public class NetworkManager : MonoBehaviour
             mapNetworkPlayerToPlayerNum[np] = mapNetworkPlayerToPlayerNum[np] - 1;
         }
 
-        GameManager.Instance.GUI().GetComponent<GUIScript>().SetTextMessageForAllPlayers("Player " + GameManager.Instance.ConnectedPlayers()[disconnectedPlayer] + " is excluded from the game. All players will see his/hers cards.\n" + GameManager.Instance.GUI().GetComponent<GUIScript>().TextMessageForAllPlayers());
+        GameManager.Instance.GUI().GetComponent<GUIScript>().SetTextMessageForAllPlayers("Player " + GameManager.Instance.ConnectedPlayers()[disconnectedPlayer] + " is excluded from the game. All players will see his/hers cards.\n ****************************\n" + GameManager.Instance.GUI().GetComponent<GUIScript>().TextMessageForAllPlayers());
     }
 
     void OnDisconnectedFromServer(NetworkDisconnection info)
