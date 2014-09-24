@@ -376,13 +376,15 @@ public class GUIScript : MonoBehaviour
                         {
                             solutions = questionCards;
                             EndGameRPC(playerNum, questionCards.First, questionCards.Second, questionCards.Third);
-
+							// Correct Answer
                         }
                         else
                         {
                             questionAsk = false;
                             infoBox = true;
                             infoBoxLabel = "You are wrong!";
+							Sounds.Instance.PlayWrong();
+							// Wrong answer
                         }
                     }
 
@@ -714,6 +716,10 @@ public class GUIScript : MonoBehaviour
         solutions.Second = character;
         solutions.Third = weapon;
         WhoWon = playerWon;
+		if (WhoWon == playerNum)
+						Sounds.Instance.PlayWin ();
+				else
+						Sounds.Instance.PlayLose ();
 
         //endgame logic for other components
     }
@@ -803,6 +809,7 @@ public class GUIScript : MonoBehaviour
     {
         if (!dicesThrown)
         {
+			Sounds.Instance.PlayDice();
             num1 = Random.Range(1, 6);
             num2 = Random.Range(1, 6);
             dicesThrown = true;
