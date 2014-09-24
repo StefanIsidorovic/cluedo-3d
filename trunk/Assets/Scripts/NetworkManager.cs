@@ -434,7 +434,7 @@ public class NetworkManager : MonoBehaviour
 
     void OnDisconnectedFromServer(NetworkDisconnection info)
     {
-        Application.LoadLevel("Cluedo");
+        GameManager.Instance.ResetClientScene();
     }
 
     #endregion
