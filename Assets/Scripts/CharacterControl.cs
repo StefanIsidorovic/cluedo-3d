@@ -7,12 +7,12 @@ public class CharacterControl : MonoBehaviour
     /// Starting coordinates on board for players.
     /// </summary>
     public static readonly Vector3[] playersStartPositions = { 
-                                                                new Vector3(8, 2, 15), 
-                                                                new Vector3(14, 2, 8), 
-                                                                new Vector3(9, 2, -7), 
-                                                                new Vector3(0, 2, -7), 
-                                                                new Vector3(-8, 2, -1), 
-                                                                new Vector3(-8, 2, 8) 
+                                                                new Vector3(8, 1.1f, 14.9f), 
+                                                                new Vector3(14, 1.1f, 8), 
+                                                                new Vector3(9, 1.1f, -7), 
+                                                                new Vector3(0, 1.1f, -7), 
+                                                                new Vector3(-8, 1.1f, -1), 
+                                                                new Vector3(-8, 1.1f, 8) 
                                                              };
 
     /// <summary>
@@ -38,6 +38,7 @@ public class CharacterControl : MonoBehaviour
     private float lerpPosition, lerpTime;
     private bool moveStarted;
     private int spawnAngle;
+    private Animator animator;
 
     // Use this for initialization
     void Start()
@@ -50,12 +51,14 @@ public class CharacterControl : MonoBehaviour
         numOfMoves = 0;
         moveStarted = false;
         spawnAngle = playersSpawnAngles[playerNum];
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
         if (networkView.isMine)
         {
+            animator.SetBool("isWalking", moveStarted);
             //Player must throw dices before his movement and it must be his turn to play
             var gameManager = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>();
             if (gameManager.DicesSum() == GameManager.INVALID_DICES_SUM || gameManager.OnTurn() != playerNum)
@@ -136,7 +139,6 @@ public class CharacterControl : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(0, spawnAngle, 0);
         }
-
         // Save rotation, rotate, get current position and decode move
         var saveRotation = transform.rotation;
         transform.Rotate(yAxis, angle);
@@ -243,8 +245,8 @@ public class CharacterControl : MonoBehaviour
     private void SetMaterialRPC(int materialIndex)
     {
         Material mat = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().playerMaterials[materialIndex];
-        transform.Find("PlayerGreen").renderer.material = mat;
-        transform.Find("Sphere").renderer.material = mat;
+        //transform.Find("PlayerGreen").renderer.material = mat;
+        //transform.Find("Sphere").renderer.material = mat;
     }
 
     [RPC]

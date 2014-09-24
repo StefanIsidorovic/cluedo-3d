@@ -55,7 +55,7 @@ public class NetworkManager : MonoBehaviour
 
     #region Player data
     private string publicPlayerName = "";
-    public GameObject playerPrefab;
+    public GameObject[] playerPrefabs;
     public Material[] playerMaterials;
     // Variable for network manager to know which player is his, for later spawning.
     private int numOfPlayer = 0;
@@ -432,7 +432,7 @@ public class NetworkManager : MonoBehaviour
     {
         Debug.Log("connected: " + numOfPlayer);
 
-        var spawnedPlayer = Network.Instantiate(playerPrefab, CharacterControl.playersStartPositions[numOfPlayer], Quaternion.Euler(0, CharacterControl.playersSpawnAngles[numOfPlayer], 0), 0);
+        var spawnedPlayer = Network.Instantiate(playerPrefabs[numOfPlayer], CharacterControl.playersStartPositions[numOfPlayer], Quaternion.Euler(0, CharacterControl.playersSpawnAngles[numOfPlayer], 0), 0);
 
         string playerName = "Player" + numOfPlayer;
         spawnedPlayer.name = playerName;
