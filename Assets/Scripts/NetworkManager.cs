@@ -120,9 +120,36 @@ public class NetworkManager : MonoBehaviour
             GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "", backgroundStyle2);
             GUI.Label(new Rect(20, 20, 300, 60), "The game will begin in just a second! Please wait for more players to connect. Minimum number of player is " + minimumNumberOfPlayers + ".", smallLabelStyle);
 
+            /***************LEAVE GAME BUTTON******************/
+            GUIStyle leaveButtonStyle = new GUIStyle(GUI.skin.button);
+            leaveButtonStyle.normal.background = (Texture2D)Resources.Load("leave", typeof(Texture2D));
+            leaveButtonStyle.active.background = leaveButtonStyle.normal.background;
+            leaveButtonStyle.hover.background = leaveButtonStyle.normal.background;
+
+            GUIStyle leaveLabelStyle = new GUIStyle(GUI.skin.label);
+            leaveButtonStyle.fontSize = 20;
+            leaveButtonStyle.normal.textColor = Color.gray;
+            leaveButtonStyle.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(new Rect(80, Screen.height - 70, 200, 50), "<size=20>Leave Game</size>", leaveLabelStyle);
+
+            if (GUI.Button(new Rect(10, Screen.height - 100, 50, 100), "", leaveButtonStyle))
+            {
+                GameManager gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+                if (Network.isClient)
+                {
+                    gameManager.ResetClientScene();
+                }
+                else
+                {
+                    gameManager.ResetServerScene();
+                }
+            }
+
+            /*********ABOUT ****************/
             if (showTextAboutCluedo)
                 ShowTextAboutCluedo();
 
+            /*****************PLAYERS LIST*****************/
             string textMessage = "Investigators:" + "\n";
             List<string> connectedPlayers= GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().ConnectedPlayers();
             int i = 1;
@@ -131,9 +158,10 @@ public class NetworkManager : MonoBehaviour
                 textMessage += "\n" + i + ". " +playerN + " ";
                 i += 1;
             }
+
+            /*************START GAME / WAIT FOR MORE**************/
             if (Network.isServer)
             {
-               
                 if (numOfPlayersConnected < minimumNumberOfPlayers)
                 {
                     GUI.enabled= false;
