@@ -248,7 +248,7 @@ public class GUIScript : MonoBehaviour
             if (item1 != Rooms.Hallway)
             {
                 string item = EnumConverter.ToString(item1);
-                toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
+                toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item],gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? "<color=green>" + item + "</color>":item);
                 textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60, textBoxWidth, 20), textBoxes[item]);
                 i++;
             }
@@ -257,7 +257,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllCharacters())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 60 + 35, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? "<color=green>" + item + "</color>" : item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 60 + 35, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -265,7 +265,7 @@ public class GUIScript : MonoBehaviour
         foreach (var item1 in gameManager.AllWeapons())
         {
             string item = EnumConverter.ToString(item1);
-            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], item);
+            toogle[item] = GUI.Toggle(new Rect(leftMarginSideBar, i * 22 + 140, 110, 20), gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? true : toogle[item], gameManager.PlayerHasCard(playerNum, (int)EnumConverter.ToEnum(item)) ? "<color=green>" + item + "</color>" : item);
             textBoxes[item] = GUI.TextField(new Rect(130, i * 22 + 140, textBoxWidth, 20), textBoxes[item]);
             i++;
         }
@@ -376,16 +376,16 @@ public class GUIScript : MonoBehaviour
                         {
                             solutions = questionCards;
                             EndGameRPC(playerNum, questionCards.First, questionCards.Second, questionCards.Third);
-                            // Correct Answer
+							// Correct Answer
                         }
                         else
                         {
                             questionAsk = false;
                             infoBox = true;
                             infoBoxLabel = "You are wrong!";
-                            Sounds.Instance.PlayWrong();
+							Sounds.Instance.PlayWrong();
                             Network.CloseConnection(Network.connections[0], true);
-                            // Wrong answer
+							// Wrong answer
                         }
                     }
 
@@ -598,6 +598,8 @@ public class GUIScript : MonoBehaviour
                 Network.Disconnect();
                 MasterServer.UnregisterHost();
                 Application.LoadLevel("Cluedo");
+
+
             }
 
         }
@@ -709,7 +711,7 @@ public class GUIScript : MonoBehaviour
         num1 = 0;
         num2 = 0;
     }
-
+    
     [RPC]
     public void EndGame(int playerWon, int room, int character, int weapon)
     {
@@ -719,10 +721,10 @@ public class GUIScript : MonoBehaviour
         solutions.Second = character;
         solutions.Third = weapon;
         WhoWon = playerWon;
-        if (WhoWon == playerNum)
-            Sounds.Instance.PlayWin();
-        else
-            Sounds.Instance.PlayLose();
+		if (WhoWon == playerNum)
+						Sounds.Instance.PlayWin ();
+				else
+						Sounds.Instance.PlayLose ();
 
         //endgame logic for other components
     }
@@ -812,7 +814,7 @@ public class GUIScript : MonoBehaviour
     {
         if (!dicesThrown)
         {
-            Sounds.Instance.PlayDice();
+			Sounds.Instance.PlayDice();
             num1 = Random.Range(1, 6);
             num2 = Random.Range(1, 6);
             dicesThrown = true;
