@@ -4,7 +4,7 @@ using System.Collections;
 
 
 
-public class Jukebox : MonoBehaviour{
+public class Jukebox : MonoSingleton<Jukebox>{
 
 
     // The audio source from where the sound will be playing.
@@ -15,9 +15,6 @@ public class Jukebox : MonoBehaviour{
     private int currentSong = 0;
  	// Ensures that only one jukebox instance will be available throughout a gameplay.
     private static Jukebox tmp;
-	// The volume of the music.
-
-	private float volume=1.0f;
     void Awake()
     {
         if (tmp == null)
@@ -43,11 +40,7 @@ public class Jukebox : MonoBehaviour{
            
         
     }
-  
-  
-
-   
-    /// Plays the next song, if there is no next song plays the first song again.
+  	/// Plays the next song, if there is no next song plays the first song again.
     public void NextTrack()
     {
         Stop();
@@ -56,58 +49,29 @@ public class Jukebox : MonoBehaviour{
            if (songs.Length > 1)
                 {
                     System.Random ran = new System.Random();
-
-                    int newSong = currentSong;
+					int newSong = currentSong;
                     do
                     {
-                        newSong = ran.Next(0, songs.Length);
+                      newSong = ran.Next(0, songs.Length);
                     } while (newSong == currentSong);
                     currentSong = newSong;
                 }
-            
-          
             Play();
         }
     }
-    /// Plays the previous song, if there is no previous song plays the last song in the list.
- 
-    public void PreviousTrack()
-    {
-        Stop();
-        if (songs!=null)
-        {
-				if (songs.Length > 0)
-				{
-					if (songs.Length > 1)
-                {
-                    System.Random ran = new System.Random();
 
-                    int newSong = currentSong;
-                    while (newSong == currentSong)
-                    {
-                        newSong = ran.Next(0, songs.Length);
-                    }
-                    currentSong = newSong;
-                }
-            }
-           
-            Play();
-        }
-    }
     /// Stops playback.
     public void Stop()
     {
         source.Stop();
     }
-    /// Starts playing the song at currentSong in the song list.\
+    /// Starts playing the song at currentSong in the song list.
     public void Play()
     {
 			if (songs != null) {
 								if (songs.Length > 0) {
 										currentSong = Mathf.Clamp (currentSong, 0, songs.Length - 1);
-
 										if (songs [currentSong] != null) {
-												//source.volume = volume;
 												source.clip = songs [currentSong];
 												source.Play ();
 												Invoke ("NextTrack", songs [currentSong].length);
@@ -119,6 +83,10 @@ public class Jukebox : MonoBehaviour{
 								}
 						}
     }
+
+	public void Pause(){
+		source.Pause ();
+	}
 
 
 
