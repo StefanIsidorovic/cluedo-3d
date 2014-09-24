@@ -917,7 +917,8 @@ public class GUIScript : MonoBehaviour
     private void GenerateMessageForAllPlayers()
     {
         PublicPlayerName = GameObject.Find("Player" + gameManager.OnTurn()).gameObject.GetComponent<CharacterControl>().PublicName();
-        PublicPlayerName = "<color=green>" + PublicPlayerName + "</color>";
+        if (!PublicPlayerName.StartsWith("<color=green>"))
+            PublicPlayerName = "<color=green>" + PublicPlayerName + "</color>";
         int dicesSum = GameObject.Find("GameManager").gameObject.GetComponent<GameManager>().DicesSum();
         if (dicesSum > 0 && askDialogShow == false && !askDialogShowQuestion && !askDialogShowCardsBool && !questionAsk && !infoBox)
         {
