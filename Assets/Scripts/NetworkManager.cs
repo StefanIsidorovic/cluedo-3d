@@ -414,6 +414,22 @@ public class NetworkManager : MonoBehaviour
             gameManager.SetNumOfPlayers(gameManager.NumOfPlayers() - 1);
             ChangePlayersConnected(numOfPlayersConnected - 1);
         }
+
+        // Finally fix NetworkManager mapping between NetworkPlayer objects and player numbers 
+        // Since C# is very, very, very stupid programming language we need to cache for which network 
+        // player objects we need to decrement value in Dictionary
+        List<NetworkPlayer> cacheNp = new List<NetworkPlayer>();
+        foreach (KeyValuePair<NetworkPlayer, int> npPn in mapNetworkPlayerToPlayerNum)
+        {
+            if (npPn.Value > disconnectedPlayer)
+            {
+                cacheNp.Add(npPn.Key);
+            }
+        }
+        foreach (var np in cacheNp)
+        {
+            mapNetworkPlayerToPlayerNum[np] = mapNetworkPlayerToPlayerNum[np] - 1;
+        }
     }
 
     void OnConnectedToServer()

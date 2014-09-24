@@ -284,6 +284,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void DistributeDisconnectedPlayerCards(int disconnectedPlayer)
     {
         // Get and shuffle cards
+        Debug.Log("Disconnected player is player (GameManager): " + disconnectedPlayer + ".");
         var cardsToDistribute = cardsDistribution[disconnectedPlayer];
         Algorithms.Shuffle<int>(cardsToDistribute);
         #region Debug logging for cards
