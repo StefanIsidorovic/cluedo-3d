@@ -777,7 +777,7 @@ public class GUIScript : MonoBehaviour
         askButtonText = "Ask!";
         askDialogShow = someoneAsking = guardAsking = askDialogShowCardsBool = askDialogShowQuestion = questionAsk = false;
         playersWhoHaveCards = new Triple<int, int, int>(-1, -1, -1);
-        solutions = new Triple<int, int, int>(-1, -1, -1);
+        //solutions = new Triple<int, int, int>(-1, -1, -1);
         askedFor = new Triple<Rooms, Characters, Weapons>(0, 0, 0);
         asking = false;
         playerAsking = -1;
