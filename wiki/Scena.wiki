@@ -1,32 +1,32 @@
 #summary Sve veze koje treba uspostaviti na sceni
 
-*Board* </br>
-BoardScript</br>
-NetworkView (Off, None)</br>
-</br>
-*CameraSwapper*</br>
-CameraController</br>
-</br>
-*GameManager*</br>
-GameManager</br>
-NetworkView (Off, None)</br>
-</br>
-*NetworkManager*</br>
-NetworkManager (playerPrefabs[] - size 6 - nakaciti iz foldera Prefabs Player0, Player1, ..., Player5) </br>
-NetworkView (Off, None)</br>
-</br>
-*Main camera*</br>
-FollowThePlayer</br>
-</br>
-*TopViewCamera</br>
-MenuScript</br>
-TopViewCameraRotation</br>
-</br>
-*Music Player* </br>
-JukeBox (elementary audio)</br>
+*Board* 
+#BoardScript
+#NetworkView (Off, None)
 
-*Prefabs* (Player0, Player1, ..., Player5)</br>
-CharachterControl</br>
-BoardScript</br>
-NetworkView (Reliable Delta Compressed, PlayerN (Trasform))</br>
-Animator (Controller - PlayerNAnimatorController iz foldera Animators)</br>
+*CameraSwapper*
+#CameraController
+
+*GameManager*
+#GameManager
+#NetworkView (Off, None)
+
+*NetworkManager*
+#NetworkManager (playerPrefabs[] - size 6 - nakaciti iz foldera Prefabs Player0, Player1, ..., Player5) 
+#NetworkView (Off, None)
+
+*Main camera*
+#FollowThePlayer
+
+*TopViewCamera
+#MenuScript
+#TopViewCameraRotation
+
+*Music Player*
+#JukeBox (elementary audio)
+
+*Prefabs* (Player0, Player1, ..., Player5)
+#CharachterControl
+#BoardScript
+#NetworkView (Reliable Delta Compressed, PlayerN (Trasform))
+#Animator (Controller - PlayerNAnimatorController iz foldera Animators)
