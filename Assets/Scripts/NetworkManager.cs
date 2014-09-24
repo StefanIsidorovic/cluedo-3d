@@ -105,7 +105,7 @@ public class NetworkManager : MonoBehaviour
 
                 //Third line
                 hostsBox = new Rect(Screen.width - 350, Screen.height / 2 - 50, 300, 200);
-                GUI.Box(hostsBox, "<color=#FFFFFF><size=25>Enter an existing room</size></color>", boxStyle);
+                GUI.Box(hostsBox, "<color=#FFFFFFm><size=25>Enter an existing room</size></color>", boxStyle);
                 ShowHostsList();
             }
             else
@@ -430,7 +430,7 @@ public class NetworkManager : MonoBehaviour
             mapNetworkPlayerToPlayerNum[np] = mapNetworkPlayerToPlayerNum[np] - 1;
         }
 
-        GameManager.Instance.GUI().GetComponent<GUIScript>().SetTextMessageForAllPlayers("Player " + GameManager.Instance.ConnectedPlayers()[disconnectedPlayer] + " is excluded from the game. All players will see his/hers cards.\n ****************************\n" + GameManager.Instance.GUI().GetComponent<GUIScript>().TextMessageForAllPlayers());
+        GameManager.Instance.GUI().GetComponent<GUIScript>().SetTextMessageForAllPlayers("Player <color=green>" + GameManager.Instance.ConnectedPlayers()[disconnectedPlayer] + "</color> is excluded from the game. All players will see his/hers cards.\n ****************************\n" + GameManager.Instance.GUI().GetComponent<GUIScript>().TextMessageForAllPlayers());
     }
 
     void OnDisconnectedFromServer(NetworkDisconnection info)
