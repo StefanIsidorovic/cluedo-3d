@@ -247,7 +247,7 @@ public class NetworkManager : MonoBehaviour
                 gameName = "DefaultRoomName";
             Network.InitializeServer(5, 25000, !Network.HavePublicAddress());
             mapNetworkPlayerToPlayerNum.Add(Network.player, 0);
-            MasterServer.RegisterHost(typeName, gameName);
+            MasterServer.RegisterHost(typeName, gameName,"0");
             show = false;
             serverStarted = true;
             SetListConnectedPlayers();
@@ -288,12 +288,13 @@ public class NetworkManager : MonoBehaviour
         {
             for (int i = 0; i < hostList.Length; i++)
             {
-                if (GUI.Button(new Rect( 10,5+35 * i, 270, 30), hostList[i].gameName, buttonTextStyle))
-                {
-                    //SetListConnectedPlayers();
-                    JoinServer(hostList[i]);
-                    showTextAboutCluedo = false;
-                }
+                if(hostList[i].comment == "0")
+                    if (GUI.Button(new Rect( 10,5+35 * i, 270, 30), hostList[i].gameName, buttonTextStyle))
+                    {
+                        //SetListConnectedPlayers();
+                        JoinServer(hostList[i]);
+                        showTextAboutCluedo = false;
+                    }
             }
         }
 
@@ -508,6 +509,8 @@ public class NetworkManager : MonoBehaviour
 
     private void StartGame()
     {
+        MasterServer.UnregisterHost();
+        MasterServer.RegisterHost(typeName, gameName, "1");
         networkView.RPC("StartGameNetwork", RPCMode.AllBuffered);
     }
 
