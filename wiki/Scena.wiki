@@ -1,22 +1,32 @@
 #summary Sve veze koje treba uspostaviti na sceni
 
-*Camera*
+*Board*
+BoardScript
+NetworkView (Off, None)
 
-Na objekat CameraSwapper treba da bude nakacena skripta SwapCamera. U toj skripti treba postaviti sledece: <br/>
-cam1 - Main Camera <br/>
-cam2 - TopViewCamera
+*CameraSwapper*
+CameraController
 
 *GameManager*
-
-Na ovaj objekat treba nakaciti skriptu GameManager.
+GameManager
+NetworkView (Off, None)
 
 *NetworkManager*
-
-Na ovaj objekat treba nakaciti skripte NetworkManager (na koji treba nakaciti Player Prefab) i NetworkView
+NetworkManager (playerPrefabs[] - size 6 - nakaciti iz foldera Prefabs Player0, Player1, ..., Player5) 
+NetworkView (Off, None)
 
 *Main camera*
-Nakaciti skriptu FollowThePlayer
+FollowThePlayer
 
 *TopViewCamera
+MenuScript
+TopViewCameraRotation
 
-Nakaciti skripte MenuScript i TopViewCameraRotation
+*Music Player* 
+JukeBox (elementary audio)
+
+*Prefabs* (Player0, Player1, ..., Player5)
+CharachterControl
+BoardScript
+NetworkView (Reliable Delta Compressed, PlayerN (Trasform))
+Animator (Controller - PlayerNAnimatorController iz foldera Animators)
