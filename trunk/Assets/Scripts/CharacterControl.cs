@@ -26,12 +26,12 @@ public class CharacterControl : MonoBehaviour
     private int numOfMoves; // Number of made moves in current series of moves
     private string publicName; //Name that player choose
 
-    private static Vector3 faceForward = new Vector3(0, 0, -1);
-    private static Vector3 faceBackwards = new Vector3(0, 0, 1);
-    private static Vector3 faceLeft = new Vector3(1, 0, 0);
-    private static Vector3 faceRight = new Vector3(-1, 0, 0);
-    private static Vector3 yAxis = new Vector3(0, 1, 0);
-    private static Vector3 zAxis = new Vector3(0, 0, 1);
+    private static readonly Vector3 faceForward = new Vector3(0, 0, -1);
+    private static readonly Vector3 faceBackwards = new Vector3(0, 0, 1);
+    private static readonly Vector3 faceLeft = new Vector3(1, 0, 0);
+    private static readonly Vector3 faceRight = new Vector3(-1, 0, 0);
+    private static readonly Vector3 yAxis = new Vector3(0, 1, 0);
+    private static readonly Vector3 zAxis = new Vector3(0, 0, 1);
 
     private Vector3 oldPosition;
     private Vector3 newPosition;
@@ -91,14 +91,14 @@ public class CharacterControl : MonoBehaviour
                 lerpPosition += Time.deltaTime / lerpTime;
                 transform.position = Vector3.Lerp(oldPosition, newPosition, lerpPosition);
                 moveStarted = true;
-				Sounds.Instance.PlayFootstep();
+                Sounds.Instance.PlayFootstep();
             }
             else
             {
                 // Reset move variables 
                 oldPosition = newPosition;
                 lerpPosition = 0F;
-                
+
                 // Increase number of moves when done moving
                 if (moveStarted)
                 {
@@ -160,7 +160,7 @@ public class CharacterControl : MonoBehaviour
             board.SetPlayerPosition(playerNum, nextPosition.X, nextPosition.Z);
             return true;
         }
-        
+
         // Move wasn't successful so player needs to be rotated to original position
         transform.rotation = saveRotation;
         return false;

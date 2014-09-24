@@ -432,13 +432,9 @@ public class NetworkManager : MonoBehaviour
         GameManager.Instance.GUI().GetComponent<GUIScript>().SetTextMessageForAllPlayers("Player " + GameManager.Instance.ConnectedPlayers()[disconnectedPlayer] + " is excluded from the game. All players will see his/hers cards.\n" + GameManager.Instance.GUI().GetComponent<GUIScript>().TextMessageForAllPlayers());
     }
 
-    void OnConnectedToServer()
+    void OnDisconnectedFromServer(NetworkDisconnection info)
     {
-        if (numOfPlayersConnected == 7)
-        {
-            Debug.Log("Too many players in game!");
-            return;
-        }
+        Application.LoadLevel("Cluedo");
     }
 
     #endregion
