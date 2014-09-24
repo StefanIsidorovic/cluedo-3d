@@ -135,6 +135,22 @@ public class GameManager : MonoSingleton<GameManager>
         }
     }
 
+    public void ResetServerScene()
+    {
+        Network.Disconnect();
+        MasterServer.UnregisterHost();
+        Application.LoadLevel("Cluedo");
+    }
+
+    public void ResetClientScene()
+    {
+        if (Network.connections.Length == 1)
+        {
+            Network.CloseConnection(Network.connections[0], true);
+        }
+        Application.LoadLevel("Cluedo");
+    }
+
     #region Public interface for cards and players
 
     /// <summary>
