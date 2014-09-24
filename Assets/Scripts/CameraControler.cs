@@ -47,6 +47,11 @@ public class CameraControler : MonoSingleton<CameraControler>
     /// </summary>
     private Camera topViewCamera;
 
+    /// <summary>
+    /// Reference to player tracked by Main Camera and TopViewCamera
+    /// </summary>
+    private CharacterControl playerTracked;
+
     void Start()
     {
         // Fetch and initialize cameras
@@ -71,8 +76,14 @@ public class CameraControler : MonoSingleton<CameraControler>
         {
             mainCamera.enabled = !mainCamera.enabled;
             topViewCamera.enabled = !topViewCamera.enabled;
+            if (playerTracked && IsTopViewCamera)
+            {
+                playerTracked.GetComponent<CharacterControl>().CameraSwitchedToTopViewRotationAdjustment();
+            }
         }
     }
+
+    public CharacterControl PlayerTracked { get { return playerTracked; } set { playerTracked = value; } }
 
     public bool IsTopViewCamera { get { return topViewCamera.enabled; } }
     public bool IsMainCamera { get { return mainCamera.enabled; } }

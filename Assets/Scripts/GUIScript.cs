@@ -592,7 +592,7 @@ public class GUIScript : MonoBehaviour
 
             if (GUI.Button(new Rect(155, stepH * 21, 130, 30), "EXIT!"))
             {
-                // #TODO: end game
+                Application.LoadLevel(0);
             }
 
         }
