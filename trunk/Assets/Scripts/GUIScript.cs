@@ -408,11 +408,6 @@ public class GUIScript : MonoBehaviour
 
     }
 
-    private void AskDialog_SomeoneAsking()
-    {
-        GUI.Label(new Rect(0, 0, 150, 100), "Someone other is playing now!");
-    }
-
     private void AskDialog_ChooseCardsToShow()
     {
         // Dimensions of dialog box
@@ -719,16 +714,19 @@ public class GUIScript : MonoBehaviour
     [RPC]
     public void EndGame(int playerWon, int room, int character, int weapon)
     {
-        ResetGUIVariables();
+        if (playerWon == playerNum)
+            Sounds.Instance.PlayWin();
+        else
+        {
+            Sounds.Instance.PlayLose();
+        }
+        
         endGameInfo = true;
         solutions.First = room;
         solutions.Second = character;
         solutions.Third = weapon;
         WhoWon = playerWon;
-        if (WhoWon == playerNum)
-            Sounds.Instance.PlayWin();
-        else
-            Sounds.Instance.PlayLose();
+        ResetGUIVariables();
 
         //endgame logic for other components
     }
